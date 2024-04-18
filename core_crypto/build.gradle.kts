@@ -32,31 +32,6 @@ android {
         jvmTarget = "17"
     }
 
-    buildFeatures {
-        buildConfig = true
-        viewBinding = true
-    }
-
-    flavorDimensions.add("environment")
-
-    productFlavors {
-        create("fake") {
-            dimension = "environment"
-        }
-
-        create("dev") {
-            dimension = "environment"
-        }
-
-        create("staging") {
-            dimension = "environment"
-        }
-
-        create("prod") {
-            dimension = "environment"
-        }
-    }
-
     publishing {
         publishing {
             singleVariant("release") {
@@ -79,17 +54,15 @@ dependencies {
     implementation(libs.bcprov.jdk18on)
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            register<MavenPublication>("release"){
-                groupId = "com.github.fadlurahmanfdev"
-                artifactId = "core_crypto"
-                version = "0.0.5"
+publishing {
+    publications {
+        register<MavenPublication>("release"){
+            groupId = "com.github.fadlurahmanfdev"
+            artifactId = "core_crypto"
+            version = "0.0.6"
 
-                afterEvaluate {
-                    from(components["prodRelease"])
-                }
+            afterEvaluate {
+                from(components["release"])
             }
         }
     }
