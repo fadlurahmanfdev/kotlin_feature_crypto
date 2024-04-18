@@ -1,9 +1,8 @@
 package co.id.fadlurahmanf.core_crypto.data.repositories
 
+import android.util.Log
 import co.id.fadlurahmanf.core_crypto.data.enums.AESMethod
 import co.id.fadlurahmanf.core_crypto.others.BaseCrypto
-import java.util.logging.Level
-import java.util.logging.Logger
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.spec.IvParameterSpec
@@ -24,8 +23,7 @@ class CryptoAESRepositoryImpl : BaseCrypto(), CryptoAESRepository {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv)
             return encode(cipher.doFinal(plainText.toByteArray()))
         } catch (e: Throwable) {
-            Logger.getLogger(CryptoAESRepository::class.java.simpleName)
-                .log(Level.INFO, "failed encrypt: ${e.message}")
+            Log.e(CryptoAESRepository::class.java.simpleName, "failed encrypt: ${e.message}")
             return null
         }
     }
@@ -38,8 +36,7 @@ class CryptoAESRepositoryImpl : BaseCrypto(), CryptoAESRepository {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, iv)
             return String(cipher.doFinal(decode(encryptedText)))
         } catch (e: Exception) {
-            Logger.getLogger(CryptoAESRepository::class.java.simpleName)
-                .log(Level.INFO, "failed decrypt: ${e.message}")
+            Log.e(CryptoAESRepository::class.java.simpleName, "failed decrypt: ${e.message}")
             return null
         }
     }

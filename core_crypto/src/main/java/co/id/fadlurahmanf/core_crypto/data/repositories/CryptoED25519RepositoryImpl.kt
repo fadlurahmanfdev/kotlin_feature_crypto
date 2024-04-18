@@ -1,5 +1,6 @@
 package co.id.fadlurahmanf.core_crypto.data.repositories
 
+import android.util.Log
 import co.id.fadlurahmanf.core_crypto.data.model.CryptoKey
 import co.id.fadlurahmanf.core_crypto.others.BaseCrypto
 import org.bouncycastle.crypto.generators.Ed25519KeyPairGenerator
@@ -8,8 +9,6 @@ import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters
 import org.bouncycastle.crypto.signers.Ed25519Signer
 import java.security.SecureRandom
-import java.util.logging.Level
-import java.util.logging.Logger
 
 class CryptoED25519RepositoryImpl : BaseCrypto(), CryptoED25519Repository {
     override fun generateKey(): CryptoKey {
@@ -34,8 +33,10 @@ class CryptoED25519RepositoryImpl : BaseCrypto(), CryptoED25519Repository {
             val signature = signer.generateSignature()
             encode(signature)
         } catch (e: Throwable) {
-            Logger.getLogger(CryptoED25519Repository::class.java.simpleName)
-                .log(Level.INFO, "failed generateSignature: ${e.message}")
+            Log.e(
+                CryptoED25519Repository::class.java.simpleName,
+                "failed generateSignature: ${e.message}"
+            )
             null
         }
     }
@@ -53,8 +54,10 @@ class CryptoED25519RepositoryImpl : BaseCrypto(), CryptoED25519Repository {
             verifierDerived.update(message, 0, text.length)
             verifierDerived.verifySignature(decode(signature))
         } catch (e: Throwable) {
-            Logger.getLogger(CryptoED25519Repository::class.java.simpleName)
-                .log(Level.INFO, "failed verifySignature: ${e.message}")
+            Log.e(
+                CryptoED25519Repository::class.java.simpleName,
+                "failed verifySignature: ${e.message}"
+            )
             false
         }
     }

@@ -1,5 +1,6 @@
 package co.id.fadlurahmanf.core_crypto.data.repositories
 
+import android.util.Log
 import co.id.fadlurahmanf.core_crypto.data.enums.RSAMethod
 import co.id.fadlurahmanf.core_crypto.data.enums.RSASignatureMethod
 import co.id.fadlurahmanf.core_crypto.data.model.CryptoKey
@@ -9,8 +10,6 @@ import java.security.KeyPairGenerator
 import java.security.Signature
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
-import java.util.logging.Level
-import java.util.logging.Logger
 import javax.crypto.Cipher
 
 class CryptoRSARepositoryImpl : BaseCrypto(), CryptoRSARepository {
@@ -36,8 +35,10 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoRSARepository {
             signer.update(plainText.toByteArray())
             encode(signer.sign())
         } catch (e: Throwable) {
-            Logger.getLogger(CryptoRSARepository::class.java.simpleName)
-                .log(Level.INFO, "failed generateSignature: ${e.message}")
+            Log.d(
+                CryptoRSARepository::class.java.simpleName,
+                "failed generateSignature: ${e.message}"
+            )
             null
         }
     }
@@ -57,8 +58,10 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoRSARepository {
             signer.verify(decode(encodedSignature))
             true
         } catch (e: Throwable) {
-            Logger.getLogger(CryptoRSARepository::class.java.simpleName)
-                .log(Level.INFO, "failed verifySignature: ${e.message}")
+            Log.d(
+                CryptoRSARepository::class.java.simpleName,
+                "failed verifySignature: ${e.message}"
+            )
             false
         }
     }
@@ -72,8 +75,7 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoRSARepository {
             val encryptedByteArray = cipher.doFinal(plainText.toByteArray())
             encode(encryptedByteArray)
         } catch (e: Throwable) {
-            Logger.getLogger(CryptoRSARepository::class.java.simpleName)
-                .log(Level.INFO, "failed encrypt: ${e.message}")
+            Log.e(CryptoRSARepository::class.java.simpleName, "failed encrypt: ${e.message}")
             null
         }
     }
@@ -90,8 +92,7 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoRSARepository {
             cipher.init(Cipher.DECRYPT_MODE, privateKey)
             String(cipher.doFinal(decode(encryptedText)))
         } catch (e: Throwable) {
-            Logger.getLogger(CryptoRSARepository::class.java.simpleName)
-                .log(Level.INFO, "failed decrypt: ${e.message}")
+            Log.e(CryptoRSARepository::class.java.simpleName, "failed decrypt: ${e.message}")
             null
         }
     }
