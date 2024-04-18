@@ -34,33 +34,33 @@ android {
         jvmTarget = "17"
     }
 
-    buildFeatures {
-        buildConfig = true
-        viewBinding = true
-    }
+//    buildFeatures {
+//        buildConfig = true
+//        viewBinding = true
+//    }
 
-    flavorDimensions.add("environment")
-
-    productFlavors {
-        create("fake") {
-            dimension = "environment"
-            applicationIdSuffix = ".fake"
-        }
-
-        create("dev") {
-            dimension = "environment"
-            applicationIdSuffix = ".dev"
-        }
-
-        create("staging") {
-            dimension = "environment"
-            applicationIdSuffix = ".staging"
-        }
-
-        create("prod") {
-            dimension = "environment"
-        }
-    }
+//    flavorDimensions.add("environment")
+//
+//    productFlavors {
+//        create("fake") {
+//            dimension = "environment"
+//            applicationIdSuffix = ".fake"
+//        }
+//
+//        create("dev") {
+//            dimension = "environment"
+//            applicationIdSuffix = ".dev"
+//        }
+//
+//        create("staging") {
+//            dimension = "environment"
+//            applicationIdSuffix = ".staging"
+//        }
+//
+//        create("prod") {
+//            dimension = "environment"
+//        }
+//    }
 }
 
 dependencies {

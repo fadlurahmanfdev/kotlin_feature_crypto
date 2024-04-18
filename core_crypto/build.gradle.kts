@@ -59,7 +59,7 @@ publishing {
         register<MavenPublication>("release"){
             groupId = "com.github.fadlurahmanfdev"
             artifactId = "core_crypto"
-            version = "0.0.6"
+            version = "0.0.7"
 
             afterEvaluate {
                 from(components["release"])
