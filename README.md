@@ -17,5 +17,5 @@ dependencyResolutionManagement {
 Add below code in your gradle project (see latest-release in [releases](https://github.com/fadlurahmanfdev/core_crypto/releases))
 
 ```
-implementation 'com.github.fadlurahmanfdev:core_crypto:latest-release'
+implementation("com.github.fadlurahmanfdev:core_crypto:latest-release")
 ```
