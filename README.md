@@ -2,7 +2,7 @@
 
 ### How To Use In Your Project
 
-Add below code in your gradle module project
+Add below code in your setting gradle kts
 
 ```
 dependencyResolutionManagement {
@@ -14,7 +14,7 @@ dependencyResolutionManagement {
 	}
 ```
 
-Add below code in your gradle project (see latest-release in releases)
+Add below code in your gradle project (see latest-release in [releases](https://github.com/fadlurahmanfdev/core_crypto/releases))
 
 ```
 implementation 'com.github.fadlurahmanfdev:core_crypto:latest-release'
