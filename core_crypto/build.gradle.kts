@@ -57,6 +57,10 @@ dependencies {
 publishing {
     publications {
         register<MavenPublication>("release"){
+            groupId = "io.github.fadlurahmanfdev"
+            artifactId = "core_crypto"
+            version = "0.0.1"
+
             afterEvaluate {
                 from(components["release"])
             }
