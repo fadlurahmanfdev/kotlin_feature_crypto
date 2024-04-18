@@ -54,15 +54,17 @@ dependencies {
     implementation(libs.bcprov.jdk18on)
 }
 
-publishing {
-    publications {
-        register<MavenPublication>("release"){
-            groupId = "io.github.fadlurahmanfdev"
-            artifactId = "core_crypto"
-            version = "0.0.1"
+afterEvaluate {
+    publishing {
+        publications {
+            register<MavenPublication>("release"){
+                groupId = "io.github.fadlurahmanfdev"
+                artifactId = "core_crypto"
+                version = "0.0.1"
 
-            afterEvaluate {
-                from(components["release"])
+                afterEvaluate {
+                    from(components["release"])
+                }
             }
         }
     }
