@@ -27,11 +27,39 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_19
-        targetCompatibility = JavaVersion.VERSION_19
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "19"
+        jvmTarget = "17"
+    }
+
+    buildFeatures {
+        buildConfig = true
+        viewBinding = true
+    }
+
+    flavorDimensions.add("environment")
+
+    productFlavors {
+        create("fake") {
+            dimension = "environment"
+            applicationIdSuffix = ".fake"
+        }
+
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+        }
+
+        create("staging") {
+            dimension = "environment"
+            applicationIdSuffix = ".staging"
+        }
+
+        create("prod") {
+            dimension = "environment"
+        }
     }
 }
 

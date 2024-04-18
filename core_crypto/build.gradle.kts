@@ -32,6 +32,31 @@ android {
         jvmTarget = "17"
     }
 
+    buildFeatures {
+        buildConfig = true
+        viewBinding = true
+    }
+
+    flavorDimensions.add("environment")
+
+    productFlavors {
+        create("fake") {
+            dimension = "environment"
+        }
+
+        create("dev") {
+            dimension = "environment"
+        }
+
+        create("staging") {
+            dimension = "environment"
+        }
+
+        create("prod") {
+            dimension = "environment"
+        }
+    }
+
     publishing {
         publishing {
             singleVariant("release") {
@@ -60,10 +85,10 @@ afterEvaluate {
             register<MavenPublication>("release"){
                 groupId = "com.github.fadlurahmanfdev"
                 artifactId = "core_crypto"
-                version = "0.0.4"
+                version = "0.0.5"
 
                 afterEvaluate {
-                    from(components["release"])
+                    from(components["prodRelease"])
                 }
             }
         }
