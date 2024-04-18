@@ -1,8 +1,8 @@
-package co.id.fadlurahmanf.core_crypto.data.repositories
+package com.github.fadlurahmanfdev.core_crypto.data.repositories
 
-import co.id.fadlurahmanf.core_crypto.data.enums.RSAMethod
-import co.id.fadlurahmanf.core_crypto.data.enums.RSASignatureMethod
-import co.id.fadlurahmanf.core_crypto.data.model.CryptoKey
+import com.github.fadlurahmanfdev.core_crypto.data.enums.RSAMethod
+import com.github.fadlurahmanfdev.core_crypto.data.enums.RSASignatureMethod
+import com.github.fadlurahmanfdev.core_crypto.data.model.CryptoKey
 
 interface CryptoRSARepository {
     fun generateKey(): CryptoKey

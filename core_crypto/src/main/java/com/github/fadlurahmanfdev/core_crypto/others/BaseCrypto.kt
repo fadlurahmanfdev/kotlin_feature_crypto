@@ -1,9 +1,9 @@
-package co.id.fadlurahmanf.core_crypto.others
+package com.github.fadlurahmanfdev.core_crypto.others
 
 import android.util.Base64
-import co.id.fadlurahmanf.core_crypto.data.enums.AESMethod
-import co.id.fadlurahmanf.core_crypto.data.enums.RSAMethod
-import co.id.fadlurahmanf.core_crypto.data.enums.RSASignatureMethod
+import com.github.fadlurahmanfdev.core_crypto.data.enums.AESMethod
+import com.github.fadlurahmanfdev.core_crypto.data.enums.RSAMethod
+import com.github.fadlurahmanfdev.core_crypto.data.enums.RSASignatureMethod
 
 abstract class BaseCrypto {
 

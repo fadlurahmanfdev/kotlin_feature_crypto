@@ -1,4 +1,4 @@
-package co.id.fadlurahmanf.core_crypto.data.enums
+package com.github.fadlurahmanfdev.core_crypto.data.enums
 
 enum class RSAMethod {
     RSA_ECB_NoPadding,

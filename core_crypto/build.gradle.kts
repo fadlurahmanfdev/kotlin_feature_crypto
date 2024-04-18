@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "co.id.fadlurahmanf.core_crypto"
+    namespace = "com.github.fadlurahmanfdev.core_crypto"
     compileSdk = 34
 
     defaultConfig {
@@ -59,7 +59,7 @@ publishing {
         register<MavenPublication>("release"){
             groupId = "com.github.fadlurahmanfdev"
             artifactId = "core_crypto"
-            version = "0.0.7"
+            version = "0.1.0"
 
             afterEvaluate {
                 from(components["release"])
