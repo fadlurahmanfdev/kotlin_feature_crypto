@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "core_crypto"
 include(":app")
 include(":core_crypto_v2")
+include(":core_crypto")
