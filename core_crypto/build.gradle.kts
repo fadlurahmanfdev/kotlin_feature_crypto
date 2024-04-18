@@ -58,7 +58,7 @@ afterEvaluate {
     publishing {
         publications {
             register<MavenPublication>("release"){
-                groupId = "io.github.fadlurahmanfdev"
+                groupId = "com.github.fadlurahmanfdev"
                 artifactId = "core_crypto"
                 version = "0.0.1"
 
