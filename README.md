@@ -2,7 +2,7 @@
 
 ### How To Use In Your Project
 
-Add below code in your setting gradle kts
+Add below code in your setting gradle
 
 ```
 dependencyResolutionManagement {
