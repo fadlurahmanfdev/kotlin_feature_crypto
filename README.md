@@ -1,0 +1,21 @@
+# How To:
+
+### How To Use In Your Project
+
+Add below code in your gradle module project
+
+```
+dependencyResolutionManagement {
+		repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+		repositories {
+			mavenCentral()
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+
+Add below code in your gradle project (see latest-release in releases)
+
+```
+implementation 'com.github.fadlurahmanfdev:core_crypto:latest-release'
+```
