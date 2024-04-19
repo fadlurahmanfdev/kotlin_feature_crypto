@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "co.id.fadlurahmanf.core_crypto"
+    namespace = "com.github.fadlurahmanfdev.core_crypto_example"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "co.id.fadlurahmanf.core_crypto"
+        applicationId = "com.github.fadlurahmanfdev.core_crypto_example"
         minSdk = 21
         targetSdk = 34
         versionCode = 1
@@ -33,34 +33,6 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-
-//    buildFeatures {
-//        buildConfig = true
-//        viewBinding = true
-//    }
-
-//    flavorDimensions.add("environment")
-//
-//    productFlavors {
-//        create("fake") {
-//            dimension = "environment"
-//            applicationIdSuffix = ".fake"
-//        }
-//
-//        create("dev") {
-//            dimension = "environment"
-//            applicationIdSuffix = ".dev"
-//        }
-//
-//        create("staging") {
-//            dimension = "environment"
-//            applicationIdSuffix = ".staging"
-//        }
-//
-//        create("prod") {
-//            dimension = "environment"
-//        }
-//    }
 }
 
 dependencies {
@@ -73,4 +45,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    //noinspection UseTomlInstead
+    implementation("com.github.fadlurahmanfdev:core_crypto:0.1.0")
 }

@@ -1,4 +1,4 @@
-package co.id.fadlurahmanf.core_crypto
+package com.github.fadlurahmanfdev.core_crypto_example
 
 import org.junit.Test
 
