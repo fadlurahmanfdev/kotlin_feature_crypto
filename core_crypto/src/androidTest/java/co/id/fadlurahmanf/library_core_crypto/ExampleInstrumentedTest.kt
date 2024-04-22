@@ -1,4 +1,4 @@
-package co.id.fadlurahmanf.core_crypto
+package co.id.fadlurahmanf.library_core_crypto
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

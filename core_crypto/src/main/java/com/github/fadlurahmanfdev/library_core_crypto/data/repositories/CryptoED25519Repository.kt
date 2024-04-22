@@ -1,6 +1,6 @@
-package com.github.fadlurahmanfdev.core_crypto.data.repositories
+package com.github.fadlurahmanfdev.library_core_crypto.data.repositories
 
-import com.github.fadlurahmanfdev.core_crypto.data.model.CryptoKey
+import com.github.fadlurahmanfdev.library_core_crypto.data.model.CryptoKey
 
 interface CryptoED25519Repository {
     fun generateKey(): CryptoKey

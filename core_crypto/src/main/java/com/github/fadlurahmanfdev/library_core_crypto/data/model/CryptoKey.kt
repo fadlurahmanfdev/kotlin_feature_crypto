@@ -1,4 +1,4 @@
-package com.github.fadlurahmanfdev.core_crypto.data.model
+package com.github.fadlurahmanfdev.library_core_crypto.data.model
 
 data class CryptoKey(
     /**

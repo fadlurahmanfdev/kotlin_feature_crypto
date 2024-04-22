@@ -46,6 +46,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    //noinspection UseTomlInstead
-    implementation("com.github.fadlurahmanfdev:core_crypto:0.1.0")
+//    //noinspection UseTomlInstead
+//    implementation("com.github.fadlurahmanfdev:core_crypto:0.1.0")
+
+    implementation(project(":core_crypto"))
 }

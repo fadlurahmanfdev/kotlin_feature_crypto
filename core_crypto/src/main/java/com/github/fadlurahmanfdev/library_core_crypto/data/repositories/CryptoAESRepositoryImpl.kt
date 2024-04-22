@@ -1,8 +1,8 @@
-package com.github.fadlurahmanfdev.core_crypto.data.repositories
+package com.github.fadlurahmanfdev.library_core_crypto.data.repositories
 
 import android.util.Log
-import com.github.fadlurahmanfdev.core_crypto.data.enums.AESMethod
-import com.github.fadlurahmanfdev.core_crypto.others.BaseCrypto
+import com.github.fadlurahmanfdev.library_core_crypto.data.enums.AESMethod
+import com.github.fadlurahmanfdev.library_core_crypto.others.BaseCrypto
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.spec.IvParameterSpec
