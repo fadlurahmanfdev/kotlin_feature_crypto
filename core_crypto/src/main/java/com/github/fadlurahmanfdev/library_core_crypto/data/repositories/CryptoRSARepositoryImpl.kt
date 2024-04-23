@@ -36,7 +36,7 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoRSARepository {
             encode(signer.sign())
         } catch (e: Throwable) {
             Log.d(
-                CryptoRSARepository::class.java.simpleName,
+                CryptoRSARepositoryImpl::class.java.simpleName,
                 "failed generateSignature: ${e.message}"
             )
             null
@@ -59,7 +59,7 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoRSARepository {
             true
         } catch (e: Throwable) {
             Log.d(
-                CryptoRSARepository::class.java.simpleName,
+                CryptoRSARepositoryImpl::class.java.simpleName,
                 "failed verifySignature: ${e.message}"
             )
             false
@@ -75,7 +75,7 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoRSARepository {
             val encryptedByteArray = cipher.doFinal(plainText.toByteArray())
             encode(encryptedByteArray)
         } catch (e: Throwable) {
-            Log.e(CryptoRSARepository::class.java.simpleName, "failed encrypt: ${e.message}")
+            Log.e(CryptoRSARepositoryImpl::class.java.simpleName, "failed encrypt: ${e.message}")
             null
         }
     }
@@ -92,7 +92,7 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoRSARepository {
             cipher.init(Cipher.DECRYPT_MODE, privateKey)
             String(cipher.doFinal(decode(encryptedText)))
         } catch (e: Throwable) {
-            Log.e(CryptoRSARepository::class.java.simpleName, "failed decrypt: ${e.message}")
+            Log.e(CryptoRSARepositoryImpl::class.java.simpleName, "failed decrypt: ${e.message}")
             null
         }
     }

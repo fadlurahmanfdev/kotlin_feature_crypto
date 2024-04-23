@@ -34,7 +34,7 @@ class CryptoED25519RepositoryImpl : BaseCrypto(), CryptoED25519Repository {
             encode(signature)
         } catch (e: Throwable) {
             Log.e(
-                CryptoED25519Repository::class.java.simpleName,
+                CryptoED25519RepositoryImpl::class.java.simpleName,
                 "failed generateSignature: ${e.message}"
             )
             null
@@ -55,7 +55,7 @@ class CryptoED25519RepositoryImpl : BaseCrypto(), CryptoED25519Repository {
             verifierDerived.verifySignature(decode(signature))
         } catch (e: Throwable) {
             Log.e(
-                CryptoED25519Repository::class.java.simpleName,
+                CryptoED25519RepositoryImpl::class.java.simpleName,
                 "failed verifySignature: ${e.message}"
             )
             false

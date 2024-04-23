@@ -23,7 +23,7 @@ class CryptoAESRepositoryImpl : BaseCrypto(), CryptoAESRepository {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv)
             return encode(cipher.doFinal(plainText.toByteArray()))
         } catch (e: Throwable) {
-            Log.e(CryptoAESRepository::class.java.simpleName, "failed encrypt: ${e.message}")
+            Log.e(CryptoAESRepositoryImpl::class.java.simpleName, "failed encrypt: ${e.message}")
             return null
         }
     }
@@ -36,7 +36,7 @@ class CryptoAESRepositoryImpl : BaseCrypto(), CryptoAESRepository {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, iv)
             return String(cipher.doFinal(decode(encryptedText)))
         } catch (e: Exception) {
-            Log.e(CryptoAESRepository::class.java.simpleName, "failed decrypt: ${e.message}")
+            Log.e(CryptoAESRepositoryImpl::class.java.simpleName, "failed decrypt: ${e.message}")
             return null
         }
     }
