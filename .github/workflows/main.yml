@@ -25,8 +25,9 @@ jobs:
           release_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
-      - name: curl
+      - name: Curl Tag Release Jitpack IO
         uses: wei/curl@master
+        continue-on-error: true
         with:
           args: https://jitpack.io/com/github/fadlurahmanfdev/kotlin_core_crypto/${{ github.ref_name }}/kotlin_core_crypto-${{ github.ref_name }}.pom
           
