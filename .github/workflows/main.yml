@@ -25,6 +25,9 @@ jobs:
           release_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
+      - name: Sleep for 10 seconds
+        run: Start-Sleep -s 10
+        shell: powershell
       - name: Curl Tag Release Jitpack IO
         uses: wei/curl@master
         continue-on-error: true
