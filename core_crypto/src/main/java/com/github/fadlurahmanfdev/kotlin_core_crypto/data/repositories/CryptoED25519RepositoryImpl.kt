@@ -1,8 +1,8 @@
-package com.github.fadlurahmanfdev.library_core_crypto.data.repositories
+package com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories
 
 import android.util.Log
-import com.github.fadlurahmanfdev.library_core_crypto.data.model.CryptoKey
-import com.github.fadlurahmanfdev.library_core_crypto.others.BaseCrypto
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
+import com.github.fadlurahmanfdev.kotlin_core_crypto.others.BaseCrypto
 import org.bouncycastle.crypto.generators.Ed25519KeyPairGenerator
 import org.bouncycastle.crypto.params.Ed25519KeyGenerationParameters
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters

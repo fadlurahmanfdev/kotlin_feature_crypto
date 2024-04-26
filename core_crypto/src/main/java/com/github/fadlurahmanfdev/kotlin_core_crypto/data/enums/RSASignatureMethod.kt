@@ -1,4 +1,4 @@
-package com.github.fadlurahmanfdev.library_core_crypto.data.enums
+package com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums
 
 enum class RSASignatureMethod {
     MD5withRSA,
