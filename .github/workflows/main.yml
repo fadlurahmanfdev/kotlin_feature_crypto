@@ -25,4 +25,8 @@ jobs:
           release_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
+      - name: curl
+        uses: wei/curl@master
+        with:
+          args: https://jitpack.io/com/github/fadlurahmanfdev/kotlin_core_crypto/${{ github.ref_name }}/kotlin_core_crypto-${{ github.ref_name }}.pom
           
