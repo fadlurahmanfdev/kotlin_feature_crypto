@@ -1,13 +1,13 @@
 package com.github.fadlurahmanfdev.core_crypto_example.domain
 
 import android.util.Log
-import com.github.fadlurahmanfdev.library_core_crypto.data.enums.AESMethod
-import com.github.fadlurahmanfdev.library_core_crypto.data.enums.RSAMethod
-import com.github.fadlurahmanfdev.library_core_crypto.data.enums.RSASignatureMethod
-import com.github.fadlurahmanfdev.library_core_crypto.data.model.CryptoKey
-import com.github.fadlurahmanfdev.library_core_crypto.data.repositories.CryptoAESRepository
-import com.github.fadlurahmanfdev.library_core_crypto.data.repositories.CryptoED25519Repository
-import com.github.fadlurahmanfdev.library_core_crypto.data.repositories.CryptoRSARepository
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepository
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoED25519Repository
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoRSARepository
 
 class ExampleCryptoUseCaseImpl(
     private val cryptoAESRepository: CryptoAESRepository,

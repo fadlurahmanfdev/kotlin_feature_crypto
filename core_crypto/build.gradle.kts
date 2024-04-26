@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.github.fadlurahmanfdev.library_core_crypto"
+    namespace = "com.github.fadlurahmanfdev.kotlin_core_crypto"
     compileSdk = 34
 
     defaultConfig {
@@ -58,8 +58,8 @@ publishing {
     publications {
         register<MavenPublication>("release"){
             groupId = "com.github.fadlurahmanfdev"
-            artifactId = "library_core_crypto"
-            version = "0.2.1"
+            artifactId = "kotlin_core_crypto"
+            version = "0.3.4"
 
             afterEvaluate {
                 from(components["release"])

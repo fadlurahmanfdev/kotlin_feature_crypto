@@ -1,4 +1,4 @@
-package co.id.fadlurahmanf.library_core_crypto
+package co.id.fadlurahmanf.kotlin_core_crypto
 
 import org.junit.Test
 

@@ -1,9 +1,9 @@
 package com.github.fadlurahmanfdev.core_crypto_example.domain
 
-import com.github.fadlurahmanfdev.library_core_crypto.data.enums.AESMethod
-import com.github.fadlurahmanfdev.library_core_crypto.data.enums.RSAMethod
-import com.github.fadlurahmanfdev.library_core_crypto.data.enums.RSASignatureMethod
-import com.github.fadlurahmanfdev.library_core_crypto.data.model.CryptoKey
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
 
 interface ExampleCryptoUseCase {
     fun generateAESKey(): String

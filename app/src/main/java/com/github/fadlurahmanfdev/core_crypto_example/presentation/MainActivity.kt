@@ -8,14 +8,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.github.fadlurahmanfdev.core_crypto_example.R
 import com.github.fadlurahmanfdev.core_crypto_example.data.FeatureModel
-import com.github.fadlurahmanfdev.core_crypto_example.domain.ExampleCryptoUseCase
 import com.github.fadlurahmanfdev.core_crypto_example.domain.ExampleCryptoUseCaseImpl
-import com.github.fadlurahmanfdev.library_core_crypto.data.repositories.CryptoAESRepository
-import com.github.fadlurahmanfdev.library_core_crypto.data.repositories.CryptoAESRepositoryImpl
-import com.github.fadlurahmanfdev.library_core_crypto.data.repositories.CryptoED25519Repository
-import com.github.fadlurahmanfdev.library_core_crypto.data.repositories.CryptoED25519RepositoryImpl
-import com.github.fadlurahmanfdev.library_core_crypto.data.repositories.CryptoRSARepository
-import com.github.fadlurahmanfdev.library_core_crypto.data.repositories.CryptoRSARepositoryImpl
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepositoryImpl
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoED25519RepositoryImpl
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoRSARepositoryImpl
 
 class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
     lateinit var viewModel: MainViewModel

@@ -3,10 +3,10 @@ package com.github.fadlurahmanfdev.core_crypto_example.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.github.fadlurahmanfdev.core_crypto_example.domain.ExampleCryptoUseCase
-import com.github.fadlurahmanfdev.library_core_crypto.data.enums.AESMethod
-import com.github.fadlurahmanfdev.library_core_crypto.data.enums.RSAMethod
-import com.github.fadlurahmanfdev.library_core_crypto.data.enums.RSASignatureMethod
-import com.github.fadlurahmanfdev.library_core_crypto.data.model.CryptoKey
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
 
 class MainViewModel(
     private val exampleCryptoUseCase: ExampleCryptoUseCase
