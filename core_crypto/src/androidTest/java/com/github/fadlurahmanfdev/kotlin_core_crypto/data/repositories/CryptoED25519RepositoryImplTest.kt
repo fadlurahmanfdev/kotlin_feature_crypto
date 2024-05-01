@@ -37,6 +37,6 @@ class CryptoED25519RepositoryImplTest {
             signature = signature!!,
             text = plainSignatureText,
         )
-        assertEquals(false, isVerify)
+        assertEquals(true, isVerify)
     }
 }
