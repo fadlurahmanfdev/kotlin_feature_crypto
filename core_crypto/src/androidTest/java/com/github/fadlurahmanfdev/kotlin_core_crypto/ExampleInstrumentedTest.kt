@@ -1,13 +1,9 @@
-package co.id.fadlurahmanf.kotlin_core_crypto
+package com.github.fadlurahmanfdev.kotlin_core_crypto
 
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Assert.*
-import org.junit.Before
 
 /**
  * Instrumented test, which will execute on an Android device.

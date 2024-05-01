@@ -7,5 +7,7 @@ interface CryptoED25519Repository {
 
     fun generateSignature(plainText: String, encodedPrivateKey: String): String?
 
+    // TODO(dev): change signature to encoded signature
+    // TODO(dev): change text to plain text
     fun verifySignature(text: String, signature: String, encodedPublicKey: String): Boolean
 }
