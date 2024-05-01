@@ -15,15 +15,35 @@ jobs:
           java-version: 17
           distribution: 'adopt'
           cache: 'gradle'
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Gradle cache
+        uses: gradle/actions/setup-gradle@v3
+      - name: AVD cache
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+#          key: avd-${{ matrix.api-level }}
+          key: avd-34
       - name: Run connected tests
+        if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
           api-level: 34
           target: google_apis
           arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
           script: |
-            ./gradlew :core_crypto:connectedAndroidTest
-            ./gradlew :core_crypto:connectedCheck
+            ./gradlew :core_crypto:connectedAndroidTest --stacktrace
+            ./gradlew :core_crypto:connectedCheck --stacktrace
       - name: Android Test Report
         uses: asadmansr/android-test-report-action@v1.2.0
         if: ${{ always() }}
