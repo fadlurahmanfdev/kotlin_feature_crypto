@@ -46,7 +46,6 @@ class CryptoAESRepositoryImplTest {
     @Test
     fun failed_encrypt_with_fake_aes_key() {
         val plainText = "Plain Text AES"
-        val key = cryptoAESRepository.generateKey()
         val encrypted = cryptoAESRepository.encrypt(
             encodedKey = "SOME FAKE AES KEY",
             plainText = plainText,

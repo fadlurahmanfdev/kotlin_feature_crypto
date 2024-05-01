@@ -23,4 +23,8 @@ jobs:
           arch: x86_64
           script: |
             ./gradlew :core_crypto:connectedAndroidTest
+            ./gradlew :core_crypto:connectedCheck
+      - name: Android Test Report
+        uses: asadmansr/android-test-report-action@v1.2.0
+        if: ${{ always() }}
           
