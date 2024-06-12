@@ -9,13 +9,13 @@ interface CryptoAESRepository {
         encodedKey: String,
         encodedIVKey: String,
         plainText: String,
-        method: AESMethod
+        method: AESMethod = AESMethod.AES_CBC_PKCS5PADDING
     ): String?
 
     fun decrypt(
         encodedKey: String,
         encodedIVKey: String,
         encryptedText: String,
-        method: AESMethod
+        method: AESMethod = AESMethod.AES_CBC_PKCS5PADDING
     ): String?
 }
