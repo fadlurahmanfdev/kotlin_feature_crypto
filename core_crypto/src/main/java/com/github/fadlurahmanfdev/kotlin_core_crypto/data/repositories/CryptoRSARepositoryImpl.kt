@@ -66,7 +66,11 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoRSARepository {
         }
     }
 
-    override fun encrypt(encodedPublicKey: String, plainText: String, method: RSAMethod): String? {
+    override fun encrypt(
+        encodedPublicKey: String,
+        plainText: String,
+        method: RSAMethod
+    ): String? {
         return try {
             val cipher = Cipher.getInstance(getRSATransformationBasedOnFlow(method))
             val publicKeySpec = X509EncodedKeySpec(decode(encodedPublicKey))

@@ -7,33 +7,10 @@ import com.github.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
 
 interface ExampleCryptoUseCase {
     fun generateAESKey(): String
-    fun encryptAES(encodedKey: String, plainText: String, method: AESMethod): String?
+    fun encryptDecryptAES()
     fun decryptAES(encodedKey: String, encryptedText: String, method: AESMethod): String?
     fun generateRSAKey(): CryptoKey
-    fun encryptRSA(
-        encodedPublicKey: String,
-        plainText: String,
-        method: RSAMethod,
-    ): String?
-
-    fun decryptRSA(
-        encodedPrivateKey: String,
-        encryptedText: String,
-        method: RSAMethod
-    ): String?
-
-    fun generateRSASignature(
-        encodedPrivateKey: String,
-        plainText: String,
-        method: RSASignatureMethod,
-    ): String?
-
-    fun verifyRSASignature(
-        encodedPublicKey: String,
-        encodedSignature: String,
-        plainText: String,
-        method: RSASignatureMethod,
-    ): Boolean
+    fun encryptDecryptRSA()
 
     fun encryptTextWithCombinationRsaAndAes(
         encodedPublicKey: String,

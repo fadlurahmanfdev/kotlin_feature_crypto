@@ -18,12 +18,25 @@ class ExampleCryptoUseCaseImpl(
         return cryptoAESRepository.generateKey()
     }
 
-    override fun encryptAES(encodedKey: String, plainText: String, method: AESMethod): String? {
-        return cryptoAESRepository.encrypt(
-            encodedKey = encodedKey,
+    override fun encryptDecryptAES() {
+        val plainText = "Passw0rd!"
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PLAIN TEXT: $plainText")
+        val key = cryptoAESRepository.generateKey()
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "AES KEY: $key")
+        val encryptedText = cryptoAESRepository.encrypt(
+            encodedKey = key,
             plainText = plainText,
-            method = method
+            method = AESMethod.AES_CBC_ISO10126Padding,
         )
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "ENCRYPTED TEXT: $encryptedText")
+        if (encryptedText != null) {
+            val decryptedText = cryptoAESRepository.decrypt(
+                encodedKey = key,
+                encryptedText = encryptedText,
+                method = AESMethod.AES_CBC_ISO10126Padding,
+            )
+            Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "DECRYPTED TEXT: $decryptedText")
+        }
     }
 
     override fun decryptAES(encodedKey: String, encryptedText: String, method: AESMethod): String? {
@@ -38,54 +51,48 @@ class ExampleCryptoUseCaseImpl(
         return cryptoRSARepository.generateKey()
     }
 
-    override fun encryptRSA(
-        encodedPublicKey: String,
-        plainText: String,
-        method: RSAMethod
-    ): String? {
-        return cryptoRSARepository.encrypt(
-            encodedPublicKey = encodedPublicKey,
+    override fun encryptDecryptRSA() {
+        val plainText = "Passw0rd!"
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PLAIN TEXT: $plainText")
+        val key = cryptoRSARepository.generateKey()
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PRIVATE KEY: ${key.privateKey}")
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PUBLIC KEY: ${key.publicKey}")
+        val encryptedText = cryptoRSARepository.encrypt(
+            encodedPublicKey = key.publicKey,
             plainText = plainText,
-            method = method
+            method = RSAMethod.RSA_ECB_PKCS1Padding
         )
-    }
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "ENCRYPTED TEXT: $encryptedText")
+        if (encryptedText != null) {
+            val decryptedText = cryptoRSARepository.decrypt(
+                key.privateKey,
+                encryptedText = encryptedText,
+                method = RSAMethod.RSA_ECB_PKCS1Padding,
+            )
+            Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "DECRYPTED TEXT: $decryptedText")
 
-    override fun decryptRSA(
-        encodedPrivateKey: String,
-        encryptedText: String,
-        method: RSAMethod
-    ): String? {
-        return cryptoRSARepository.decrypt(
-            encodedPrivateKey = encodedPrivateKey,
-            encryptedText = encryptedText,
-            method = method
-        )
-    }
-
-    override fun generateRSASignature(
-        encodedPrivateKey: String,
-        plainText: String,
-        method: RSASignatureMethod,
-    ): String? {
-        return cryptoRSARepository.generateSignature(
-            encodedPrivateKey = encodedPrivateKey,
-            plainText = plainText,
-            method = method
-        )
-    }
-
-    override fun verifyRSASignature(
-        encodedPublicKey: String,
-        encodedSignature: String,
-        plainText: String,
-        method: RSASignatureMethod,
-    ): Boolean {
-        return cryptoRSARepository.verifySignature(
-            encodedPublicKey = encodedPublicKey,
-            encodedSignature = encodedSignature,
-            plainText = plainText,
-            method = method
-        )
+            val signature = cryptoRSARepository.generateSignature(
+                encodedPrivateKey = key.privateKey,
+                plainText = plainText,
+                method = RSASignatureMethod.SHA256withRSA,
+            )
+            Log.d(
+                ExampleCryptoUseCaseImpl::class.java.simpleName,
+                "SIGNATURE: $signature"
+            )
+            if (signature != null) {
+                val isSignatureVerified = cryptoRSARepository.verifySignature(
+                    encodedPublicKey = key.publicKey,
+                    plainText = "Passw0rd!",
+                    encodedSignature = signature,
+                    method = RSASignatureMethod.SHA256withRSA,
+                )
+                Log.d(
+                    ExampleCryptoUseCaseImpl::class.java.simpleName,
+                    "IS SIGNATURE VERIFIED: $isSignatureVerified"
+                )
+            }
+        }
     }
 
     override fun encryptTextWithCombinationRsaAndAes(

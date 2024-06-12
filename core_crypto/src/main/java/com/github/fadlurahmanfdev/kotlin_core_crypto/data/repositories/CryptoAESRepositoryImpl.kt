@@ -15,12 +15,22 @@ class CryptoAESRepositoryImpl : BaseCrypto(), CryptoAESRepository {
         return encode(keyGen.generateKey().encoded)
     }
 
-    override fun encrypt(encodedKey: String, plainText: String, method: AESMethod): String? {
+    override fun generateIVKey(): String {
+        val ivParameterSpec = IvParameterSpec(ByteArray(16))
+        return encode(ivParameterSpec.iv)
+    }
+
+    override fun encrypt(
+        encodedKey: String,
+        encodedIVKey: String,
+        plainText: String,
+        method: AESMethod
+    ): String? {
         try {
             val cipher = Cipher.getInstance(getAESTransformationBasedOnFlow(method))
             val secretKey = SecretKeySpec(decode(encodedKey), "AES")
-            val iv = IvParameterSpec(ByteArray(16))
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv)
+            val ivParameterSpec = IvParameterSpec(decode(encodedIVKey))
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec)
             return encode(cipher.doFinal(plainText.toByteArray()))
         } catch (e: Throwable) {
             Log.e(CryptoAESRepositoryImpl::class.java.simpleName, "failed encrypt: ${e.message}")
@@ -28,11 +38,16 @@ class CryptoAESRepositoryImpl : BaseCrypto(), CryptoAESRepository {
         }
     }
 
-    override fun decrypt(encodedKey: String, encryptedText: String, method: AESMethod): String? {
+    override fun decrypt(
+        encodedKey: String,
+        encodedIVKey: String,
+        encryptedText: String,
+        method: AESMethod
+    ): String? {
         try {
             val cipher = Cipher.getInstance(getAESTransformationBasedOnFlow(method))
             val secretKey = SecretKeySpec(decode(encodedKey), "AES")
-            val iv = IvParameterSpec(ByteArray(16))
+            val iv = IvParameterSpec(decode(encodedIVKey))
             cipher.init(Cipher.DECRYPT_MODE, secretKey, iv)
             return String(cipher.doFinal(decode(encryptedText)))
         } catch (e: Exception) {

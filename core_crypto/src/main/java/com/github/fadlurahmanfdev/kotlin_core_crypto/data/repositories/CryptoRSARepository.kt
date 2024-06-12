@@ -19,6 +19,14 @@ interface CryptoRSARepository {
         method: RSASignatureMethod,
     ): Boolean
 
-    fun encrypt(encodedPublicKey: String, plainText: String, method: RSAMethod): String?
-    fun decrypt(encodedPrivateKey: String, encryptedText: String, method: RSAMethod): String?
+    fun encrypt(
+        encodedPublicKey: String,
+        plainText: String,
+        method: RSAMethod = RSAMethod.RSA_ECB_PKCS1Padding,
+    ): String?
+
+    fun decrypt(
+        encodedPrivateKey: String, encryptedText: String,
+        method: RSAMethod = RSAMethod.RSA_ECB_PKCS1Padding,
+    ): String?
 }
