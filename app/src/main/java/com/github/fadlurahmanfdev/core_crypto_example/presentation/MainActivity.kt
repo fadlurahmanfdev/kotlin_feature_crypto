@@ -19,51 +19,15 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
     private val features: List<FeatureModel> = listOf<FeatureModel>(
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "AES KEY",
-            desc = "Generate AES Key",
-            enum = "GENERATE_AES_KEY"
+            title = "Encryption Decryption AES",
+            desc = "Encryption Decryption using AES",
+            enum = "ENCRYPT_DECRYPT_AES"
         ),
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Encrypt AES",
-            desc = "Encrypt using AES method",
-            enum = "ENCRYPT_AES"
-        ),
-        FeatureModel(
-            featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Decrypt AES",
-            desc = "Decrypt using AES method",
-            enum = "DECRYPT_AES"
-        ),
-        FeatureModel(
-            featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "RSA KEY",
-            desc = "Generate RSA Key",
-            enum = "GENERATE_RSA_KEY"
-        ),
-        FeatureModel(
-            featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Encrypt RSA",
-            desc = "Encrypt using RSAA method",
-            enum = "ENCRYPT_RSA"
-        ),
-        FeatureModel(
-            featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Decrypt RSA",
-            desc = "Decrypt using RSA method",
-            enum = "DECRYPT_RSA"
-        ),
-        FeatureModel(
-            featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Generate RSA Signature",
-            desc = "Generate RSA Signature",
-            enum = "GENERATE_RSA_SIGNATURE"
-        ),
-        FeatureModel(
-            featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Verify RSA Signature",
-            desc = "Verify RSA Signature",
-            enum = "VERIFY_RSA_SIGNATURE"
+            title = "Encryption Decryption RSA",
+            desc = "Encryption Decryption using RSA",
+            enum = "ENCRYPT_DECRYPT_RSA"
         ),
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
@@ -120,36 +84,12 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
     override fun onClicked(item: FeatureModel) {
         when (item.enum) {
-            "GENERATE_AES_KEY" -> {
-                viewModel.generateAESKey()
+            "ENCRYPT_DECRYPT_AES" -> {
+                viewModel.encryptDecryptAES()
             }
 
-            "ENCRYPT_AES" -> {
-                viewModel.encryptAES()
-            }
-
-            "DECRYPT_AES" -> {
-                viewModel.decryptAES()
-            }
-
-            "GENERATE_RSA_KEY" -> {
-                viewModel.generateRSAKey()
-            }
-
-            "ENCRYPT_RSA" -> {
-                viewModel.encryptRSA()
-            }
-
-            "DECRYPT_RSA" -> {
-                viewModel.decryptRSA()
-            }
-
-            "GENERATE_RSA_SIGNATURE" -> {
-                viewModel.generateRSASignature()
-            }
-
-            "VERIFY_RSA_SIGNATURE" -> {
-                viewModel.verifyAESSignature()
+            "ENCRYPT_DECRYPT_RSA" -> {
+                viewModel.encryptDecryptRSA()
             }
 
             "GENERATE_ED25519_KEY" -> {

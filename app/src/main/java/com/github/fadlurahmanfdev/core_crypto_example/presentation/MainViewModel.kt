@@ -26,104 +26,12 @@ class MainViewModel(
     private lateinit var ed25519Key: CryptoKey
     private lateinit var signatureED25519: String
 
-    fun generateAESKey() {
-        val key = exampleCryptoUseCase.generateAESKey()
-        encodedAESKey = key
-        Log.d(MainViewModel::class.java.simpleName, "AES KEY: $key")
+    fun encryptDecryptAES() {
+        exampleCryptoUseCase.encryptDecryptAES()
     }
 
-    fun encryptAES() {
-        val encrypted = exampleCryptoUseCase.encryptAES(
-            encodedKey = encodedAESKey,
-            plainText = "TES_VALUE_AES",
-            method = AESMethod.AES_GCM_NoPadding
-        )
-        Log.d(MainViewModel::class.java.simpleName, "ENCRYPTED AES: $encrypted")
-        if (encrypted != null) {
-            encryptedAESText = encrypted
-        }
-    }
-
-    fun decryptAES() {
-        val decrypted = exampleCryptoUseCase.decryptAES(
-            encodedKey = encodedAESKey,
-            encryptedText = encryptedAESText,
-            method = AESMethod.AES_GCM_NoPadding
-        )
-        Log.d(MainViewModel::class.java.simpleName, "DECRYPTED AES: $decrypted")
-    }
-
-    fun generateRSAKey() {
-        rsaKey = exampleCryptoUseCase.generateRSAKey()
-        encodedAESKey = exampleCryptoUseCase.generateAESKey()
-        Log.d(
-            MainViewModel::class.java.simpleName, "RSA KEY:\n" +
-                    "PRIVATE KEY: ${rsaKey.privateKey}" +
-                    "\n\n" +
-                    "-------------------------" +
-                    "\n\n" +
-                    "PUBLIC KEY: ${rsaKey.publicKey}" +
-                    "\n\n" +
-                    "AES KEY: $encodedAESKey"
-        )
-
-        val encryptedAESKey = exampleCryptoUseCase.encryptRSA(
-            encodedPublicKey = rsaKey.publicKey,
-            plainText = encodedAESKey,
-            method = RSAMethod.RSA_ECB_PKCS1Padding,
-        )
-        Log.d(MainViewModel::class.java.simpleName, "ENCRYPTED AES KEY: $encryptedAESKey")
-        if (encryptedAESKey != null) {
-            this.encryptedAESKey = encryptedAESKey
-        }
-    }
-
-    fun encryptRSA() {
-        val encrypted = exampleCryptoUseCase.encryptTextWithCombinationRsaAndAes(
-            encodedPublicKey = rsaKey.publicKey,
-            encodedPrivateKey = rsaKey.privateKey,
-            encryptedAESKey = encryptedAESKey,
-            plainText = "TES_VALUE_RSA",
-            rsaMethod = RSAMethod.RSA_ECB_PKCS1Padding,
-            aesMethod = AESMethod.AES_GCM_NoPadding,
-        )
-        Log.d(MainViewModel::class.java.simpleName, "ENCRYPTED RSA: $encrypted")
-        if (encrypted != null) {
-            encryptedRSAText = encrypted
-        }
-    }
-
-    fun decryptRSA() {
-        val decrypted = exampleCryptoUseCase.decryptTextWithCombinationRsaAndAes(
-            encodedPrivateKey = rsaKey.privateKey,
-            encryptedAESKey = encryptedAESKey,
-            encryptedText = encryptedRSAText,
-            rsaMethod = RSAMethod.RSA_ECB_PKCS1Padding,
-            aesMethod = AESMethod.AES_GCM_NoPadding
-        )
-        Log.d(MainViewModel::class.java.simpleName, "DECRYPTED RSA: $decrypted")
-    }
-
-    fun generateRSASignature() {
-        val signature = exampleCryptoUseCase.generateRSASignature(
-            encodedPrivateKey = rsaKey.privateKey,
-            plainText = "TES_SIGNATURE_RSA",
-            method = RSASignatureMethod.MD5withRSA
-        )
-        Log.d(MainViewModel::class.java.simpleName, "SIGNATURE RSA: $signature")
-        if (signature != null) {
-            signatureRSA = signature
-        }
-    }
-
-    fun verifyAESSignature() {
-        val decrypted = exampleCryptoUseCase.verifyRSASignature(
-            encodedPublicKey = rsaKey.publicKey,
-            encodedSignature = rsaKey.privateKey,
-            plainText = "TES_SIGNATURE_RSA",
-            method = RSASignatureMethod.MD5withRSA,
-        )
-        Log.d(MainViewModel::class.java.simpleName, "DECRYPTED RSA: $decrypted")
+    fun encryptDecryptRSA() {
+        exampleCryptoUseCase.encryptDecryptRSA()
     }
 
     fun generateED25519Key() {
