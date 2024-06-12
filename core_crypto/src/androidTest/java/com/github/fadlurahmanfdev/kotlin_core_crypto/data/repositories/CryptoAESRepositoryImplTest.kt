@@ -24,6 +24,54 @@ class CryptoAESRepositoryImplTest {
     }
 
     @Test
+    fun generate_iv_key_success_is_not_empty() {
+        val ivKey = cryptoAESRepository.generateIVKey()
+        assertEquals(true, ivKey.isNotEmpty())
+    }
+
+    @Test
+    fun encrypt_decrypt_aes_success_method_aes_cbc_pkcs5padding() {
+        val plainText = "Plain Text AES"
+        val key = cryptoAESRepository.generateKey()
+        val ivKey = cryptoAESRepository.generateIVKey()
+        val encrypted = cryptoAESRepository.encrypt(
+            encodedKey = key,
+            encodedIVKey = ivKey,
+            plainText = plainText,
+            method = AESMethod.AES_CBC_PKCS5PADDING
+        )
+        assertEquals(true, encrypted != null)
+        val decrypted = cryptoAESRepository.decrypt(
+            encodedKey = key,
+            encodedIVKey = ivKey,
+            encryptedText = encrypted!!,
+            method = AESMethod.AES_CBC_PKCS5PADDING
+        )
+        assertEquals(plainText, decrypted)
+    }
+
+    @Test
+    fun encrypt_decrypt_aes_success_with_aes_cbc_pkcs5padding() {
+        val plainText = "Plain Text Iso 10126"
+        val key = cryptoAESRepository.generateKey()
+        val ivKey = cryptoAESRepository.generateIVKey()
+        val encrypted = cryptoAESRepository.encrypt(
+            encodedKey = key,
+            encodedIVKey = ivKey,
+            plainText = plainText,
+            method = AESMethod.AES_CBC_PKCS5PADDING
+        )
+        assertEquals(true, encrypted != null)
+        val decrypted = cryptoAESRepository.decrypt(
+            encodedKey = key,
+            encodedIVKey = ivKey,
+            encryptedText = encrypted!!,
+            method = AESMethod.AES_CBC_PKCS5PADDING
+        )
+        assertEquals(plainText, decrypted)
+    }
+
+    @Test
     fun encrypt_decrypt_aes_success_method_aes_gcm_no_padding() {
         val plainText = "Plain Text AES"
         val key = cryptoAESRepository.generateKey()

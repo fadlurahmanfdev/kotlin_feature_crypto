@@ -2,6 +2,7 @@ package com.github.fadlurahmanfdev.kotlin_core_crypto.others
 
 import android.util.Base64
 import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
+import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod.*
 import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
 import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
 
@@ -21,8 +22,9 @@ abstract class BaseCrypto {
 
     fun getAESTransformationBasedOnFlow(method: AESMethod): String {
         return when (method) {
-            AESMethod.AES_CBC_ISO10126Padding -> "AES/CBC/ISO10126Padding"
-            AESMethod.AES_GCM_NoPadding -> "AES/GCM/NoPadding"
+            AES_CBC_ISO10126Padding -> "AES/CBC/ISO10126Padding"
+            AES_GCM_NoPadding -> "AES/GCM/NoPadding"
+            AES_CBC_PKCS5PADDING -> "AES/CBC/PKCS5Padding"
         }
     }
 
