@@ -25,13 +25,13 @@ jobs:
           release_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
-      - name: Sleep for 30 seconds
+      - name: Sleep for 120 seconds
         uses: jakejarvis/wait-action@master
         with:
-          time: '30s'
+          time: '120s'
       - name: Curl Tag Release Jitpack IO
         uses: wei/curl@master
         continue-on-error: true
         with:
-          args: --verbose https://jitpack.io/com/github/fadlurahmanfdev/kotlin_core_crypto/${{ github.ref_name }}/kotlin_core_crypto-${{ github.ref_name }}.pom
+          args: --connect-timeout 300 --verbose https://jitpack.io/com/github/fadlurahmanfdev/kotlin_core_crypto/${{ github.ref_name }}/kotlin_core_crypto-${{ github.ref_name }}.pom
           
