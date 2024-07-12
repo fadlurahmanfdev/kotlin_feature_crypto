@@ -10,7 +10,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class CryptoRSARepositoryImplTest {
-    lateinit var cryptoRSARepository: CryptoRSARepository
+    private lateinit var cryptoRSARepository: CryptoRSARepository
 
     @Before
     fun setUp() {
