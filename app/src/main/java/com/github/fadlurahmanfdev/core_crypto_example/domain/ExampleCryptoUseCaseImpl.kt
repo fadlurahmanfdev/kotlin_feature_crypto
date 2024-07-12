@@ -14,41 +14,47 @@ class ExampleCryptoUseCaseImpl(
     private val cryptoED25519Repository: CryptoED25519Repository,
     private val cryptoRSARepository: CryptoRSARepository,
 ) : ExampleCryptoUseCase {
-    override fun generateAESKey(): String {
-        return cryptoAESRepository.generateKey()
-    }
 
     override fun encryptDecryptAES() {
         val plainText = "Passw0rd!"
         Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PLAIN TEXT: $plainText")
         val key = cryptoAESRepository.generateKey()
         Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "AES KEY: $key")
+        val ivKey = cryptoAESRepository.generateIVKey()
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "IV KEY: $ivKey")
         val encryptedText = cryptoAESRepository.encrypt(
             encodedKey = key,
             plainText = plainText,
-            method = AESMethod.AES_CBC_ISO10126Padding,
+            encodedIVKey = ivKey
         )
         Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "ENCRYPTED TEXT: $encryptedText")
         if (encryptedText != null) {
             val decryptedText = cryptoAESRepository.decrypt(
                 encodedKey = key,
                 encryptedText = encryptedText,
-                method = AESMethod.AES_CBC_ISO10126Padding,
+                encodedIVKey = ivKey,
             )
             Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "DECRYPTED TEXT: $decryptedText")
         }
     }
 
-    override fun decryptAES(encodedKey: String, encryptedText: String, method: AESMethod): String? {
-        return cryptoAESRepository.decrypt(
-            encodedKey = encodedKey,
-            encryptedText = encryptedText,
-            method = method
+    override fun secureEncryptDecryptAES() {
+        val plainText = "Passw0rd!"
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PLAIN TEXT: $plainText")
+        val key = cryptoAESRepository.generateSecureKey()
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "AES KEY: $key")
+        val encryptedText = cryptoAESRepository.secureEncrypt(
+            encodedSecureKey = key,
+            plainText = plainText,
         )
-    }
-
-    override fun generateRSAKey(): CryptoKey {
-        return cryptoRSARepository.generateKey()
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "ENCRYPTED TEXT: $encryptedText")
+        if (encryptedText != null) {
+            val decryptedText = cryptoAESRepository.secureDecrypt(
+                encodedSecureKey = key,
+                encryptedText = encryptedText,
+            )
+            Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "DECRYPTED TEXT: $decryptedText")
+        }
     }
 
     override fun encryptDecryptRSA() {
@@ -119,7 +125,8 @@ class ExampleCryptoUseCaseImpl(
         return cryptoAESRepository.encrypt(
             encodedKey = decryptedAESKey,
             plainText = plainText,
-            method = aesMethod
+            method = aesMethod,
+            encodedIVKey = ""
         )
     }
 
@@ -147,6 +154,7 @@ class ExampleCryptoUseCaseImpl(
             encryptedText = encryptedText,
             encodedKey = decryptedAESKey,
             method = aesMethod,
+            encodedIVKey = ""
         )
     }
 
@@ -164,16 +172,25 @@ class ExampleCryptoUseCaseImpl(
         )
     }
 
-    override fun verifyED25519Signature(
-        encodedPublicKey: String,
-        encodedSignature: String,
-        plainText: String,
-    ): Boolean {
-        return cryptoED25519Repository.verifySignature(
-            encodedPublicKey = encodedPublicKey,
-            signature = encodedSignature,
-            text = plainText
+    override fun verifyED25519Signature() {
+        val plainText = "Passw0rd!"
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PLAIN TEXT: $plainText")
+        val key = cryptoED25519Repository.generateKey()
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PRIVATE KEY: ${key.privateKey}")
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PUBLIC KEY: ${key.publicKey}")
+        val signature = cryptoED25519Repository.generateSignature(
+            plainText = plainText,
+            encodedPrivateKey = key.privateKey,
         )
+        Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "SIGNATURE: $signature")
+        if (signature != null) {
+            val isSignatureVerified = cryptoED25519Repository.verifySignature(
+                text = plainText,
+                encodedPublicKey = key.publicKey,
+                signature = signature,
+            )
+            Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "IS SIGNATURE VERIFIED: $isSignatureVerified")
+        }
     }
 
 }

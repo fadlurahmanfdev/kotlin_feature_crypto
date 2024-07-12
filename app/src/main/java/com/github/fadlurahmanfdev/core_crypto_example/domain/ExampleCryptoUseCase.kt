@@ -2,14 +2,11 @@ package com.github.fadlurahmanfdev.core_crypto_example.domain
 
 import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
 import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
 import com.github.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
 
 interface ExampleCryptoUseCase {
-    fun generateAESKey(): String
     fun encryptDecryptAES()
-    fun decryptAES(encodedKey: String, encryptedText: String, method: AESMethod): String?
-    fun generateRSAKey(): CryptoKey
+    fun secureEncryptDecryptAES()
     fun encryptDecryptRSA()
 
     fun encryptTextWithCombinationRsaAndAes(
@@ -36,9 +33,5 @@ interface ExampleCryptoUseCase {
         plainText: String,
     ): String?
 
-    fun verifyED25519Signature(
-        encodedPublicKey: String,
-        encodedSignature: String,
-        plainText: String,
-    ): Boolean
+    fun verifyED25519Signature()
 }

@@ -31,18 +31,6 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         ),
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Generate ED25519 Key",
-            desc = "Generate ED25519 Key",
-            enum = "GENERATE_ED25519_KEY"
-        ),
-        FeatureModel(
-            featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Generate ED25519 Signature",
-            desc = "Generate ED25519 Signature",
-            enum = "GENERATE_ED25519_SIGNATURE"
-        ),
-        FeatureModel(
-            featureIcon = R.drawable.baseline_developer_mode_24,
             title = "Verify RSA Signature",
             desc = "Verify RSA Signature",
             enum = "VERIFY_ED25519_SIGNATURE"
@@ -90,14 +78,6 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
             "ENCRYPT_DECRYPT_RSA" -> {
                 viewModel.encryptDecryptRSA()
-            }
-
-            "GENERATE_ED25519_KEY" -> {
-                viewModel.generateED25519Key()
-            }
-
-            "GENERATE_ED25519_SIGNATURE" -> {
-                viewModel.generateED25519Signature()
             }
 
             "VERIFY_ED25519_SIGNATURE" -> {

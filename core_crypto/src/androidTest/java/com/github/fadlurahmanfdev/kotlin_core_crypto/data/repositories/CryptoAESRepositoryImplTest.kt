@@ -10,11 +10,17 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class CryptoAESRepositoryImplTest {
-    lateinit var cryptoAESRepository: CryptoAESRepository
+    private lateinit var cryptoAESRepository: CryptoAESRepository
 
     @Before
     fun setUp() {
         cryptoAESRepository = CryptoAESRepositoryImpl()
+    }
+
+    @Test
+    fun generate_secure_key_success_is_not_empty() {
+        val key = cryptoAESRepository.generateSecureKey()
+        assertEquals(true, key.isNotEmpty())
     }
 
     @Test
@@ -51,20 +57,17 @@ class CryptoAESRepositoryImplTest {
     }
 
     @Test
-    fun encrypt_decrypt_aes_success_with_aes_cbc_pkcs5padding() {
-        val plainText = "Plain Text Iso 10126"
-        val key = cryptoAESRepository.generateKey()
-        val ivKey = cryptoAESRepository.generateIVKey()
-        val encrypted = cryptoAESRepository.encrypt(
-            encodedKey = key,
-            encodedIVKey = ivKey,
+    fun secure_encrypt_decrypt_aes_success_method_aes_cbc_pkcs5padding() {
+        val plainText = "Plain Text AES"
+        val key = cryptoAESRepository.generateSecureKey()
+        val encrypted = cryptoAESRepository.secureEncrypt(
+            encodedSecureKey = key,
             plainText = plainText,
             method = AESMethod.AES_CBC_PKCS5PADDING
         )
         assertEquals(true, encrypted != null)
-        val decrypted = cryptoAESRepository.decrypt(
-            encodedKey = key,
-            encodedIVKey = ivKey,
+        val decrypted = cryptoAESRepository.secureDecrypt(
+            encodedSecureKey = key,
             encryptedText = encrypted!!,
             method = AESMethod.AES_CBC_PKCS5PADDING
         )
@@ -72,20 +75,38 @@ class CryptoAESRepositoryImplTest {
     }
 
     @Test
+    fun decrypt_aes_cbc_pkcs5padding_failed_with_fake_key() {
+        val plainText = "Plain Text Iso 10126"
+        val key = cryptoAESRepository.generateSecureKey()
+        val encrypted = cryptoAESRepository.secureEncrypt(
+            encodedSecureKey = key,
+            plainText = plainText,
+            method = AESMethod.AES_CBC_PKCS5PADDING
+        )
+        assertEquals(true, encrypted != null)
+        val decrypted = cryptoAESRepository.secureDecrypt(
+            encodedSecureKey = "Fake Key",
+            encryptedText = encrypted!!,
+            method = AESMethod.AES_CBC_PKCS5PADDING
+        )
+        assertEquals(null, decrypted)
+    }
+
+    @Test
     fun encrypt_decrypt_aes_success_method_aes_gcm_no_padding() {
         val plainText = "Plain Text AES"
-        val key = cryptoAESRepository.generateKey()
+        val key = cryptoAESRepository.generateSecureKey()
         val ivKey = cryptoAESRepository.generateIVKey()
-        val encrypted = cryptoAESRepository.encrypt(
-            encodedKey = key,
-            encodedIVKey = ivKey,
+        val encrypted = cryptoAESRepository.secureEncrypt(
+            encodedSecureKey = key,
+
             plainText = plainText,
             method = AESMethod.AES_GCM_NoPadding
         )
         assertEquals(true, encrypted != null)
-        val decrypted = cryptoAESRepository.decrypt(
-            encodedKey = key,
-            encodedIVKey = ivKey,
+        val decrypted = cryptoAESRepository.secureDecrypt(
+            encodedSecureKey = key,
+
             encryptedText = encrypted!!,
             method = AESMethod.AES_GCM_NoPadding
         )
@@ -95,18 +116,18 @@ class CryptoAESRepositoryImplTest {
     @Test
     fun encrypt_decrypt_aes_success_method_aes_cbc_iso10126_padding() {
         val plainText = "Plain Text Iso 10126"
-        val key = cryptoAESRepository.generateKey()
+        val key = cryptoAESRepository.generateSecureKey()
         val ivKey = cryptoAESRepository.generateIVKey()
-        val encrypted = cryptoAESRepository.encrypt(
-            encodedKey = key,
-            encodedIVKey = ivKey,
+        val encrypted = cryptoAESRepository.secureEncrypt(
+            encodedSecureKey = key,
+
             plainText = plainText,
             method = AESMethod.AES_CBC_ISO10126Padding
         )
         assertEquals(true, encrypted != null)
-        val decrypted = cryptoAESRepository.decrypt(
-            encodedKey = key,
-            encodedIVKey = ivKey,
+        val decrypted = cryptoAESRepository.secureDecrypt(
+            encodedSecureKey = key,
+
             encryptedText = encrypted!!,
             method = AESMethod.AES_CBC_ISO10126Padding
         )
@@ -116,18 +137,18 @@ class CryptoAESRepositoryImplTest {
     @Test
     fun failed_decrypt_with_different_method() {
         val plainText = "Plain Text AES"
-        val key = cryptoAESRepository.generateKey()
+        val key = cryptoAESRepository.generateSecureKey()
         val ivKey = cryptoAESRepository.generateIVKey()
-        val encrypted = cryptoAESRepository.encrypt(
-            encodedKey = key,
-            encodedIVKey = ivKey,
+        val encrypted = cryptoAESRepository.secureEncrypt(
+            encodedSecureKey = key,
+
             plainText = plainText,
             method = AESMethod.AES_GCM_NoPadding
         )
         assertEquals(true, encrypted != null)
-        val decrypted = cryptoAESRepository.decrypt(
-            encodedKey = key,
-            encodedIVKey = ivKey,
+        val decrypted = cryptoAESRepository.secureDecrypt(
+            encodedSecureKey = key,
+
             encryptedText = encrypted!!,
             method = AESMethod.AES_CBC_ISO10126Padding
         )
@@ -138,9 +159,9 @@ class CryptoAESRepositoryImplTest {
     fun failed_encrypt_with_fake_aes_key() {
         val plainText = "Plain Text AES"
         val ivKey = cryptoAESRepository.generateIVKey()
-        val encrypted = cryptoAESRepository.encrypt(
-            encodedKey = "SOME FAKE AES KEY",
-            encodedIVKey = ivKey,
+        val encrypted = cryptoAESRepository.secureEncrypt(
+            encodedSecureKey = "SOME FAKE AES KEY",
+
             plainText = plainText,
             method = AESMethod.AES_GCM_NoPadding
         )
@@ -149,11 +170,11 @@ class CryptoAESRepositoryImplTest {
 
     @Test
     fun failed_decrypt_with_fake_aes_key() {
-        val key = cryptoAESRepository.generateKey()
+        val key = cryptoAESRepository.generateSecureKey()
         val ivKey = cryptoAESRepository.generateIVKey()
-        val decrypted = cryptoAESRepository.decrypt(
-            encodedKey = key,
-            encodedIVKey = ivKey,
+        val decrypted = cryptoAESRepository.secureDecrypt(
+            encodedSecureKey = key,
+
             encryptedText = "Fake Encrypted Text",
             method = AESMethod.AES_GCM_NoPadding
         )

@@ -2,26 +2,10 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="CryptoAESRepositoryImplTest (1)">
-        <State>
-          <targetSelectedWithDropDown>
-            <Target>
-              <type value="QUICK_BOOT_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="$USER_HOME$/.android/avd/7.6_Fold-in_with_outer_display_API_33.avd" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-06-12T07:11:29.777469Z" />
-        </State>
-      </entry>
-      <entry key="CryptoED25519RepositoryImplTest">
+      <entry key="CryptoAESRepositoryImplTest">
         <State />
       </entry>
-      <entry key="app">
+      <entry key="CryptoAESRepositoryImplTest (1)">
         <State>
           <targetSelectedWithDropDown>
             <Target>
@@ -34,7 +18,32 @@
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-06-12T07:11:50.891879Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-06-12T10:04:23.761652Z" />
+        </State>
+      </entry>
+      <entry key="CryptoED25519RepositoryImplTest">
+        <State />
+      </entry>
+      <entry key="CryptoRSARepositoryImplTest">
+        <State />
+      </entry>
+      <entry key="CryptoRSARepositoryImplTest (1)">
+        <State />
+      </entry>
+      <entry key="app">
+        <State>
+          <runningDeviceTargetSelectedWithDropDown>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="SERIAL_NUMBER" />
+                  <value value="RR8M20LAB5L" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-06-13T00:27:57.724899Z" />
         </State>
       </entry>
     </value>
