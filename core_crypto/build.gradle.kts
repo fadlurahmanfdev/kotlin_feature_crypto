@@ -60,7 +60,7 @@ dependencies {
 publishing {
     publications {
         register<MavenPublication>("release"){
-            groupId = "com.github.fadlurahmanfdev"
+            groupId = "com.fadlurahmanfdev"
             artifactId = "kotlin_core_crypto"
             version = "0.0.1"
 
