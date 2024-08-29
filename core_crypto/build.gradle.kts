@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -57,16 +59,49 @@ dependencies {
     implementation(libs.bcprov.jdk18on)
 }
 
-publishing {
-    publications {
-        register<MavenPublication>("release"){
-            groupId = "com.fadlurahmanfdev"
-            artifactId = "kotlin_feature_crypto"
-            version = "0.0.2"
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
 
-            afterEvaluate {
-                from(components["release"])
+    coordinates("com.fadlurahmanfdev.kotlin_feature_crypto", "kotlin_feature_crypto", "0.0.2")
+
+    pom {
+        name.set("Kotlin's Library Feature Crypto")
+        description.set("Cryptography")
+        inceptionYear.set("2024")
+        url.set("https://github.com/fadlurahmanfdev/kotlin_feature_crypto/")
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
             }
+        }
+        developers {
+            developer {
+                id.set("fadlurahmanfdev")
+                name.set("Taufik Fadlurahman Fajari")
+                url.set("https://github.com/fadlurahmanfdev/")
+            }
+        }
+        scm {
+            url.set("https://github.com/fadlurahmanfdev/kotlin_feature_crypto/")
+            connection.set("scm:git:git://github.com/fadlurahmanfdev/kotlin_feature_crypto.git")
+            developerConnection.set("scm:git:ssh://git@github.com/fadlurahmanfdev/kotlin_feature_crypto.git")
         }
     }
 }
+
+//publishing {
+//    publications {
+//        register<MavenPublication>("release"){
+//            groupId = "com.fadlurahmanfdev"
+//            artifactId = "kotlin_feature_crypto"
+//            version = "0.0.3"
+//
+//            afterEvaluate {
+//                from(components["release"])
+//            }
+//        }
+//    }
+//}
