@@ -3,12 +3,11 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("maven-publish")
 
-    id("com.vanniktech.maven.publish") version "0.28.0" apply false
-    id("com.gradleup.nmcp") version "0.0.7" apply false
+    id("com.vanniktech.maven.publish") version "0.29.0"
 }
 
 android {
-    namespace = "com.github.fadlurahmanfdev.kotlin_core_crypto"
+    namespace = "com.fadlurahmanfdev.kotlin_feature_crypto"
     compileSdk = 34
 
     defaultConfig {
@@ -37,9 +36,10 @@ android {
 
     publishing {
         publishing {
-            singleVariant("release") {
+            multipleVariants {
                 withSourcesJar()
                 withJavadocJar()
+                allVariants()
             }
         }
     }
@@ -61,8 +61,8 @@ publishing {
     publications {
         register<MavenPublication>("release"){
             groupId = "com.fadlurahmanfdev"
-            artifactId = "kotlin_core_crypto"
-            version = "0.0.1"
+            artifactId = "kotlin_feature_crypto"
+            version = "0.0.2"
 
             afterEvaluate {
                 from(components["release"])
