@@ -95,3 +95,17 @@ mavenPublishing {
         }
     }
 }
+
+//publishing {
+//    publications {
+//        register<MavenPublication>("release"){
+//            groupId = "com.fadlurahmanfdev"
+//            artifactId = "kotlin_feature_crypto"
+//            version = "0.0.3"
+//
+//            afterEvaluate {
+//                from(components["release"])
+//            }
+//        }
+//    }
+//}
