@@ -20,13 +20,22 @@ interface CryptoRSARepository {
     ): Boolean
 
     fun encrypt(
-        encodedPublicKey: String,
+        /**
+         * encoded public key, get from generateKey().publicKey
+         * @see CryptoRSARepository.generateKey
+         * */
+        publicKey: String,
         plainText: String,
         method: RSAMethod = RSAMethod.RSA_ECB_PKCS1Padding,
     ): String?
 
     fun decrypt(
-        encodedPrivateKey: String, encryptedText: String,
+        /**
+         * encoded private key, get from generateKey().privateKey
+         * @see CryptoRSARepository.generateKey
+         * */
+        privateKey: String,
+        encryptedText: String,
         method: RSAMethod = RSAMethod.RSA_ECB_PKCS1Padding,
     ): String?
 }
