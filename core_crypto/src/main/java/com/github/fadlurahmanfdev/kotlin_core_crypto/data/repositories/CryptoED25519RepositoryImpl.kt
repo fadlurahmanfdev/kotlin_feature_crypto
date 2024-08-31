@@ -24,11 +24,14 @@ class CryptoED25519RepositoryImpl : BaseCrypto(), CryptoED25519Repository {
         return CryptoKey(privateKeyEncoded, publicKeyEncoded)
     }
 
-    override fun generateSignature(plainText: String, encodedPrivateKey: String): String? {
+    override fun generateSignature(
+        privateKey: String,
+        plainText: String
+    ): String? {
         return try {
-            val privateKey = Ed25519PrivateKeyParameters(decode(encodedPrivateKey), 0)
+            val nativeKey = Ed25519PrivateKeyParameters(decode(privateKey), 0)
             val signer = Ed25519Signer()
-            signer.init(true, privateKey)
+            signer.init(true, nativeKey)
             signer.update(plainText.toByteArray(), 0, plainText.length)
             val signature = signer.generateSignature()
             encode(signature)
@@ -42,16 +45,16 @@ class CryptoED25519RepositoryImpl : BaseCrypto(), CryptoED25519Repository {
     }
 
     override fun verifySignature(
-        text: String,
+        publicKey: String,
+        plainText: String,
         signature: String,
-        encodedPublicKey: String
     ): Boolean {
         return try {
-            val publicKey = Ed25519PublicKeyParameters(decode(encodedPublicKey), 0)
+            val nativeKey = Ed25519PublicKeyParameters(decode(publicKey), 0)
             val verifierDerived = Ed25519Signer()
-            verifierDerived.init(false, publicKey)
-            val message = text.toByteArray()
-            verifierDerived.update(message, 0, text.length)
+            verifierDerived.init(false, nativeKey)
+            val message = plainText.toByteArray()
+            verifierDerived.update(message, 0, plainText.length)
             verifierDerived.verifySignature(decode(signature))
         } catch (e: Throwable) {
             Log.e(

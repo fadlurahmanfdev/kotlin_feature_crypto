@@ -167,7 +167,7 @@ class ExampleCryptoUseCaseImpl(
         plainText: String,
     ): String? {
         return cryptoED25519Repository.generateSignature(
-            encodedPrivateKey = encodedPrivateKey,
+            privateKey = encodedPrivateKey,
             plainText = plainText,
         )
     }
@@ -180,13 +180,13 @@ class ExampleCryptoUseCaseImpl(
         Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PUBLIC KEY: ${key.publicKey}")
         val signature = cryptoED25519Repository.generateSignature(
             plainText = plainText,
-            encodedPrivateKey = key.privateKey,
+            privateKey = key.privateKey,
         )
         Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "SIGNATURE: $signature")
         if (signature != null) {
             val isSignatureVerified = cryptoED25519Repository.verifySignature(
-                text = plainText,
-                encodedPublicKey = key.publicKey,
+                plainText = plainText,
+                publicKey = key.publicKey,
                 signature = signature,
             )
             Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "IS SIGNATURE VERIFIED: $isSignatureVerified")
