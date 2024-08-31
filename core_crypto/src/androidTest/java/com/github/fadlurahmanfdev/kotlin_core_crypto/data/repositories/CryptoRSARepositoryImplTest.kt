@@ -29,15 +29,15 @@ class CryptoRSARepositoryImplTest {
         val plainSignatureText = "Plain Signature Text"
         val key = cryptoRSARepository.generateKey()
         val signature = cryptoRSARepository.generateSignature(
-            encodedPrivateKey = key.privateKey,
+            privateKey = key.privateKey,
             plainText = plainSignatureText,
             method = RSASignatureMethod.SHA256withRSA
         )
         assertEquals(true, signature != null)
         assertEquals(true, (signature ?: "").isNotEmpty())
         val isVerify = cryptoRSARepository.verifySignature(
-            encodedPublicKey = key.publicKey,
-            encodedSignature = signature!!,
+            publicKey = key.publicKey,
+            signature = signature!!,
             plainText = plainSignatureText,
             method = RSASignatureMethod.SHA256withRSA
         )
@@ -49,15 +49,15 @@ class CryptoRSARepositoryImplTest {
         val plainSignatureText = "Plain Signature Text"
         val key = cryptoRSARepository.generateKey()
         val signature = cryptoRSARepository.generateSignature(
-            encodedPrivateKey = key.privateKey,
+            privateKey = key.privateKey,
             plainText = plainSignatureText,
             method = RSASignatureMethod.SHA1withRSA
         )
         assertEquals(true, signature != null)
         assertEquals(true, (signature ?: "").isNotEmpty())
         val isVerify = cryptoRSARepository.verifySignature(
-            encodedPublicKey = key.publicKey,
-            encodedSignature = signature!!,
+            publicKey = key.publicKey,
+            signature = signature!!,
             plainText = plainSignatureText,
             method = RSASignatureMethod.SHA1withRSA
         )
@@ -107,7 +107,7 @@ class CryptoRSARepositoryImplTest {
         val plainSignatureText = "Plain Signature Text"
         val key = cryptoRSARepository.generateKey()
         val signature = cryptoRSARepository.generateSignature(
-            encodedPrivateKey = key.publicKey,
+            privateKey = key.publicKey,
             plainText = plainSignatureText,
             method = RSASignatureMethod.SHA1withRSA
         )
