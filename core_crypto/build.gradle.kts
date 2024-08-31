@@ -62,7 +62,7 @@ mavenPublishing {
 
     pom {
         name.set("Kotlin's Library Feature Crypto")
-        description.set("Cryptography")
+        description.set("user-friendly encryption library that makes securing your data easy. It supports AES for fast encryption, RSA for secure key exchange, and ED25519 for digital signatures. With CryptX, you can quickly add strong encryption and decryption features to your app, ensuring your data stays safe with minimal effort.")
         inceptionYear.set("2024")
         url.set("https://github.com/fadlurahmanfdev/kotlin_feature_crypto/")
         licenses {
