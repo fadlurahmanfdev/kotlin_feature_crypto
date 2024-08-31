@@ -69,13 +69,13 @@ class CryptoRSARepositoryImplTest {
         val plainText = "Plain Text RSA"
         val key = cryptoRSARepository.generateKey()
         val encrypted = cryptoRSARepository.encrypt(
-            encodedPublicKey = key.publicKey,
+            publicKey = key.publicKey,
             plainText = plainText,
             method = RSAMethod.RSA_ECB_PKCS1Padding
         )
         assertEquals(true, encrypted != null)
         val decrypted = cryptoRSARepository.decrypt(
-            encodedPrivateKey = key.privateKey,
+            privateKey = key.privateKey,
             encryptedText = encrypted!!,
             method = RSAMethod.RSA_ECB_PKCS1Padding
         )
@@ -88,13 +88,13 @@ class CryptoRSARepositoryImplTest {
         val plainText = "Plain Text RSA"
         val key = cryptoRSARepository.generateKey()
         val encrypted = cryptoRSARepository.encrypt(
-            encodedPublicKey = key.publicKey,
+            publicKey = key.publicKey,
             plainText = plainText,
             method = RSAMethod.RSA_ECB_OAEPPadding
         )
         assertEquals(true, encrypted != null)
         val decrypted = cryptoRSARepository.decrypt(
-            encodedPrivateKey = key.privateKey,
+            privateKey = key.privateKey,
             encryptedText = encrypted!!,
             method = RSAMethod.RSA_ECB_OAEPPadding
         )
@@ -119,7 +119,7 @@ class CryptoRSARepositoryImplTest {
         val plainText = "Plain Text RSA"
         val key = cryptoRSARepository.generateKey()
         val encrypted = cryptoRSARepository.encrypt(
-            encodedPublicKey = key.privateKey,
+            publicKey = key.privateKey,
             plainText = plainText,
             method = RSAMethod.RSA_ECB_PKCS1Padding
         )
@@ -131,13 +131,13 @@ class CryptoRSARepositoryImplTest {
         val plainText = "Plain Text RSA"
         val key = cryptoRSARepository.generateKey()
         val encrypted = cryptoRSARepository.encrypt(
-            encodedPublicKey = key.publicKey,
+            publicKey = key.publicKey,
             plainText = plainText,
             method = RSAMethod.RSA_ECB_PKCS1Padding
         )
         assertEquals(true, encrypted != null)
         val decrypted = cryptoRSARepository.decrypt(
-            encodedPrivateKey = key.publicKey,
+            privateKey = key.publicKey,
             encryptedText = encrypted!!,
             method = RSAMethod.RSA_ECB_PKCS1Padding
         )

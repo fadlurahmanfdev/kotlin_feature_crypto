@@ -64,7 +64,7 @@ class ExampleCryptoUseCaseImpl(
         Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PRIVATE KEY: ${key.privateKey}")
         Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PUBLIC KEY: ${key.publicKey}")
         val encryptedText = cryptoRSARepository.encrypt(
-            encodedPublicKey = key.publicKey,
+            publicKey = key.publicKey,
             plainText = plainText,
             method = RSAMethod.RSA_ECB_PKCS1Padding
         )
@@ -110,7 +110,7 @@ class ExampleCryptoUseCaseImpl(
         aesMethod: AESMethod,
     ): String? {
         val decryptedAESKey = cryptoRSARepository.decrypt(
-            encodedPrivateKey = encodedPrivateKey,
+            privateKey = encodedPrivateKey,
             encryptedText = encryptedAESKey,
             method = rsaMethod
         )
@@ -138,7 +138,7 @@ class ExampleCryptoUseCaseImpl(
         aesMethod: AESMethod,
     ): String? {
         val decryptedAESKey = cryptoRSARepository.decrypt(
-            encodedPrivateKey = encodedPrivateKey,
+            privateKey = encodedPrivateKey,
             encryptedText = encryptedAESKey,
             method = rsaMethod
         )
