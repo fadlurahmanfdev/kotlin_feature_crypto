@@ -7,14 +7,26 @@ import com.github.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
 interface CryptoRSARepository {
     fun generateKey(): CryptoKey
     fun generateSignature(
-        encodedPrivateKey: String,
+        /**
+         * encoded private key, get from generateKey().privateKey
+         * @see CryptoRSARepository.generateKey
+         * */
+        privateKey: String,
         plainText: String,
         method: RSASignatureMethod
     ): String?
 
     fun verifySignature(
-        encodedPublicKey: String,
-        encodedSignature: String,
+        /**
+         * encoded public key, get from generateKey().publicKey
+         * @see CryptoRSARepository.generateKey
+         * */
+        publicKey: String,
+        /**
+         * encoded signature, get from generateSignature()
+         * @see CryptoRSARepository.generateKey
+         * */
+        signature: String,
         plainText: String,
         method: RSASignatureMethod,
     ): Boolean

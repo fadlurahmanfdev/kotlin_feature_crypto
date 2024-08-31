@@ -78,7 +78,7 @@ class ExampleCryptoUseCaseImpl(
             Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "DECRYPTED TEXT: $decryptedText")
 
             val signature = cryptoRSARepository.generateSignature(
-                encodedPrivateKey = key.privateKey,
+                privateKey = key.privateKey,
                 plainText = plainText,
                 method = RSASignatureMethod.SHA256withRSA,
             )
@@ -88,9 +88,9 @@ class ExampleCryptoUseCaseImpl(
             )
             if (signature != null) {
                 val isSignatureVerified = cryptoRSARepository.verifySignature(
-                    encodedPublicKey = key.publicKey,
+                    publicKey = key.publicKey,
                     plainText = "Passw0rd!",
-                    encodedSignature = signature,
+                    signature = signature,
                     method = RSASignatureMethod.SHA256withRSA,
                 )
                 Log.d(

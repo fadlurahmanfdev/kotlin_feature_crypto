@@ -45,7 +45,7 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoRSARepository {
 
     override fun verifySignature(
         encodedPublicKey: String,
-        encodedSignature: String,
+        signature: String,
         plainText: String,
         method: RSASignatureMethod,
     ): Boolean {
@@ -55,7 +55,7 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoRSARepository {
             val signer = Signature.getInstance(getRSASignatureAlgorithmBasedOnFlow(method))
             signer.initVerify(publicKey)
             signer.update(plainText.toByteArray())
-            signer.verify(decode(encodedSignature))
+            signer.verify(decode(signature))
             true
         } catch (e: Throwable) {
             Log.d(
