@@ -23,16 +23,16 @@ class ExampleCryptoUseCaseImpl(
         val ivKey = cryptoAESRepository.generateIVKey()
         Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "IV KEY: $ivKey")
         val encryptedText = cryptoAESRepository.encrypt(
-            encodedKey = key,
+            key = key,
             plainText = plainText,
-            encodedIVKey = ivKey
+            ivKey = ivKey
         )
         Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "ENCRYPTED TEXT: $encryptedText")
         if (encryptedText != null) {
             val decryptedText = cryptoAESRepository.decrypt(
-                encodedKey = key,
+                key = key,
                 encryptedText = encryptedText,
-                encodedIVKey = ivKey,
+                ivKey = ivKey,
             )
             Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "DECRYPTED TEXT: $decryptedText")
         }
@@ -123,10 +123,10 @@ class ExampleCryptoUseCaseImpl(
             return null
         }
         return cryptoAESRepository.encrypt(
-            encodedKey = decryptedAESKey,
+            key = decryptedAESKey,
             plainText = plainText,
             method = aesMethod,
-            encodedIVKey = ""
+            ivKey = ""
         )
     }
 
@@ -152,9 +152,9 @@ class ExampleCryptoUseCaseImpl(
         }
         return cryptoAESRepository.decrypt(
             encryptedText = encryptedText,
-            encodedKey = decryptedAESKey,
+            key = decryptedAESKey,
             method = aesMethod,
-            encodedIVKey = ""
+            ivKey = ""
         )
     }
 

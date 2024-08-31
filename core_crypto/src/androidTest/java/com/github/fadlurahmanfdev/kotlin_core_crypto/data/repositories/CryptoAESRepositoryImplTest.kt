@@ -41,15 +41,15 @@ class CryptoAESRepositoryImplTest {
         val key = cryptoAESRepository.generateKey()
         val ivKey = cryptoAESRepository.generateIVKey()
         val encrypted = cryptoAESRepository.encrypt(
-            encodedKey = key,
-            encodedIVKey = ivKey,
+            key = key,
+            ivKey = ivKey,
             plainText = plainText,
             method = AESMethod.AES_CBC_PKCS5PADDING
         )
         assertEquals(true, encrypted != null)
         val decrypted = cryptoAESRepository.decrypt(
-            encodedKey = key,
-            encodedIVKey = ivKey,
+            key = key,
+            ivKey = ivKey,
             encryptedText = encrypted!!,
             method = AESMethod.AES_CBC_PKCS5PADDING
         )
@@ -185,8 +185,8 @@ class CryptoAESRepositoryImplTest {
     fun failed_encrypt_with_fake_iv_key() {
         val key = cryptoAESRepository.generateKey()
         val encrypted = cryptoAESRepository.encrypt(
-            encodedKey = key,
-            encodedIVKey = "FAKE IV KEY",
+            key = key,
+            ivKey = "FAKE IV KEY",
             method = AESMethod.AES_GCM_NoPadding,
             plainText = "Passw0rd!"
         )
@@ -198,15 +198,15 @@ class CryptoAESRepositoryImplTest {
         val key = cryptoAESRepository.generateKey()
         val ivKey = cryptoAESRepository.generateIVKey()
         val encrypted = cryptoAESRepository.encrypt(
-            encodedKey = key,
-            encodedIVKey = ivKey,
+            key = key,
+            ivKey = ivKey,
             method = AESMethod.AES_GCM_NoPadding,
             plainText = "Passw0rd!"
         )
         assertEquals(true, encrypted != null)
         val decrypted = cryptoAESRepository.decrypt(
-            encodedKey = key,
-            encodedIVKey = "FAKE IV KEY",
+            key = key,
+            ivKey = "FAKE IV KEY",
             encryptedText = encrypted!!,
             method = AESMethod.AES_GCM_NoPadding
         )

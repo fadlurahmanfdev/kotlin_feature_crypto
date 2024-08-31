@@ -70,15 +70,15 @@ class CryptoAESRepositoryImpl : BaseCrypto(), CryptoAESRepository {
     }
 
     override fun encrypt(
-        encodedKey: String,
-        encodedIVKey: String,
+        key: String,
+        ivKey: String,
         plainText: String,
         method: AESMethod
     ): String? {
         try {
             val cipher = Cipher.getInstance(getAESTransformationBasedOnFlow(method))
-            val secretKey = SecretKeySpec(decode(encodedKey), "AES")
-            val ivParameterSpec = IvParameterSpec(decode(encodedIVKey))
+            val secretKey = SecretKeySpec(decode(key), "AES")
+            val ivParameterSpec = IvParameterSpec(decode(ivKey))
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec)
             return encode(cipher.doFinal(plainText.toByteArray()))
         } catch (e: Throwable) {
@@ -88,15 +88,15 @@ class CryptoAESRepositoryImpl : BaseCrypto(), CryptoAESRepository {
     }
 
     override fun decrypt(
-        encodedKey: String,
-        encodedIVKey: String,
+        key: String,
+        ivKey: String,
         encryptedText: String,
         method: AESMethod
     ): String? {
         try {
             val cipher = Cipher.getInstance(getAESTransformationBasedOnFlow(method))
-            val secretKey = SecretKeySpec(decode(encodedKey), "AES")
-            val ivParamaterSpec = IvParameterSpec(decode(encodedIVKey))
+            val secretKey = SecretKeySpec(decode(key), "AES")
+            val ivParamaterSpec = IvParameterSpec(decode(ivKey))
             cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParamaterSpec)
             return String(cipher.doFinal(decode(encryptedText)))
         } catch (e: Exception) {
