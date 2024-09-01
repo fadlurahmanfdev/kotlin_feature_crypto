@@ -1,4 +1,4 @@
-package com.github.fadlurahmanfdev.kotlin_core_crypto
+package com.fadlurahmanfdev.kotlin_core_crypto
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 
