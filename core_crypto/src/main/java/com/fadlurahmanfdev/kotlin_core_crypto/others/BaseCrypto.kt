@@ -1,10 +1,10 @@
-package com.github.fadlurahmanfdev.kotlin_core_crypto.others
+package com.fadlurahmanfdev.kotlin_core_crypto.others
 
 import android.util.Base64
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod.*
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod.*
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
 
 abstract class BaseCrypto {
 

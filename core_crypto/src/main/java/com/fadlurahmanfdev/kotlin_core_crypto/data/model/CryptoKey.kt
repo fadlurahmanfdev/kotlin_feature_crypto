@@ -1,4 +1,4 @@
-package com.github.fadlurahmanfdev.kotlin_core_crypto.data.model
+package com.fadlurahmanfdev.kotlin_core_crypto.data.model
 
 data class CryptoKey(
     /**
