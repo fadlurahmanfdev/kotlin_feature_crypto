@@ -1,10 +1,10 @@
-package com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories
+package com.fadlurahmanfdev.kotlin_core_crypto.data.repositories
 
 import android.util.Log
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
-import com.github.fadlurahmanfdev.kotlin_core_crypto.others.BaseCrypto
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
+import com.fadlurahmanfdev.kotlin_core_crypto.others.BaseCrypto
 import java.security.KeyFactory
 import java.security.KeyPairGenerator
 import java.security.Signature
