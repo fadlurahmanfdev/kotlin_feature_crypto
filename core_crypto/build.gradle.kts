@@ -58,7 +58,7 @@ mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
 
-    coordinates("com.fadlurahmanfdev", "kotlin_feature_crypto", "0.0.3")
+    coordinates("com.fadlurahmanfdev", "kotlin_feature_crypto", "0.0.4")
 
     pom {
         name.set("Kotlin's Library Feature Crypto")
