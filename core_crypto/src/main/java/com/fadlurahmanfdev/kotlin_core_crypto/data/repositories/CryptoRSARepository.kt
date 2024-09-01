@@ -1,8 +1,8 @@
-package com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories
+package com.fadlurahmanfdev.kotlin_core_crypto.data.repositories
 
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
 
 interface CryptoRSARepository {
     fun generateKey(): CryptoKey

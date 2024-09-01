@@ -1,6 +1,6 @@
-package com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories
+package com.fadlurahmanfdev.kotlin_core_crypto.data.repositories
 
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
 
 interface CryptoAESRepository {
     fun generateSecureKey(): String

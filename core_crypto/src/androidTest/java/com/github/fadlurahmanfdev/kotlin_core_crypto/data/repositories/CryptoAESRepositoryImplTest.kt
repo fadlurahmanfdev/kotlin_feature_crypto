@@ -1,7 +1,9 @@
 package com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepository
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepositoryImpl
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
