@@ -36,7 +36,7 @@ class CryptoRSARepositoryImplTest {
         assertEquals(true, signature != null)
         assertEquals(true, (signature ?: "").isNotEmpty())
         val isVerify = cryptoRSARepository.verifySignature(
-            publicKey = key.publicKey,
+            encodedPublicKey = key.publicKey,
             signature = signature!!,
             plainText = plainSignatureText,
             method = RSASignatureMethod.SHA256withRSA
@@ -56,7 +56,7 @@ class CryptoRSARepositoryImplTest {
         assertEquals(true, signature != null)
         assertEquals(true, (signature ?: "").isNotEmpty())
         val isVerify = cryptoRSARepository.verifySignature(
-            publicKey = key.publicKey,
+            encodedPublicKey = key.publicKey,
             signature = signature!!,
             plainText = plainSignatureText,
             method = RSASignatureMethod.SHA1withRSA
@@ -75,7 +75,7 @@ class CryptoRSARepositoryImplTest {
         )
         assertEquals(true, encrypted != null)
         val decrypted = cryptoRSARepository.decrypt(
-            privateKey = key.privateKey,
+            encodedPrivateKey = key.privateKey,
             encryptedText = encrypted!!,
             method = RSAMethod.RSA_ECB_PKCS1Padding
         )
@@ -94,7 +94,7 @@ class CryptoRSARepositoryImplTest {
         )
         assertEquals(true, encrypted != null)
         val decrypted = cryptoRSARepository.decrypt(
-            privateKey = key.privateKey,
+            encodedPrivateKey = key.privateKey,
             encryptedText = encrypted!!,
             method = RSAMethod.RSA_ECB_OAEPPadding
         )
@@ -137,7 +137,7 @@ class CryptoRSARepositoryImplTest {
         )
         assertEquals(true, encrypted != null)
         val decrypted = cryptoRSARepository.decrypt(
-            privateKey = key.publicKey,
+            encodedPrivateKey = key.publicKey,
             encryptedText = encrypted!!,
             method = RSAMethod.RSA_ECB_PKCS1Padding
         )

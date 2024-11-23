@@ -35,4 +35,8 @@ interface ExampleCryptoUseCase {
     ): String?
 
     fun verifyED25519Signature()
+
+    fun customSymmetricCrypto()
+
+    fun customAsymmetricCrypto()
 }

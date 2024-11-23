@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepositoryImpl
 import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoED25519RepositoryImpl
 import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoRSARepositoryImpl
-import com.fadlurahmanfdev.kotlin_core_crypto.others.CryptoUtils
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CustomCryptoAsymmetricRepositoryImpl
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CustomCryptoSymmetricRepositoryImpl
 import com.github.fadlurahmanfdev.core_crypto_example.R
 import com.github.fadlurahmanfdev.core_crypto_example.data.FeatureModel
 import com.github.fadlurahmanfdev.core_crypto_example.domain.ExampleCryptoUseCaseImpl
@@ -36,6 +37,18 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
             desc = "Verify RSA Signature",
             enum = "VERIFY_ED25519_SIGNATURE"
         ),
+        FeatureModel(
+            featureIcon = R.drawable.baseline_developer_mode_24,
+            title = "Custom Symmetric Crypto",
+            desc = "Custom Symmetric Crypto",
+            enum = "CUSTOM_SYMMETRIC_CRYPTO"
+        ),
+        FeatureModel(
+            featureIcon = R.drawable.baseline_developer_mode_24,
+            title = "Custom Asymmetric Crypto",
+            desc = "Custom Asymmetric Crypto",
+            enum = "CUSTOM_ASYMMETRIC_CRYPTO"
+        ),
     )
 
     private lateinit var rv: RecyclerView
@@ -58,6 +71,8 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                 cryptoAESRepository = CryptoAESRepositoryImpl(),
                 cryptoED25519Repository = CryptoED25519RepositoryImpl(),
                 cryptoRSARepository = CryptoRSARepositoryImpl(),
+                customSymmetricRepository = CustomCryptoSymmetricRepositoryImpl(),
+                customAsymmetricRepository = CustomCryptoAsymmetricRepositoryImpl(),
             )
         )
 
@@ -69,13 +84,8 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         adapter.setList(features)
         adapter.setHasStableIds(true)
         rv.adapter = adapter
-
-        val cryptoCustom = CryptoUtils()
-        cryptoCustom.isTheCipherCombinationCorrect("AES/CBC/PKCS5Padding")
-        cryptoCustom.isTheCipherCombinationCorrect("AES/GCM/PKCS5Padding")
-        cryptoCustom.isTheCipherCombinationCorrect("AES/ECB/PKCS7Padding")
-        cryptoCustom.isTheCipherCombinationCorrect("ChaCha20/Poly1305/NoPadding")
     }
+
 
     override fun onClicked(item: FeatureModel) {
         when (item.enum) {
@@ -89,6 +99,14 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
             "VERIFY_ED25519_SIGNATURE" -> {
                 viewModel.verifyED25519Signature()
+            }
+
+            "CUSTOM_SYMMETRIC_CRYPTO" -> {
+                viewModel.customSymmetricCrypto()
+            }
+
+            "CUSTOM_ASYMMETRIC_CRYPTO" -> {
+                viewModel.customAsymmetricCrypto()
             }
         }
     }
