@@ -29,7 +29,7 @@ class CryptoRSARepositoryImplTest {
         val plainSignatureText = "Plain Signature Text"
         val key = cryptoRSARepository.generateKey()
         val signature = cryptoRSARepository.generateSignature(
-            privateKey = key.privateKey,
+            encodedPrivateKey = key.privateKey,
             plainText = plainSignatureText,
             method = RSASignatureMethod.SHA256withRSA
         )
@@ -49,7 +49,7 @@ class CryptoRSARepositoryImplTest {
         val plainSignatureText = "Plain Signature Text"
         val key = cryptoRSARepository.generateKey()
         val signature = cryptoRSARepository.generateSignature(
-            privateKey = key.privateKey,
+            encodedPrivateKey = key.privateKey,
             plainText = plainSignatureText,
             method = RSASignatureMethod.SHA1withRSA
         )
@@ -69,7 +69,7 @@ class CryptoRSARepositoryImplTest {
         val plainText = "Plain Text RSA"
         val key = cryptoRSARepository.generateKey()
         val encrypted = cryptoRSARepository.encrypt(
-            publicKey = key.publicKey,
+            encodedPublicKey = key.publicKey,
             plainText = plainText,
             method = RSAMethod.RSA_ECB_PKCS1Padding
         )
@@ -88,7 +88,7 @@ class CryptoRSARepositoryImplTest {
         val plainText = "Plain Text RSA"
         val key = cryptoRSARepository.generateKey()
         val encrypted = cryptoRSARepository.encrypt(
-            publicKey = key.publicKey,
+            encodedPublicKey = key.publicKey,
             plainText = plainText,
             method = RSAMethod.RSA_ECB_OAEPPadding
         )
@@ -107,7 +107,7 @@ class CryptoRSARepositoryImplTest {
         val plainSignatureText = "Plain Signature Text"
         val key = cryptoRSARepository.generateKey()
         val signature = cryptoRSARepository.generateSignature(
-            privateKey = key.publicKey,
+            encodedPrivateKey = key.publicKey,
             plainText = plainSignatureText,
             method = RSASignatureMethod.SHA1withRSA
         )
@@ -119,7 +119,7 @@ class CryptoRSARepositoryImplTest {
         val plainText = "Plain Text RSA"
         val key = cryptoRSARepository.generateKey()
         val encrypted = cryptoRSARepository.encrypt(
-            publicKey = key.privateKey,
+            encodedPublicKey = key.privateKey,
             plainText = plainText,
             method = RSAMethod.RSA_ECB_PKCS1Padding
         )
@@ -131,7 +131,7 @@ class CryptoRSARepositoryImplTest {
         val plainText = "Plain Text RSA"
         val key = cryptoRSARepository.generateKey()
         val encrypted = cryptoRSARepository.encrypt(
-            publicKey = key.publicKey,
+            encodedPublicKey = key.publicKey,
             plainText = plainText,
             method = RSAMethod.RSA_ECB_PKCS1Padding
         )

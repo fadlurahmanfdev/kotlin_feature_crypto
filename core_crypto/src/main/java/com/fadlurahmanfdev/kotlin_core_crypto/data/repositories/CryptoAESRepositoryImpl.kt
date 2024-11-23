@@ -35,40 +35,6 @@ class CryptoAESRepositoryImpl : BaseCrypto(), CryptoAESRepository {
         return encode(generateRandomString(16).toByteArray())
     }
 
-    override fun secureEncrypt(
-        encodedSecureKey: String,
-        plainText: String,
-        method: AESMethod
-    ): String? {
-        try {
-            val cipher = Cipher.getInstance(getAESTransformationBasedOnFlow(method))
-            val secretKey = SecretKeySpec(decode(encodedSecureKey), "AES")
-            val ivParameterSpec = IvParameterSpec(ByteArray(16))
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec)
-            return encode(cipher.doFinal(plainText.toByteArray()))
-        } catch (e: Throwable) {
-            Log.e(CryptoAESRepositoryImpl::class.java.simpleName, "failed encrypt: ${e.message}")
-            return null
-        }
-    }
-
-    override fun secureDecrypt(
-        encodedSecureKey: String,
-        encryptedText: String,
-        method: AESMethod
-    ): String? {
-        try {
-            val cipher = Cipher.getInstance(getAESTransformationBasedOnFlow(method))
-            val secretKey = SecretKeySpec(decode(encodedSecureKey), "AES")
-            val ivParameterSpec = IvParameterSpec(ByteArray(16))
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec)
-            return String(cipher.doFinal(decode(encryptedText)))
-        } catch (e: Exception) {
-            Log.e(CryptoAESRepositoryImpl::class.java.simpleName, "failed decrypt: ${e.message}")
-            return null
-        }
-    }
-
     override fun encrypt(
         key: String,
         ivKey: String,

@@ -11,7 +11,7 @@ interface CryptoRSARepository {
          * encoded private key, get from generateKey().privateKey
          * @see CryptoRSARepository.generateKey
          * */
-        privateKey: String,
+        encodedPrivateKey: String,
         plainText: String,
         method: RSASignatureMethod
     ): String?
@@ -21,7 +21,7 @@ interface CryptoRSARepository {
          * encoded public key, get from generateKey().publicKey
          * @see CryptoRSARepository.generateKey
          * */
-        publicKey: String,
+        encodedPublicKey: String,
         /**
          * encoded signature, get from generateSignature()
          * @see CryptoRSARepository.generateKey
@@ -36,7 +36,7 @@ interface CryptoRSARepository {
          * encoded public key, get from generateKey().publicKey
          * @see CryptoRSARepository.generateKey
          * */
-        publicKey: String,
+        encodedPublicKey: String,
         plainText: String,
         method: RSAMethod = RSAMethod.RSA_ECB_PKCS1Padding,
     ): String?
@@ -46,7 +46,7 @@ interface CryptoRSARepository {
          * encoded private key, get from generateKey().privateKey
          * @see CryptoRSARepository.generateKey
          * */
-        privateKey: String,
+        encodedPrivateKey: String,
         encryptedText: String,
         method: RSAMethod = RSAMethod.RSA_ECB_PKCS1Padding,
     ): String?
