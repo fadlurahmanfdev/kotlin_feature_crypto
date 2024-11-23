@@ -2,17 +2,25 @@ package com.github.fadlurahmanfdev.core_crypto_example.domain
 
 import android.util.Log
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoAlgorithm
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoBlockMode
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoPadding
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoSignatureAlgorithm
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
 import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
 import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepository
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAsymmetricRepository
 import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoED25519Repository
 import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoRSARepository
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoSymmetricRepository
 
 class ExampleCryptoUseCaseImpl(
     private val cryptoAESRepository: CryptoAESRepository,
     private val cryptoED25519Repository: CryptoED25519Repository,
     private val cryptoRSARepository: CryptoRSARepository,
+    private val customSymmetricRepository: CryptoSymmetricRepository,
+    private val customAsymmetricRepository: CryptoAsymmetricRepository,
 ) : ExampleCryptoUseCase {
 
     override fun encryptDecryptAES() {
@@ -195,4 +203,85 @@ class ExampleCryptoUseCaseImpl(
         }
     }
 
+    override fun customSymmetricCrypto() {
+        val isSupported = customSymmetricRepository.isSupported(
+            algorithm = FeatureCryptoAlgorithm.AES,
+            blockMode = FeatureCryptoBlockMode.GCM,
+            padding = FeatureCryptoPadding.NoPadding
+        )
+
+        if (!isSupported){
+            Log.e(this::class.java.simpleName, "no supported of given transformation")
+        }
+
+        val key = customSymmetricRepository.generateKey(FeatureCryptoAlgorithm.AES)
+        Log.d(this::class.java.simpleName, "key: $key")
+        val ivKey = customSymmetricRepository.generateIVKey()
+        Log.d(this::class.java.simpleName, "iv key: $ivKey")
+        val encryptedText = customSymmetricRepository.encrypt(
+            FeatureCryptoAlgorithm.AES,
+            blockMode = FeatureCryptoBlockMode.GCM,
+            padding = FeatureCryptoPadding.NoPadding,
+            encodedKey = key,
+            encodedIVKey = ivKey,
+            plainText = "P4ssword!Sus4h"
+        )
+        Log.d(this::class.java.simpleName, "encrypted text: $encryptedText")
+        val decryptedText = customSymmetricRepository.decrypt(
+            FeatureCryptoAlgorithm.AES,
+            blockMode = FeatureCryptoBlockMode.GCM,
+            padding = FeatureCryptoPadding.NoPadding,
+            encodedKey = key,
+            encodedIVKey = ivKey,
+            encryptedText = encryptedText
+        )
+        Log.d(this::class.java.simpleName, "decrypted text: $decryptedText")
+    }
+
+    override fun customAsymmetricCrypto() {
+        val isSupported = customAsymmetricRepository.isSupported(
+            algorithm = FeatureCryptoAlgorithm.AES,
+            blockMode = FeatureCryptoBlockMode.GCM,
+            padding = FeatureCryptoPadding.NoPadding
+        )
+
+        if (!isSupported){
+            Log.e(this::class.java.simpleName, "no supported of given transformation")
+        }
+
+        val key = customAsymmetricRepository.generateKey(FeatureCryptoAlgorithm.RSA)
+        Log.d(this::class.java.simpleName, "private key: ${key.privateKey}")
+        Log.d(this::class.java.simpleName, "public key: ${key.publicKey}")
+        val signature = customAsymmetricRepository.generateSignature(
+            encodedPrivateKey = key.privateKey,
+            algorithm = FeatureCryptoAlgorithm.RSA,
+            signatureAlgorithm = FeatureCryptoSignatureAlgorithm.SHA1withRSA,
+            plainText = "P4ssword!Sus4h",
+        )
+        Log.d(this::class.java.simpleName, "signature: $signature")
+        val isVerify = customAsymmetricRepository.verifySignature(
+            encodedPublicKey = key.publicKey,
+            algorithm = FeatureCryptoAlgorithm.RSA,
+            plainText = "P4ssword!Sus4h",
+            signature = signature,
+            signatureAlgorithm = FeatureCryptoSignatureAlgorithm.SHA512withRSA
+        )
+        Log.d(this::class.java.simpleName, "is verify signature: $isVerify")
+        val encryptedText = customAsymmetricRepository.encrypt(
+            algorithm = FeatureCryptoAlgorithm.RSA,
+            blockMode = FeatureCryptoBlockMode.ECB,
+            padding = FeatureCryptoPadding.OAEPWithSHAAndMGF1Padding,
+            encodedPublicKey = key.publicKey,
+            plainText = "P4ssword!Sus4h"
+        )
+        Log.d(this::class.java.simpleName, "encrypted text: $encryptedText")
+        val decryptedText = customAsymmetricRepository.decrypt(
+            algorithm = FeatureCryptoAlgorithm.RSA,
+            blockMode = FeatureCryptoBlockMode.ECB,
+            padding = FeatureCryptoPadding.OAEPWithSHAAndMGF1Padding,
+            encodedPrivateKey = key.privateKey,
+            encryptedText = encryptedText,
+        )
+        Log.d(this::class.java.simpleName, "decrypted text: $decryptedText")
+    }
 }

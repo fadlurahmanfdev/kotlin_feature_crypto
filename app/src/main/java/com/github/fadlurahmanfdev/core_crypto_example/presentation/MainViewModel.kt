@@ -35,4 +35,12 @@ class MainViewModel(
     fun verifyED25519Signature() {
         exampleCryptoUseCase.verifyED25519Signature()
     }
+
+    fun customSymmetricCrypto() {
+        exampleCryptoUseCase.customSymmetricCrypto()
+    }
+
+    fun customAsymmetricCrypto() {
+        exampleCryptoUseCase.customAsymmetricCrypto()
+    }
 }
