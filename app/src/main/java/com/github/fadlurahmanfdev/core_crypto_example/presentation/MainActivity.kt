@@ -6,12 +6,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepositoryImpl
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoED25519RepositoryImpl
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoRSARepositoryImpl
+import com.fadlurahmanfdev.kotlin_core_crypto.others.CryptoUtils
 import com.github.fadlurahmanfdev.core_crypto_example.R
 import com.github.fadlurahmanfdev.core_crypto_example.data.FeatureModel
 import com.github.fadlurahmanfdev.core_crypto_example.domain.ExampleCryptoUseCaseImpl
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepositoryImpl
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoED25519RepositoryImpl
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoRSARepositoryImpl
 
 class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
     lateinit var viewModel: MainViewModel
@@ -68,6 +69,12 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         adapter.setList(features)
         adapter.setHasStableIds(true)
         rv.adapter = adapter
+
+        val cryptoCustom = CryptoUtils()
+        cryptoCustom.isTheCipherCombinationCorrect("AES/CBC/PKCS5Padding")
+        cryptoCustom.isTheCipherCombinationCorrect("AES/GCM/PKCS5Padding")
+        cryptoCustom.isTheCipherCombinationCorrect("AES/ECB/PKCS7Padding")
+        cryptoCustom.isTheCipherCombinationCorrect("ChaCha20/Poly1305/NoPadding")
     }
 
     override fun onClicked(item: FeatureModel) {

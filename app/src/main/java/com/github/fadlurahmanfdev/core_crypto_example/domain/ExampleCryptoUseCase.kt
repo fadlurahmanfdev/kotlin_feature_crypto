@@ -1,8 +1,9 @@
 package com.github.fadlurahmanfdev.core_crypto_example.domain
 
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
+
 
 interface ExampleCryptoUseCase {
     fun encryptDecryptAES()
@@ -26,7 +27,7 @@ interface ExampleCryptoUseCase {
         aesMethod: AESMethod,
     ): String?
 
-    fun generateED25519Key():CryptoKey
+    fun generateED25519Key(): CryptoKey
 
     fun generateED25519Signature(
         encodedPrivateKey: String,

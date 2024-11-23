@@ -7,18 +7,6 @@ interface CryptoAESRepository {
     fun generateKey(): String
     fun generateSecureIVKey(): String
     fun generateIVKey(): String
-    @Deprecated("use decrypt with saved encoded iv key")
-    fun secureEncrypt(
-        encodedSecureKey: String,
-        plainText: String,
-        method: AESMethod = AESMethod.AES_CBC_PKCS5PADDING
-    ): String?
-    @Deprecated("use encrypt with saved encoded iv key")
-    fun secureDecrypt(
-        encodedSecureKey: String,
-        encryptedText: String,
-        method: AESMethod = AESMethod.AES_CBC_PKCS5PADDING
-    ): String?
     fun encrypt(
         /**
          * encoded base64 key

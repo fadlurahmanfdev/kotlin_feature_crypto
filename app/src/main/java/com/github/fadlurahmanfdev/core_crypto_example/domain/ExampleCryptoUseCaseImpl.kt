@@ -1,13 +1,13 @@
 package com.github.fadlurahmanfdev.core_crypto_example.domain
 
 import android.util.Log
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepository
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoED25519Repository
-import com.github.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoRSARepository
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepository
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoED25519Repository
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoRSARepository
 
 class ExampleCryptoUseCaseImpl(
     private val cryptoAESRepository: CryptoAESRepository,
@@ -43,14 +43,16 @@ class ExampleCryptoUseCaseImpl(
         Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PLAIN TEXT: $plainText")
         val key = cryptoAESRepository.generateSecureKey()
         Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "AES KEY: $key")
-        val encryptedText = cryptoAESRepository.secureEncrypt(
-            encodedSecureKey = key,
+        val encryptedText = cryptoAESRepository.encrypt(
+            key = key,
+            ivKey = "",
             plainText = plainText,
         )
         Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "ENCRYPTED TEXT: $encryptedText")
         if (encryptedText != null) {
-            val decryptedText = cryptoAESRepository.secureDecrypt(
-                encodedSecureKey = key,
+            val decryptedText = cryptoAESRepository.decrypt(
+                key = key,
+                ivKey = "",
                 encryptedText = encryptedText,
             )
             Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "DECRYPTED TEXT: $decryptedText")
@@ -64,7 +66,7 @@ class ExampleCryptoUseCaseImpl(
         Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PRIVATE KEY: ${key.privateKey}")
         Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "PUBLIC KEY: ${key.publicKey}")
         val encryptedText = cryptoRSARepository.encrypt(
-            publicKey = key.publicKey,
+            encodedPublicKey = key.publicKey,
             plainText = plainText,
             method = RSAMethod.RSA_ECB_PKCS1Padding
         )
@@ -78,7 +80,7 @@ class ExampleCryptoUseCaseImpl(
             Log.d(ExampleCryptoUseCaseImpl::class.java.simpleName, "DECRYPTED TEXT: $decryptedText")
 
             val signature = cryptoRSARepository.generateSignature(
-                privateKey = key.privateKey,
+                encodedPrivateKey = key.privateKey,
                 plainText = plainText,
                 method = RSASignatureMethod.SHA256withRSA,
             )
@@ -88,7 +90,7 @@ class ExampleCryptoUseCaseImpl(
             )
             if (signature != null) {
                 val isSignatureVerified = cryptoRSARepository.verifySignature(
-                    publicKey = key.publicKey,
+                    encodedPublicKey = key.publicKey,
                     plainText = "Passw0rd!",
                     signature = signature,
                     method = RSASignatureMethod.SHA256withRSA,
@@ -110,7 +112,7 @@ class ExampleCryptoUseCaseImpl(
         aesMethod: AESMethod,
     ): String? {
         val decryptedAESKey = cryptoRSARepository.decrypt(
-            privateKey = encodedPrivateKey,
+            encodedPrivateKey = encodedPrivateKey,
             encryptedText = encryptedAESKey,
             method = rsaMethod
         )
@@ -138,7 +140,7 @@ class ExampleCryptoUseCaseImpl(
         aesMethod: AESMethod,
     ): String? {
         val decryptedAESKey = cryptoRSARepository.decrypt(
-            privateKey = encodedPrivateKey,
+            encodedPrivateKey = encodedPrivateKey,
             encryptedText = encryptedAESKey,
             method = rsaMethod
         )
