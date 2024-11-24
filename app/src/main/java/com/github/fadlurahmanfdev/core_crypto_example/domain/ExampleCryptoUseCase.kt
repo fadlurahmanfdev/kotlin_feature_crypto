@@ -6,9 +6,8 @@ import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
 
 
 interface ExampleCryptoUseCase {
-    fun encryptDecryptAES()
-    fun secureEncryptDecryptAES()
-    fun encryptDecryptRSA()
+    fun exampleCryptoAES()
+    fun exampleCryptoRSA()
 
     fun encryptTextWithCombinationRsaAndAes(
         encodedPublicKey: String,
