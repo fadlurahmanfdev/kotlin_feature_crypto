@@ -43,15 +43,13 @@ class CryptoAESRepositoryImplTest {
         val encrypted = cryptoAESRepository.encrypt(
             key = key,
             ivKey = ivKey,
-            plainText = plainText,
-            method = AESMethod.AES_CBC_PKCS5PADDING
+            plainText = plainText
         )
         assertEquals(true, encrypted != null)
         val decrypted = cryptoAESRepository.decrypt(
             key = key,
             ivKey = ivKey,
-            encryptedText = encrypted!!,
-            method = AESMethod.AES_CBC_PKCS5PADDING
+            encryptedText = encrypted!!
         )
         assertEquals(plainText, decrypted)
     }
@@ -187,7 +185,6 @@ class CryptoAESRepositoryImplTest {
         val encrypted = cryptoAESRepository.encrypt(
             key = key,
             ivKey = "FAKE IV KEY",
-            method = AESMethod.AES_GCM_NoPadding,
             plainText = "Passw0rd!"
         )
         assertEquals(true, encrypted == null)
@@ -200,15 +197,13 @@ class CryptoAESRepositoryImplTest {
         val encrypted = cryptoAESRepository.encrypt(
             key = key,
             ivKey = ivKey,
-            method = AESMethod.AES_GCM_NoPadding,
             plainText = "Passw0rd!"
         )
         assertEquals(true, encrypted != null)
         val decrypted = cryptoAESRepository.decrypt(
             key = key,
             ivKey = "FAKE IV KEY",
-            encryptedText = encrypted!!,
-            method = AESMethod.AES_GCM_NoPadding
+            encryptedText = encrypted!!
         )
         assertEquals(true, decrypted == null)
     }

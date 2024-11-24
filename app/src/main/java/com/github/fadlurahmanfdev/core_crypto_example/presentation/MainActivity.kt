@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepositoryImpl
 import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoED25519RepositoryImpl
 import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoRSARepositoryImpl
-import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CustomCryptoAsymmetricRepositoryImpl
-import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CustomCryptoSymmetricRepositoryImpl
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.BaseAsymmetricCrypto
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.BaseSymmetricCrypto
 import com.github.fadlurahmanfdev.core_crypto_example.R
 import com.github.fadlurahmanfdev.core_crypto_example.data.FeatureModel
 import com.github.fadlurahmanfdev.core_crypto_example.domain.ExampleCryptoUseCaseImpl
@@ -71,8 +71,6 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                 cryptoAESRepository = CryptoAESRepositoryImpl(),
                 cryptoED25519Repository = CryptoED25519RepositoryImpl(),
                 cryptoRSARepository = CryptoRSARepositoryImpl(),
-                customSymmetricRepository = CustomCryptoSymmetricRepositoryImpl(),
-                customAsymmetricRepository = CustomCryptoAsymmetricRepositoryImpl(),
             )
         )
 

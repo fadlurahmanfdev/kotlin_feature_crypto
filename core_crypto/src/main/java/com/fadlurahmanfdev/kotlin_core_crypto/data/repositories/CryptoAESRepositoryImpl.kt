@@ -1,73 +1,41 @@
 package com.fadlurahmanfdev.kotlin_core_crypto.data.repositories
 
-import android.util.Log
-import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
-import com.fadlurahmanfdev.kotlin_core_crypto.others.BaseCrypto
-import javax.crypto.Cipher
-import javax.crypto.KeyGenerator
-import javax.crypto.spec.IvParameterSpec
-import javax.crypto.spec.SecretKeySpec
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoAlgorithm
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoBlockMode
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoPadding
 
-class CryptoAESRepositoryImpl : BaseCrypto(), CryptoAESRepository {
-    private fun generateRandomString(length: Int): String {
-        val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
-        return (1..length)
-            .map { allowedChars.random() }
-            .joinToString("")
-    }
-
-    override fun generateSecureKey(): String {
-        val keyGen = KeyGenerator.getInstance("AES")
-        keyGen.init(256)
-        return encode(keyGen.generateKey().encoded)
-    }
-
+class CryptoAESRepositoryImpl : BaseSymmetricCrypto(), CryptoSymmetricRepository {
     override fun generateKey(): String {
-        return encode(generateRandomString(32).toByteArray())
-    }
-
-    override fun generateSecureIVKey(): String {
-        val ivParameterSpec = IvParameterSpec(ByteArray(16))
-        return encode(ivParameterSpec.iv)
-    }
-
-    override fun generateIVKey(): String {
-        return encode(generateRandomString(16).toByteArray())
+        return super.generateKey(FeatureCryptoAlgorithm.AES)
     }
 
     override fun encrypt(
         key: String,
         ivKey: String,
-        plainText: String,
-        method: AESMethod
-    ): String? {
-        try {
-            val cipher = Cipher.getInstance(getAESTransformationBasedOnFlow(method))
-            val secretKey = SecretKeySpec(decode(key), "AES")
-            val ivParameterSpec = IvParameterSpec(decode(ivKey))
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec)
-            return encode(cipher.doFinal(plainText.toByteArray()))
-        } catch (e: Throwable) {
-            Log.e(CryptoAESRepositoryImpl::class.java.simpleName, "failed encrypt: ${e.message}")
-            return null
-        }
+        plainText: String
+    ): String {
+        return super.encrypt(
+            algorithm = FeatureCryptoAlgorithm.AES,
+            blockMode = FeatureCryptoBlockMode.GCM,
+            padding = FeatureCryptoPadding.NoPadding,
+            key = key,
+            ivKey = ivKey,
+            plainText = plainText
+        )
     }
 
     override fun decrypt(
         key: String,
         ivKey: String,
-        encryptedText: String,
-        method: AESMethod
-    ): String? {
-        try {
-            val cipher = Cipher.getInstance(getAESTransformationBasedOnFlow(method))
-            val secretKey = SecretKeySpec(decode(key), "AES")
-            val ivParamaterSpec = IvParameterSpec(decode(ivKey))
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParamaterSpec)
-            return String(cipher.doFinal(decode(encryptedText)))
-        } catch (e: Exception) {
-            Log.e(CryptoAESRepositoryImpl::class.java.simpleName, "failed decrypt: ${e.message}")
-            return null
-        }
+        encryptedText: String
+    ): String {
+        return super.decrypt(
+            algorithm = FeatureCryptoAlgorithm.AES,
+            blockMode = FeatureCryptoBlockMode.GCM,
+            padding = FeatureCryptoPadding.NoPadding,
+            key = key,
+            ivKey = ivKey,
+            encryptedText = encryptedText
+        )
     }
 }

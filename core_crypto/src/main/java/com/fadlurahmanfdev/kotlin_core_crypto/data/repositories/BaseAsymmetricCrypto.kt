@@ -14,8 +14,8 @@ import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import javax.crypto.Cipher
 
-class CustomCryptoAsymmetricRepositoryImpl : BaseCrypto(), CryptoAsymmetricRepository {
-    override fun generateKey(algorithm: FeatureCryptoAlgorithm): CryptoKey {
+abstract class BaseAsymmetricCrypto : BaseCrypto() {
+    fun generateKey(algorithm: FeatureCryptoAlgorithm): CryptoKey {
         val keyPairGenerator = KeyPairGenerator.getInstance(algorithm.name)
         val key = keyPairGenerator.generateKeyPair()
         return CryptoKey(
@@ -24,21 +24,20 @@ class CustomCryptoAsymmetricRepositoryImpl : BaseCrypto(), CryptoAsymmetricRepos
         )
     }
 
-    override fun generateSignature(
-        encodedPrivateKey: String,
+    fun generateSignature(
+        privateKey: String,
         plainText: String,
-        algorithm: FeatureCryptoAlgorithm,
         signatureAlgorithm: FeatureCryptoSignatureAlgorithm,
     ): String {
-        val privateKeySpec = PKCS8EncodedKeySpec(decode(encodedPrivateKey))
-        val privateKey = KeyFactory.getInstance(algorithm.name).generatePrivate(privateKeySpec)
+        val privateKeySpec = PKCS8EncodedKeySpec(decode(privateKey))
+        val privateKeyInstance = KeyFactory.getInstance(FeatureCryptoAlgorithm.RSA.name).generatePrivate(privateKeySpec)
         val signer = Signature.getInstance(signatureAlgorithm.name)
-        signer.initSign(privateKey)
+        signer.initSign(privateKeyInstance)
         signer.update(plainText.toByteArray())
         return encode(signer.sign())
     }
 
-    override fun verifySignature(
+    fun verifySignature(
         encodedPublicKey: String,
         signature: String,
         plainText: String,
@@ -59,7 +58,7 @@ class CustomCryptoAsymmetricRepositoryImpl : BaseCrypto(), CryptoAsymmetricRepos
         }
     }
 
-    override fun encrypt(
+    fun encrypt(
         algorithm: FeatureCryptoAlgorithm,
         blockMode: FeatureCryptoBlockMode,
         padding: FeatureCryptoPadding,
@@ -74,7 +73,7 @@ class CustomCryptoAsymmetricRepositoryImpl : BaseCrypto(), CryptoAsymmetricRepos
         return encode(encryptedByteArray)
     }
 
-    override fun decrypt(
+    fun decrypt(
         algorithm: FeatureCryptoAlgorithm,
         blockMode: FeatureCryptoBlockMode,
         padding: FeatureCryptoPadding,

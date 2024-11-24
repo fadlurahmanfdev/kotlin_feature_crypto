@@ -23,13 +23,13 @@ class MainViewModel(
     private lateinit var signatureED25519: String
 
     fun encryptDecryptAES() {
-        exampleCryptoUseCase.encryptDecryptAES()
+        exampleCryptoUseCase.exampleCryptoAES()
         println("-------------------------------------")
-        exampleCryptoUseCase.secureEncryptDecryptAES()
+//        exampleCryptoUseCase.secureEncryptDecryptAES()
     }
 
     fun encryptDecryptRSA() {
-        exampleCryptoUseCase.encryptDecryptRSA()
+        exampleCryptoUseCase.exampleCryptoRSA()
     }
 
     fun verifyED25519Signature() {
