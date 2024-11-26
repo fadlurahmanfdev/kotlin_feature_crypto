@@ -24,16 +24,26 @@ class MainViewModel(
 
     fun encryptDecryptAES() {
         exampleCryptoUseCase.exampleCryptoAES()
-        println("-------------------------------------")
-//        exampleCryptoUseCase.secureEncryptDecryptAES()
     }
 
     fun encryptDecryptRSA() {
         exampleCryptoUseCase.exampleCryptoRSA()
     }
 
-    fun verifyED25519Signature() {
-        exampleCryptoUseCase.verifyED25519Signature()
+    fun encryptCombineRSAAndAES() {
+        exampleCryptoUseCase.exampleCombineRSAAndAES()
+    }
+
+    fun exampleED25519() {
+        exampleCryptoUseCase.exampleED25519()
+    }
+
+    fun exampleECKeyExchange() {
+        exampleCryptoUseCase.exampleECKeyExchange()
+    }
+
+    fun exampleEC(){
+        exampleCryptoUseCase.exampleEC()
     }
 
     fun customSymmetricCrypto() {

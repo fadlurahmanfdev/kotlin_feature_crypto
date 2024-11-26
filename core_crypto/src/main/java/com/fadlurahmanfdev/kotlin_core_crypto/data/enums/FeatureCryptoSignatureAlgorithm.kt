@@ -7,8 +7,7 @@ enum class FeatureCryptoSignatureAlgorithm {
     MD5withRSA,
     SHA1withDSA,
     SHA256withDSA,
-    SHA256withECDSA,
-    SHA512withECDSA,
+    ECDSA,
     Ed25519,
     Ed448,
 }

@@ -18,6 +18,8 @@ import javax.crypto.Cipher
  * */
 abstract class BaseAsymmetricCrypto : BaseCrypto() {
 
+    abstract val whitelistedSignature: Set<FeatureCryptoSignatureAlgorithm>
+
     /**
      * Generate key pair for asymmetric cryptography
      *
@@ -25,8 +27,11 @@ abstract class BaseAsymmetricCrypto : BaseCrypto() {
      *
      * @return [CryptoKey] - encoded key pair (private & public)
      * */
-    fun generateKey(algorithm: FeatureCryptoAlgorithm): CryptoKey {
+    fun generateKey(algorithm: FeatureCryptoAlgorithm, keySize: Int?): CryptoKey {
         val keyPairGenerator = KeyPairGenerator.getInstance(algorithm.name)
+        if (keySize != null) {
+            keyPairGenerator.initialize(keySize)
+        }
         val key = keyPairGenerator.generateKeyPair()
         return CryptoKey(
             privateKey = encode(key.private.encoded),
@@ -102,8 +107,7 @@ abstract class BaseAsymmetricCrypto : BaseCrypto() {
      * Encrypt the text
      *
      * @param algorithm algorithm used for encryption
-     * @param blockMode block mode used for encryption
-     * @param padding padding used for encryption
+     * @param transformation transformation used for encryption
      * @param encodedPublicKey encoded public key
      * @param plainText text want to be convert into a signature
      *
@@ -116,13 +120,12 @@ abstract class BaseAsymmetricCrypto : BaseCrypto() {
      * @see FeatureCryptoPadding
      * */
     fun encrypt(
+        transformation: String,
         algorithm: FeatureCryptoAlgorithm,
-        blockMode: FeatureCryptoBlockMode,
-        padding: FeatureCryptoPadding,
         encodedPublicKey: String,
         plainText: String,
     ): String {
-        val cipher = Cipher.getInstance("${algorithm.name}/${blockMode.value}/${padding.value}")
+        val cipher = Cipher.getInstance(transformation)
         val publicKeySpec = X509EncodedKeySpec(decode(encodedPublicKey))
         val publicKey = KeyFactory.getInstance(algorithm.name).generatePublic(publicKeySpec)
         cipher.init(Cipher.ENCRYPT_MODE, publicKey)
@@ -133,9 +136,8 @@ abstract class BaseAsymmetricCrypto : BaseCrypto() {
     /**
      * Decrypt the encrypted text
      *
-     * @param algorithm algorithm used for encryption
-     * @param blockMode block mode used for encryption
-     * @param padding padding used for encryption
+     * @param algorithm algorithm used for decryption
+     * @param transformation transformation used for decryption
      * @param encodedPrivateKey encoded private key
      * @param encryptedText text want to be decrypted into plain text
      *
@@ -148,13 +150,12 @@ abstract class BaseAsymmetricCrypto : BaseCrypto() {
      * @see FeatureCryptoPadding
      * */
     fun decrypt(
+        transformation: String,
         algorithm: FeatureCryptoAlgorithm,
-        blockMode: FeatureCryptoBlockMode,
-        padding: FeatureCryptoPadding,
         encodedPrivateKey: String,
         encryptedText: String,
     ): String {
-        val cipher = Cipher.getInstance("${algorithm.name}/${blockMode.value}/${padding.value}")
+        val cipher = Cipher.getInstance(transformation)
         val privateKeySpec = PKCS8EncodedKeySpec(decode(encodedPrivateKey))
         val privateKey = KeyFactory.getInstance(algorithm.name).generatePrivate(privateKeySpec)
         cipher.init(Cipher.DECRYPT_MODE, privateKey)

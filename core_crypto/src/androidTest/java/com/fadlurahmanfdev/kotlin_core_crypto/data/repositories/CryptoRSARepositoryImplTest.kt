@@ -3,6 +3,7 @@ package com.fadlurahmanfdev.kotlin_core_crypto.data.repositories
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSASignatureMethod
+import com.fadlurahmanfdev.kotlin_core_crypto.data.impl_repositories.CryptoRSARepositoryImpl
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test

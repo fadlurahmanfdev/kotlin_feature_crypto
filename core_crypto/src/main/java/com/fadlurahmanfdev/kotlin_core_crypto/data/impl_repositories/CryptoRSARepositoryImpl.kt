@@ -1,4 +1,4 @@
-package com.fadlurahmanfdev.kotlin_core_crypto.data.repositories
+package com.fadlurahmanfdev.kotlin_core_crypto.data.impl_repositories
 
 import android.util.Log
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoAlgorithm
@@ -6,15 +6,21 @@ import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoBlockMode
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoPadding
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoSignatureAlgorithm
 import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
-import com.fadlurahmanfdev.kotlin_core_crypto.others.BaseCrypto
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoRSARepository
+import com.fadlurahmanfdev.kotlin_core_crypto.others.BaseAsymmetricCrypto
 import java.security.KeyFactory
-import java.security.KeyPairGenerator
 import java.security.Signature
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import javax.crypto.Cipher
 
-class CryptoRSARepositoryImpl : BaseCrypto(), CryptoAsymmetricRepository {
+class CryptoRSARepositoryImpl : BaseAsymmetricCrypto(), CryptoRSARepository {
+    private val algorithm = FeatureCryptoAlgorithm.RSA
+
+
+    override val whitelistedSignature: Set<FeatureCryptoSignatureAlgorithm> = setOf(
+        FeatureCryptoSignatureAlgorithm.SHA1withRSA
+    )
 
     /**
      * Generate Asymmetric key
@@ -23,12 +29,7 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoAsymmetricRepository {
      *
      * */
     override fun generateKey(): CryptoKey {
-        val keyGen = KeyPairGenerator.getInstance(FeatureCryptoAlgorithm.RSA.name)
-        keyGen.initialize(2048)
-        val keyPair = keyGen.generateKeyPair()
-        val publicKey = encode(keyPair.public.encoded)
-        val privateKey = encode(keyPair.private.encoded)
-        return CryptoKey(privateKey = privateKey, publicKey = publicKey)
+        return super.generateKey(algorithm = algorithm, keySize = 2048)
     }
 
     /**
@@ -47,13 +48,12 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoAsymmetricRepository {
         plainText: String,
         signatureAlgorithm: FeatureCryptoSignatureAlgorithm
     ): String {
-        val privateKeySpec = PKCS8EncodedKeySpec(decode(encodedPrivateKey))
-        val privateKey =
-            KeyFactory.getInstance(FeatureCryptoAlgorithm.RSA.name).generatePrivate(privateKeySpec)
-        val signer = Signature.getInstance(signatureAlgorithm.name)
-        signer.initSign(privateKey)
-        signer.update(plainText.toByteArray())
-        return encode(signer.sign())
+        return super.generateSignature(
+            encodedPrivateKey = encodedPrivateKey,
+            plainText = plainText,
+            algorithm = algorithm,
+            signatureAlgorithm = signatureAlgorithm
+        )
     }
 
     /**
@@ -110,13 +110,12 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoAsymmetricRepository {
         encodedPublicKey: String,
         plainText: String,
     ): String {
-        val cipher =
-            Cipher.getInstance("${FeatureCryptoAlgorithm.RSA.name}/${FeatureCryptoBlockMode.ECB.value}/${FeatureCryptoPadding.OAEPWithSHAAndMGF1Padding.value}")
-        val publicKeySpec = X509EncodedKeySpec(decode(encodedPublicKey))
-        val publicKey = KeyFactory.getInstance("RSA").generatePublic(publicKeySpec)
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey)
-        val encryptedByteArray = cipher.doFinal(plainText.toByteArray())
-        return encode(encryptedByteArray)
+        return super.encrypt(
+            transformation = "${FeatureCryptoAlgorithm.RSA.name}/${FeatureCryptoBlockMode.ECB.value}/${FeatureCryptoPadding.OAEPWithSHAAndMGF1Padding.value}",
+            algorithm = algorithm,
+            encodedPublicKey = encodedPublicKey,
+            plainText = plainText
+        )
     }
 
     /**

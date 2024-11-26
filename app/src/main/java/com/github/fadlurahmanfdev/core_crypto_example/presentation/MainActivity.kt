@@ -6,11 +6,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoSignatureAlgorithm
-import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepositoryImpl
-import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoED25519RepositoryImpl
-import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoRSARepositoryImpl
-import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoECRepositoryImpl
+import com.fadlurahmanfdev.kotlin_core_crypto.data.impl_repositories.CryptoAESRepositoryImpl
+import com.fadlurahmanfdev.kotlin_core_crypto.data.impl_repositories.CryptoDynamicSymmetricRepositoryImpl
+import com.fadlurahmanfdev.kotlin_core_crypto.data.impl_repositories.CryptoED25519RepositoryImpl
+import com.fadlurahmanfdev.kotlin_core_crypto.data.impl_repositories.CryptoRSARepositoryImpl
+import com.fadlurahmanfdev.kotlin_core_crypto.data.impl_repositories.CryptoECRepositoryImpl
 import com.github.fadlurahmanfdev.core_crypto_example.R
 import com.github.fadlurahmanfdev.core_crypto_example.data.FeatureModel
 import com.github.fadlurahmanfdev.core_crypto_example.domain.ExampleCryptoUseCaseImpl
@@ -33,9 +33,27 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         ),
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Verify RSA Signature",
-            desc = "Verify RSA Signature",
-            enum = "VERIFY_ED25519_SIGNATURE"
+            title = "Combine RSA & AES",
+            desc = "Combine RSA & AES",
+            enum = "COMBINE_RSA_AES"
+        ),
+        FeatureModel(
+            featureIcon = R.drawable.baseline_developer_mode_24,
+            title = "Example Crypto ED25519",
+            desc = "Example Crypto ED25519",
+            enum = "EXAMPLE_ED25519"
+        ),
+        FeatureModel(
+            featureIcon = R.drawable.baseline_developer_mode_24,
+            title = "Example EC Key Exchange",
+            desc = "Example EC Key Exchange",
+            enum = "EXAMPLE_EC_KEY_EXCHANGE"
+        ),
+        FeatureModel(
+            featureIcon = R.drawable.baseline_developer_mode_24,
+            title = "Example EC",
+            desc = "Example EC",
+            enum = "EXAMPLE_EC"
         ),
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
@@ -71,6 +89,8 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                 cryptoAESRepository = CryptoAESRepositoryImpl(),
                 cryptoED25519Repository = CryptoED25519RepositoryImpl(),
                 cryptoRSARepository = CryptoRSARepositoryImpl(),
+                cryptoECRepository = CryptoECRepositoryImpl(),
+                cryptoDynamicSymmetricRepositoryImpl = CryptoDynamicSymmetricRepositoryImpl(),
             )
         )
 
@@ -82,36 +102,6 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         adapter.setList(features)
         adapter.setHasStableIds(true)
         rv.adapter = adapter
-
-        eccRepositoryImpl = CryptoECRepositoryImpl()
-
-        val key = eccRepositoryImpl.generateKey()
-        println("MASUK PRIVATE: ${key.privateKey}")
-        println("MASUK PUBLIC: ${key.publicKey}")
-        val signature = eccRepositoryImpl.generateSignature(
-            encodedPrivateKey = key.privateKey,
-            plainText = "P4ssw0rd!Sus4h",
-            signatureAlgorithm = FeatureCryptoSignatureAlgorithm.SHA256withECDSA,
-        )
-        println("MASUK SIGNATURE: ${signature}")
-        val isVerify = eccRepositoryImpl.verifySignature(
-            encodedPublicKey = key.publicKey,
-            signature = signature,
-            plainText = "P4ssw0rd!Sus4h",
-            signatureAlgorithm = FeatureCryptoSignatureAlgorithm.SHA256withECDSA
-        )
-        println("MASUK IS VERIFY: $isVerify")
-        val encryptedText = eccRepositoryImpl.encrypt(
-            encodedPublicKey = key.publicKey,
-            plainText = "P4ssw0rd!Sus4h",
-        )
-        println("MASUK ENCRYPTED TEXT: $encryptedText")
-        val decryptedText = eccRepositoryImpl.decrypt(
-            encodedPrivateKey = key.privateKey,
-            encryptedText = encryptedText,
-        )
-        println("MASUK DECRYPTED TEXT: $decryptedText")
-        eccRepositoryImpl.test()
     }
 
     lateinit var eccRepositoryImpl: CryptoECRepositoryImpl
@@ -127,8 +117,20 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                 viewModel.encryptDecryptRSA()
             }
 
-            "VERIFY_ED25519_SIGNATURE" -> {
-                viewModel.verifyED25519Signature()
+            "COMBINE_RSA_AES" -> {
+                viewModel.encryptCombineRSAAndAES()
+            }
+
+            "EXAMPLE_ED25519" -> {
+                viewModel.exampleED25519()
+            }
+
+            "EXAMPLE_EC_KEY_EXCHANGE" -> {
+                viewModel.exampleECKeyExchange()
+            }
+
+            "EXAMPLE_EC" -> {
+                viewModel.exampleEC()
             }
 
             "CUSTOM_SYMMETRIC_CRYPTO" -> {
