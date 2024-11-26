@@ -1,17 +1,17 @@
 package com.github.fadlurahmanfdev.core_crypto_example.domain
 
 import android.util.Log
-import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoAlgorithm
-import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoBlockMode
-import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoPadding
-import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoSignatureAlgorithm
-import com.fadlurahmanfdev.kotlin_core_crypto.data.impl_repositories.CryptoAESRepositoryImpl
-import com.fadlurahmanfdev.kotlin_core_crypto.data.impl_repositories.CryptoDynamicSymmetricRepositoryImpl
-import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
-import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepository
-import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoECRepository
-import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoED25519Repository
-import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoRSARepository
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoBlockMode
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoPadding
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoSignatureAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoAESRepositoryImpl
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoDynamicSymmetricRepositoryImpl
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoKey
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories.CryptoAESRepository
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories.CryptoECRepository
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories.CryptoED25519Repository
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories.CryptoRSARepository
 
 class ExampleCryptoUseCaseImpl(
     private val cryptoAESRepository: CryptoAESRepository,
