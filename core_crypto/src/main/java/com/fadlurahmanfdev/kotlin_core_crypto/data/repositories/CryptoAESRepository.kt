@@ -1,8 +1,8 @@
 package com.fadlurahmanfdev.kotlin_core_crypto.data.repositories
 
-interface CryptoSymmetricRepository : CryptoRepository {
+interface CryptoAESRepository {
     /**
-     * Generate key
+     * Generate AES key
      *
      * @return encoded key
      * */

@@ -3,16 +3,7 @@ package com.fadlurahmanfdev.kotlin_core_crypto.data.repositories
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoSignatureAlgorithm
 import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
 
-interface CryptoED25519Repository {
-    /**
-     * Generate Asymmetric Crypto Key
-     *
-     * @return encoded key (private & public)
-     *
-     * @return [CryptoKey] ]encoded key (private & public)
-     * */
-    fun generateKey(): CryptoKey
-
+interface CryptoED25519Repository : CryptoKeyPairRepository {
     /**
      * Generate Signature
      *
@@ -27,7 +18,7 @@ interface CryptoED25519Repository {
     fun generateSignature(
         /**
          * encoded private key, get from generateKey().privateKey
-         * @see CryptoED25519Repository.generateKey
+         * @see generateKey
          * */
         encodedPrivateKey: String,
         plainText: String,

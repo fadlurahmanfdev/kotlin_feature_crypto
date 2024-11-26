@@ -7,18 +7,7 @@ interface ExampleCryptoUseCase {
     fun exampleCryptoAES()
     fun exampleCryptoRSA()
 
-    fun encryptTextWithCombinationRsaAndAes(
-        encodedPublicKey: String,
-        encodedPrivateKey: String,
-        encryptedAESKey: String,
-        plainText: String,
-    ): String?
-
-    fun decryptTextWithCombinationRsaAndAes(
-        encodedPrivateKey: String,
-        encryptedAESKey: String,
-        encryptedText: String,
-    ): String?
+    fun exampleCombineRSAAndAES()
 
     fun generateED25519Key(): CryptoKey
 
@@ -27,7 +16,11 @@ interface ExampleCryptoUseCase {
         plainText: String,
     ): String?
 
-    fun verifyED25519Signature()
+    fun exampleED25519()
+
+    fun exampleECKeyExchange()
+
+    fun exampleEC()
 
     fun customSymmetricCrypto()
 

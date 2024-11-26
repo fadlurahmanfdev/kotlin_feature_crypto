@@ -1,18 +1,8 @@
 package com.fadlurahmanfdev.kotlin_core_crypto.data.repositories
 
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoSignatureAlgorithm
-import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
 
-interface CryptoECRepository {
-    /**
-     * Generate Asymmetric Crypto Key
-     *
-     * @return encoded key (private & public)
-     *
-     * @return [CryptoKey] ]encoded key (private & public)
-     * */
-    fun generateKey(): CryptoKey
-
+interface CryptoECRepository : CryptoKeyPairRepository {
     /**
      * Generate Signature
      *
@@ -96,4 +86,6 @@ interface CryptoECRepository {
         ourEncodedPrivateKey: String,
         otherEncodedPublicKey: String
     ): String
+
+    fun derivedSharedSecret(sharedSecret: String): String
 }

@@ -1,11 +1,12 @@
-package com.fadlurahmanfdev.kotlin_core_crypto.data.repositories
+package com.fadlurahmanfdev.kotlin_core_crypto.data.impl_repositories
 
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoAlgorithm
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoBlockMode
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoPadding
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepository
 import com.fadlurahmanfdev.kotlin_core_crypto.others.BaseSymmetricCrypto
 
-class CryptoAESRepositoryImpl : BaseSymmetricCrypto(), CryptoSymmetricRepository {
+class CryptoAESRepositoryImpl : BaseSymmetricCrypto(), CryptoAESRepository {
     /**
      * Generate AES Key
      *
@@ -32,12 +33,15 @@ class CryptoAESRepositoryImpl : BaseSymmetricCrypto(), CryptoSymmetricRepository
     ): String {
         return super.encrypt(
             algorithm = FeatureCryptoAlgorithm.AES,
-            blockMode = FeatureCryptoBlockMode.GCM,
-            padding = FeatureCryptoPadding.NoPadding,
+            transformation = "${FeatureCryptoAlgorithm.AES}/${FeatureCryptoBlockMode.GCM}/${FeatureCryptoPadding.NoPadding}",
             key = key,
             ivKey = ivKey,
             plainText = plainText
         )
+    }
+
+    override fun generateIVKey(): String {
+        return super.generateIVKey(16)
     }
 
     /**
@@ -56,8 +60,7 @@ class CryptoAESRepositoryImpl : BaseSymmetricCrypto(), CryptoSymmetricRepository
     ): String {
         return super.decrypt(
             algorithm = FeatureCryptoAlgorithm.AES,
-            blockMode = FeatureCryptoBlockMode.GCM,
-            padding = FeatureCryptoPadding.NoPadding,
+            transformation = "${FeatureCryptoAlgorithm.AES}/${FeatureCryptoBlockMode.GCM}/${FeatureCryptoPadding.NoPadding}",
             key = key,
             ivKey = ivKey,
             encryptedText = encryptedText

@@ -1,8 +1,10 @@
-package com.fadlurahmanfdev.kotlin_core_crypto.data.repositories
+package com.fadlurahmanfdev.kotlin_core_crypto.data.impl_repositories
 
 import android.util.Log
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoSignatureAlgorithm
 import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoED25519Repository
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoKeyPairRepository
 import com.fadlurahmanfdev.kotlin_core_crypto.others.BaseAsymmetricCrypto
 import org.bouncycastle.crypto.generators.Ed25519KeyPairGenerator
 import org.bouncycastle.crypto.params.Ed25519KeyGenerationParameters
@@ -12,6 +14,9 @@ import org.bouncycastle.crypto.signers.Ed25519Signer
 import java.security.SecureRandom
 
 class CryptoED25519RepositoryImpl : BaseAsymmetricCrypto(), CryptoED25519Repository {
+
+    override val whitelistedSignature: Set<FeatureCryptoSignatureAlgorithm> = setOf()
+
     /**
      * Generate Asymmetric Crypto Key
      *

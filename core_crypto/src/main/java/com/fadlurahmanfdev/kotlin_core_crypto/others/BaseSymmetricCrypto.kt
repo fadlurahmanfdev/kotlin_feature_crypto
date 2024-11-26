@@ -27,9 +27,9 @@ abstract class BaseSymmetricCrypto : BaseCrypto() {
      *
      * @return encoded iv key
      * */
-    fun generateIVKey(): String {
+    fun generateIVKey(size: Int): String {
         val secureRandom = SecureRandom()
-        val ivBytes = ByteArray(16)
+        val ivBytes = ByteArray(size)
         secureRandom.nextBytes(ivBytes)
         val ivParameterSpec = IvParameterSpec(ivBytes)
         return encode(ivParameterSpec.iv)
@@ -55,13 +55,12 @@ abstract class BaseSymmetricCrypto : BaseCrypto() {
      * */
     fun encrypt(
         algorithm: FeatureCryptoAlgorithm,
-        blockMode: FeatureCryptoBlockMode,
-        padding: FeatureCryptoPadding,
+        transformation: String,
         key: String,
         ivKey: String,
         plainText: String,
     ): String {
-        val cipher = Cipher.getInstance("${algorithm.name}/${blockMode.value}/${padding.value}")
+        val cipher = Cipher.getInstance(transformation)
         val secretKey = SecretKeySpec(decode(key), algorithm.name)
         val ivParameterSpec = IvParameterSpec(decode(ivKey))
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec)
@@ -89,13 +88,12 @@ abstract class BaseSymmetricCrypto : BaseCrypto() {
      * */
     fun decrypt(
         algorithm: FeatureCryptoAlgorithm,
-        blockMode: FeatureCryptoBlockMode,
-        padding: FeatureCryptoPadding,
+        transformation: String,
         key: String,
         ivKey: String,
         encryptedText: String,
     ): String {
-        val cipher = Cipher.getInstance("${algorithm.name}/${blockMode.value}/${padding.value}")
+        val cipher = Cipher.getInstance(transformation)
         val secretKey = SecretKeySpec(decode(key), algorithm.name)
         val ivParameterSpec = IvParameterSpec(decode(ivKey))
         cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec)
