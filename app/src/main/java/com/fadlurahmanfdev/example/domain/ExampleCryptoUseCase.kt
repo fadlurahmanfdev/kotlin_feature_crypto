@@ -1,4 +1,4 @@
-package com.github.fadlurahmanfdev.core_crypto_example.domain
+package com.fadlurahmanfdev.example.domain
 
 import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoKey
 
