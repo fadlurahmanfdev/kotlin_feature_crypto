@@ -40,14 +40,15 @@ class CryptoAESRepositoryImplTest {
         val plainText = "Plain Text AES"
         val key = cryptoAESRepository.generateKey()
         val ivKey = cryptoAESRepository.generateIVKey()
-        var encrypted: String? = null
-        try {
-            encrypted = cryptoAESRepository.encrypt(
+        val encrypted = try {
+            cryptoAESRepository.encrypt(
                 key = key,
                 ivKey = ivKey,
                 plainText = plainText
             )
-        } catch (e: Throwable) { }
+        } catch (e: Throwable) {
+            null
+        }
         assertEquals(true, encrypted != null)
         val decrypted = cryptoAESRepository.decrypt(
             key = key,
@@ -55,5 +56,39 @@ class CryptoAESRepositoryImplTest {
             encryptedText = encrypted!!
         )
         assertEquals(plainText, decrypted)
+    }
+
+    @Test
+    fun encrypt_decrypt_aes_failed_using_fake_key() {
+        val plainText = "Plain Text AES"
+        val key = "fake_key"
+        val ivKey = cryptoAESRepository.generateIVKey()
+        val encrypted = try {
+            cryptoAESRepository.encrypt(
+                key = key,
+                ivKey = ivKey,
+                plainText = plainText
+            )
+        } catch (e: Throwable) {
+            null
+        }
+        assertEquals(true, encrypted == null)
+    }
+
+    @Test
+    fun encrypt_decrypt_aes_failed_using_fake_iv_key() {
+        val plainText = "Plain Text AES"
+        val key = cryptoAESRepository.generateKey()
+        val ivKey = "fake_iv_key"
+        val encrypted = try {
+            cryptoAESRepository.encrypt(
+                key = key,
+                ivKey = ivKey,
+                plainText = plainText
+            )
+        } catch (e: Throwable) {
+            null
+        }
+        assertEquals(true, encrypted == null)
     }
 }
