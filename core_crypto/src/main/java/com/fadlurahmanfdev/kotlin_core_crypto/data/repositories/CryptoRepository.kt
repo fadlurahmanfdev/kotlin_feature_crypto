@@ -6,6 +6,16 @@ import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoPadding
 import javax.crypto.Cipher
 
 interface CryptoRepository {
+    /**
+     * Check whether specified combination of algorithm, block mode, padding is supported.
+     *
+     * @param algorithm algorithm used to check if supported
+     * @param blockMode block mode used to check if supported
+     * @param padding padding used to check if supported
+     *
+     * @return [Boolean] is plain text verified with the given signature
+     *
+     * */
     fun isSupported(
         algorithm: FeatureCryptoAlgorithm,
         blockMode: FeatureCryptoBlockMode,

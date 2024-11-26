@@ -1,4 +1,4 @@
-package com.fadlurahmanfdev.kotlin_core_crypto.data.repositories
+package com.fadlurahmanfdev.kotlin_core_crypto.others
 
 import android.util.Log
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoAlgorithm
@@ -6,7 +6,6 @@ import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoBlockMode
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoPadding
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoSignatureAlgorithm
 import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
-import com.fadlurahmanfdev.kotlin_core_crypto.others.BaseCrypto
 import java.security.KeyFactory
 import java.security.KeyPairGenerator
 import java.security.Signature
@@ -14,7 +13,18 @@ import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import javax.crypto.Cipher
 
+/**
+ * Abstract class for asymmetric cryptography
+ * */
 abstract class BaseAsymmetricCrypto : BaseCrypto() {
+
+    /**
+     * Generate key pair for asymmetric cryptography
+     *
+     * @param algorithm algorithm used for generate key
+     *
+     * @return [CryptoKey] - encoded key pair (private & public)
+     * */
     fun generateKey(algorithm: FeatureCryptoAlgorithm): CryptoKey {
         val keyPairGenerator = KeyPairGenerator.getInstance(algorithm.name)
         val key = keyPairGenerator.generateKeyPair()
@@ -24,19 +34,49 @@ abstract class BaseAsymmetricCrypto : BaseCrypto() {
         )
     }
 
+    /**
+     * Generate signature later maybe want to be verified
+     *
+     * @param encodedPrivateKey encoded private key
+     * @param plainText text want to be convert into a signature
+     * @param algorithm algorithm used for the signature
+     * @param signatureAlgorithm signature of the algorithm
+     *
+     * @return encoded signature
+     *
+     * @see generateKey
+     * @see FeatureCryptoAlgorithm
+     * @see FeatureCryptoSignatureAlgorithm
+     * */
     fun generateSignature(
-        privateKey: String,
+        encodedPrivateKey: String,
         plainText: String,
+        algorithm: FeatureCryptoAlgorithm,
         signatureAlgorithm: FeatureCryptoSignatureAlgorithm,
     ): String {
-        val privateKeySpec = PKCS8EncodedKeySpec(decode(privateKey))
-        val privateKeyInstance = KeyFactory.getInstance(FeatureCryptoAlgorithm.RSA.name).generatePrivate(privateKeySpec)
+        val privateKeySpec = PKCS8EncodedKeySpec(decode(encodedPrivateKey))
+        val privateKey = KeyFactory.getInstance(algorithm.name).generatePrivate(privateKeySpec)
         val signer = Signature.getInstance(signatureAlgorithm.name)
-        signer.initSign(privateKeyInstance)
+        signer.initSign(privateKey)
         signer.update(plainText.toByteArray())
         return encode(signer.sign())
     }
 
+    /**
+     * Verify the generated signature
+     *
+     * @param encodedPublicKey encoded public key
+     * @param plainText text want to be convert into a signature
+     * @param algorithm algorithm used for the signature
+     * @param signatureAlgorithm signature of the algorithm
+     *
+     * @return [Boolean] state whether signature is verified
+     *
+     * @see generateKey
+     * @see generateSignature
+     * @see FeatureCryptoAlgorithm
+     * @see FeatureCryptoSignatureAlgorithm
+     * */
     fun verifySignature(
         encodedPublicKey: String,
         signature: String,
@@ -58,6 +98,23 @@ abstract class BaseAsymmetricCrypto : BaseCrypto() {
         }
     }
 
+    /**
+     * Encrypt the text
+     *
+     * @param algorithm algorithm used for encryption
+     * @param blockMode block mode used for encryption
+     * @param padding padding used for encryption
+     * @param encodedPublicKey encoded public key
+     * @param plainText text want to be convert into a signature
+     *
+     * @return encrypted text
+     *
+     * @see generateKey
+     * @see generateSignature
+     * @see FeatureCryptoAlgorithm
+     * @see FeatureCryptoBlockMode
+     * @see FeatureCryptoPadding
+     * */
     fun encrypt(
         algorithm: FeatureCryptoAlgorithm,
         blockMode: FeatureCryptoBlockMode,
@@ -73,6 +130,23 @@ abstract class BaseAsymmetricCrypto : BaseCrypto() {
         return encode(encryptedByteArray)
     }
 
+    /**
+     * Decrypt the encrypted text
+     *
+     * @param algorithm algorithm used for encryption
+     * @param blockMode block mode used for encryption
+     * @param padding padding used for encryption
+     * @param encodedPrivateKey encoded private key
+     * @param encryptedText text want to be decrypted into plain text
+     *
+     * @return encrypted text
+     *
+     * @see generateKey
+     * @see generateSignature
+     * @see FeatureCryptoAlgorithm
+     * @see FeatureCryptoBlockMode
+     * @see FeatureCryptoPadding
+     * */
     fun decrypt(
         algorithm: FeatureCryptoAlgorithm,
         blockMode: FeatureCryptoBlockMode,

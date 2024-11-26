@@ -6,6 +6,6 @@ enum class FeatureCryptoAlgorithm {
     THREE_DES,
     ChaCha20,
     RSA,
-    ECDSA,
+    EC,
     DSA,
 }

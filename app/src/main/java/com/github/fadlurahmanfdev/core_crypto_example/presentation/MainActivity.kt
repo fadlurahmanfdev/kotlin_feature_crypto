@@ -6,11 +6,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoSignatureAlgorithm
 import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAESRepositoryImpl
 import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoED25519RepositoryImpl
 import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoRSARepositoryImpl
-import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.BaseAsymmetricCrypto
-import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.BaseSymmetricCrypto
+import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoECRepositoryImpl
 import com.github.fadlurahmanfdev.core_crypto_example.R
 import com.github.fadlurahmanfdev.core_crypto_example.data.FeatureModel
 import com.github.fadlurahmanfdev.core_crypto_example.domain.ExampleCryptoUseCaseImpl
@@ -82,7 +82,39 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         adapter.setList(features)
         adapter.setHasStableIds(true)
         rv.adapter = adapter
+
+        eccRepositoryImpl = CryptoECRepositoryImpl()
+
+        val key = eccRepositoryImpl.generateKey()
+        println("MASUK PRIVATE: ${key.privateKey}")
+        println("MASUK PUBLIC: ${key.publicKey}")
+        val signature = eccRepositoryImpl.generateSignature(
+            encodedPrivateKey = key.privateKey,
+            plainText = "P4ssw0rd!Sus4h",
+            signatureAlgorithm = FeatureCryptoSignatureAlgorithm.SHA256withECDSA,
+        )
+        println("MASUK SIGNATURE: ${signature}")
+        val isVerify = eccRepositoryImpl.verifySignature(
+            encodedPublicKey = key.publicKey,
+            signature = signature,
+            plainText = "P4ssw0rd!Sus4h",
+            signatureAlgorithm = FeatureCryptoSignatureAlgorithm.SHA256withECDSA
+        )
+        println("MASUK IS VERIFY: $isVerify")
+        val encryptedText = eccRepositoryImpl.encrypt(
+            encodedPublicKey = key.publicKey,
+            plainText = "P4ssw0rd!Sus4h",
+        )
+        println("MASUK ENCRYPTED TEXT: $encryptedText")
+        val decryptedText = eccRepositoryImpl.decrypt(
+            encodedPrivateKey = key.privateKey,
+            encryptedText = encryptedText,
+        )
+        println("MASUK DECRYPTED TEXT: $decryptedText")
+        eccRepositoryImpl.test()
     }
+
+    lateinit var eccRepositoryImpl: CryptoECRepositoryImpl
 
 
     override fun onClicked(item: FeatureModel) {
