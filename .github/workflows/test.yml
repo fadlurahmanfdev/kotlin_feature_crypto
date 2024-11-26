@@ -43,8 +43,8 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           script: |
-            ./gradlew :core_crypto:connectedAndroidTest --stacktrace
-            ./gradlew :core_crypto:connectedCheck --stacktrace
+            ./gradlew :feature_crypto:connectedAndroidTest --stacktrace
+            ./gradlew :feature_crypto:connectedCheck --stacktrace
       - name: Android Test Report
         uses: asadmansr/android-test-report-action@v1.2.0
         if: ${{ always() }}
