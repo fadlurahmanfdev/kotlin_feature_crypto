@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.github.fadlurahmanfdev.core_crypto_example"
+    namespace = "com.fadlurahmanfdev.example"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.github.fadlurahmanfdev.core_crypto_example"
+        applicationId = "com.fadlurahmanfdev.example"
         minSdk = 21
         targetSdk = 34
         versionCode = 1

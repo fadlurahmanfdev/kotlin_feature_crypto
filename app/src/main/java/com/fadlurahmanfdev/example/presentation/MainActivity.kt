@@ -1,4 +1,4 @@
-package com.github.fadlurahmanfdev.core_crypto_example.presentation
+package com.fadlurahmanfdev.example.presentation
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -11,9 +11,9 @@ import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoDy
 import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoED25519RepositoryImpl
 import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoRSARepositoryImpl
 import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoECRepositoryImpl
-import com.github.fadlurahmanfdev.core_crypto_example.R
-import com.github.fadlurahmanfdev.core_crypto_example.data.FeatureModel
-import com.github.fadlurahmanfdev.core_crypto_example.domain.ExampleCryptoUseCaseImpl
+import com.fadlurahmanfdev.example.R
+import com.fadlurahmanfdev.example.data.FeatureModel
+import com.fadlurahmanfdev.example.domain.ExampleCryptoUseCaseImpl
 
 class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
     lateinit var viewModel: MainViewModel

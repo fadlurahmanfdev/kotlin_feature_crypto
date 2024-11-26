@@ -1,4 +1,4 @@
-package com.github.fadlurahmanfdev.core_crypto_example.data
+package com.fadlurahmanfdev.example.data
 
 import androidx.annotation.DrawableRes
 
