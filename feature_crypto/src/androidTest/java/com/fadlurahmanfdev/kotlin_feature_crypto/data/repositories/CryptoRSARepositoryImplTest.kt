@@ -34,7 +34,7 @@ class CryptoRSARepositoryImplTest {
                 plainText = plainSignatureText,
                 signatureAlgorithm = FeatureCryptoSignatureAlgorithm.SHA256withRSA
             )
-        }catch (e:Throwable){
+        } catch (e: Throwable) {
             null
         }
         assertEquals(true, signature != null)
@@ -58,7 +58,7 @@ class CryptoRSARepositoryImplTest {
                 plainText = plainSignatureText,
                 signatureAlgorithm = FeatureCryptoSignatureAlgorithm.SHA1withRSA,
             )
-        }catch (e:Throwable){
+        } catch (e: Throwable) {
             null
         }
         assertEquals(true, signature != null)
@@ -72,45 +72,58 @@ class CryptoRSARepositoryImplTest {
         assertEquals(true, isVerify)
     }
 
-//    @Test
-//    fun failed_generate_signature_with_non_private_key() {
-//        val plainSignatureText = "Plain Signature Text"
-//        val key = cryptoRSARepository.generateKey()
-//        val signature = cryptoRSARepository.generateSignature(
-//            encodedPrivateKey = key.publicKey,
-//            plainText = plainSignatureText,
-//            method = RSASignatureMethod.SHA1withRSA
-//        )
-//        assertEquals(true, signature == null)
-//    }
-//
-//    @Test
-//    fun failed_encrypt_with_non_public_key() {
-//        val plainText = "Plain Text RSA"
-//        val key = cryptoRSARepository.generateKey()
-//        val encrypted = cryptoRSARepository.encrypt(
-//            encodedPublicKey = key.privateKey,
-//            plainText = plainText,
-//            method = RSAMethod.RSA_ECB_PKCS1Padding
-//        )
-//        assertEquals(true, encrypted == null)
-//    }
-//
-//    @Test
-//    fun failed_decrypt_rsa_with_non_private_key() {
-//        val plainText = "Plain Text RSA"
-//        val key = cryptoRSARepository.generateKey()
-//        val encrypted = cryptoRSARepository.encrypt(
-//            encodedPublicKey = key.publicKey,
-//            plainText = plainText,
-//            method = RSAMethod.RSA_ECB_PKCS1Padding
-//        )
-//        assertEquals(true, encrypted != null)
-//        val decrypted = cryptoRSARepository.decrypt(
-//            encodedPrivateKey = key.publicKey,
-//            encryptedText = encrypted!!,
-//            method = RSAMethod.RSA_ECB_PKCS1Padding
-//        )
-//        assertEquals(true, decrypted == null)
-//    }
+    @Test
+    fun failed_generate_signature_with_non_private_key() {
+        val plainSignatureText = "Plain Signature Text"
+        val key = cryptoRSARepository.generateKey()
+        val signature = try {
+            cryptoRSARepository.generateSignature(
+                encodedPrivateKey = key.publicKey,
+                plainText = plainSignatureText,
+                signatureAlgorithm = FeatureCryptoSignatureAlgorithm.SHA1withRSA
+            )
+        } catch (e: Throwable) {
+            null
+        }
+        assertEquals(true, signature == null)
+    }
+
+    @Test
+    fun failed_encrypt_with_non_public_key() {
+        val plainText = "Plain Text RSA"
+        val key = cryptoRSARepository.generateKey()
+        val encrypted = try {
+            cryptoRSARepository.encrypt(
+                encodedPublicKey = key.privateKey,
+                plainText = plainText,
+            )
+        } catch (e: Throwable) {
+            null
+        }
+        assertEquals(true, encrypted == null)
+    }
+
+    @Test
+    fun failed_decrypt_rsa_with_non_private_key() {
+        val plainText = "Plain Text RSA"
+        val key = cryptoRSARepository.generateKey()
+        val encrypted = try {
+            cryptoRSARepository.encrypt(
+                encodedPublicKey = key.publicKey,
+                plainText = plainText,
+            )
+        } catch (e: Throwable) {
+            null
+        }
+        assertEquals(true, encrypted != null)
+        val decrypted = try {
+            cryptoRSARepository.decrypt(
+                encodedPrivateKey = key.publicKey,
+                encryptedText = encrypted!!,
+            )
+        } catch (e: Throwable) {
+            null
+        }
+        assertEquals(true, decrypted == null)
+    }
 }
