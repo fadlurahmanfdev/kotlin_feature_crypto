@@ -46,6 +46,4 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(project(":feature_crypto"))
-
-//    implementation("com.github.fadlurahmanfdev:kotlin_core_crypto:v0.3.6")
 }
