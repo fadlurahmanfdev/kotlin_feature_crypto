@@ -1,6 +1,6 @@
 package com.github.fadlurahmanfdev.core_crypto_example.domain
 
-import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoKey
 
 
 interface ExampleCryptoUseCase {

@@ -1,7 +1,7 @@
 package com.github.fadlurahmanfdev.core_crypto_example.presentation
 
 import androidx.lifecycle.ViewModel
-import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoKey
 import com.github.fadlurahmanfdev.core_crypto_example.domain.ExampleCryptoUseCase
 
 class MainViewModel(
