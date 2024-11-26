@@ -3,7 +3,7 @@ package com.fadlurahmanfdev.kotlin_core_crypto.data.repositories
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoSignatureAlgorithm
 import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
 
-interface CryptoAsymmetricRepository : CryptoRepository {
+interface CryptoECRepository {
     /**
      * Generate Asymmetric Crypto Key
      *
@@ -80,5 +80,20 @@ interface CryptoAsymmetricRepository : CryptoRepository {
     fun decrypt(
         encodedPrivateKey: String,
         encryptedText: String,
+    ): String
+
+    /**
+     * Generate shared secret using our own private key & other public key.
+     *
+     * @param ourEncodedPrivateKey our private key in base64 encoded
+     * @param otherEncodedPublicKey other channel public key in base64 encoded
+     *
+     * @return [String] encoded shared secret
+     *
+     * @see generateKey
+     * */
+    fun generateSharedSecret(
+        ourEncodedPrivateKey: String,
+        otherEncodedPublicKey: String
     ): String
 }

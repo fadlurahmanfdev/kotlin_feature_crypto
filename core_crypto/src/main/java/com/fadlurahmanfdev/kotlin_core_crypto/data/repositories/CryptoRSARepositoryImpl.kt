@@ -15,6 +15,13 @@ import java.security.spec.X509EncodedKeySpec
 import javax.crypto.Cipher
 
 class CryptoRSARepositoryImpl : BaseCrypto(), CryptoAsymmetricRepository {
+
+    /**
+     * Generate Asymmetric key
+     *
+     * @return [CryptoKey] encoded key (private & public)
+     *
+     * */
     override fun generateKey(): CryptoKey {
         val keyGen = KeyPairGenerator.getInstance(FeatureCryptoAlgorithm.RSA.name)
         keyGen.initialize(2048)
@@ -24,20 +31,45 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoAsymmetricRepository {
         return CryptoKey(privateKey = privateKey, publicKey = publicKey)
     }
 
+    /**
+     * Generate Signature
+     *
+     * @param encodedPrivateKey encoded private key
+     * @param plainText text want to be convert into signature
+     * @param signatureAlgorithm algorithm used for generate signature
+     *
+     * @return [String] encoded signature
+     *
+     * @see generateKey
+     * */
     override fun generateSignature(
-        privateKey: String,
+        encodedPrivateKey: String,
         plainText: String,
         signatureAlgorithm: FeatureCryptoSignatureAlgorithm
     ): String {
-        val privateKeySpec = PKCS8EncodedKeySpec(decode(privateKey))
-        val privateKeyInstance =
+        val privateKeySpec = PKCS8EncodedKeySpec(decode(encodedPrivateKey))
+        val privateKey =
             KeyFactory.getInstance(FeatureCryptoAlgorithm.RSA.name).generatePrivate(privateKeySpec)
         val signer = Signature.getInstance(signatureAlgorithm.name)
-        signer.initSign(privateKeyInstance)
+        signer.initSign(privateKey)
         signer.update(plainText.toByteArray())
         return encode(signer.sign())
     }
 
+    /**
+     * Verify signature
+     *
+     * @param encodedPublicKey encoded public key
+     * @param signature encoded signature want to be verified
+     * @param plainText text want to be verified
+     * @param signatureAlgorithm algorithm used for generate signature
+     *
+     * @return [Boolean] state whether text verified with the signature
+     *
+     * @see generateKey
+     * @see FeatureCryptoSignatureAlgorithm
+     *
+     * */
     override fun verifySignature(
         encodedPublicKey: String,
         signature: String,
@@ -62,6 +94,18 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoAsymmetricRepository {
         }
     }
 
+    /**
+     * Encrypt the text
+     *
+     * @param encodedPublicKey encoded public key
+     * @param plainText text want to be encrypted
+     *
+     * @return [Boolean] state whether text verified with the signature
+     *
+     * @see generateKey
+     * @see FeatureCryptoSignatureAlgorithm
+     *
+     * */
     override fun encrypt(
         encodedPublicKey: String,
         plainText: String,
@@ -75,6 +119,19 @@ class CryptoRSARepositoryImpl : BaseCrypto(), CryptoAsymmetricRepository {
         return encode(encryptedByteArray)
     }
 
+    /**
+     * Decrypt the encrypted text
+     *
+     * @param encodedPrivateKey encoded private key
+     * @param encryptedText encrypted text want to be decrypted
+     *
+     * @return [String] encrypted text
+     *
+     * @see generateKey
+     * @see encrypt
+     * @see FeatureCryptoSignatureAlgorithm
+     *
+     * */
     override fun decrypt(
         encodedPrivateKey: String,
         encryptedText: String,

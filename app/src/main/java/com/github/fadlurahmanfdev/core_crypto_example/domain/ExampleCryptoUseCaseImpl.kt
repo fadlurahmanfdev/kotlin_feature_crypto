@@ -1,9 +1,7 @@
 package com.github.fadlurahmanfdev.core_crypto_example.domain
 
 import android.util.Log
-import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.AESMethod
 import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.FeatureCryptoSignatureAlgorithm
-import com.fadlurahmanfdev.kotlin_core_crypto.data.enums.RSAMethod
 import com.fadlurahmanfdev.kotlin_core_crypto.data.model.CryptoKey
 import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoAsymmetricRepository
 import com.fadlurahmanfdev.kotlin_core_crypto.data.repositories.CryptoED25519Repository
@@ -58,7 +56,7 @@ class ExampleCryptoUseCaseImpl(
             )
             Log.d(this::class.java.simpleName, "decrypted text: $decryptedText")
             val signature = cryptoRSARepository.generateSignature(
-                privateKey = key.privateKey,
+                encodedPrivateKey = key.privateKey,
                 plainText = plainText,
                 signatureAlgorithm = FeatureCryptoSignatureAlgorithm.SHA1withRSA
             )
@@ -80,8 +78,6 @@ class ExampleCryptoUseCaseImpl(
         encodedPrivateKey: String,
         encryptedAESKey: String,
         plainText: String,
-        rsaMethod: RSAMethod,
-        aesMethod: AESMethod,
     ): String? {
         return null
 //        val decryptedAESKey = cryptoRSARepository.decrypt(
@@ -108,8 +104,6 @@ class ExampleCryptoUseCaseImpl(
         encodedPrivateKey: String,
         encryptedAESKey: String,
         encryptedText: String,
-        rsaMethod: RSAMethod,
-        aesMethod: AESMethod,
     ): String? {
         return null
 //        val decryptedAESKey = cryptoRSARepository.decrypt(
@@ -139,9 +133,9 @@ class ExampleCryptoUseCaseImpl(
     override fun generateED25519Signature(
         encodedPrivateKey: String,
         plainText: String,
-    ): String? {
+    ): String {
         return cryptoED25519Repository.generateSignature(
-            privateKey = encodedPrivateKey,
+            encodedPrivateKey = encodedPrivateKey,
             plainText = plainText,
         )
     }
@@ -154,13 +148,13 @@ class ExampleCryptoUseCaseImpl(
         Log.d(this::class.java.simpleName, "PUBLIC KEY: ${key.publicKey}")
         val signature = cryptoED25519Repository.generateSignature(
             plainText = plainText,
-            privateKey = key.privateKey,
+            encodedPrivateKey = key.privateKey,
         )
         Log.d(this::class.java.simpleName, "SIGNATURE: $signature")
         if (signature != null) {
             val isSignatureVerified = cryptoED25519Repository.verifySignature(
                 plainText = plainText,
-                publicKey = key.publicKey,
+                encodedPublicKey = key.publicKey,
                 signature = signature,
             )
             Log.d(this::class.java.simpleName, "IS SIGNATURE VERIFIED: $isSignatureVerified")

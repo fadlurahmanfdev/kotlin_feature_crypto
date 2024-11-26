@@ -27,13 +27,13 @@ class CryptoED25519RepositoryImplTest {
         val plainSignatureText = "Plain Signature Text"
         val key = cryptoED25519Repository.generateKey()
         val signature = cryptoED25519Repository.generateSignature(
-            privateKey = key.privateKey,
+            encodedPrivateKey = key.privateKey,
             plainText = plainSignatureText,
         )
         assertEquals(true, signature != null)
         assertEquals(true, (signature ?: "").isNotEmpty())
         val isVerify = cryptoED25519Repository.verifySignature(
-            publicKey = key.publicKey,
+            encodedPublicKey = key.publicKey,
             signature = signature!!,
             plainText = plainSignatureText,
         )
