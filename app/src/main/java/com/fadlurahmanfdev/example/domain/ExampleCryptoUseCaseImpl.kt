@@ -23,6 +23,7 @@ class ExampleCryptoUseCaseImpl(
 
     override fun exampleCryptoAES() {
         try {
+            Log.d(this::class.java.simpleName, "example AES")
             val plainText = "Passw0rd!Sus4h"
             Log.d(this::class.java.simpleName, "plain text: $plainText")
             val key = cryptoAESRepository.generateKey()
@@ -48,6 +49,7 @@ class ExampleCryptoUseCaseImpl(
 
     override fun exampleCryptoRSA() {
         try {
+            Log.d(this::class.java.simpleName, "example RSA")
             val plainText = "Passw0rd!Sus4hB9t"
             Log.d(this::class.java.simpleName, "plain text: $plainText")
             val key = cryptoRSARepository.generateKey()
@@ -83,6 +85,7 @@ class ExampleCryptoUseCaseImpl(
 
     override fun exampleCombineRSAAndAES() {
         try {
+            Log.d(this::class.java.simpleName, "example combine RSA & AES")
             val rsaKey = cryptoRSARepository.generateKey()
             Log.d(this::class.java.simpleName, "rsa private key: ${rsaKey.privateKey}")
             Log.d(this::class.java.simpleName, "rsa public key: ${rsaKey.publicKey}")
@@ -151,6 +154,7 @@ class ExampleCryptoUseCaseImpl(
     }
 
     override fun exampleED25519() {
+        Log.d(this::class.java.simpleName, "example ED25519")
         val plainText = "Passw0rd!Sus4hB9t"
         Log.d(this::class.java.simpleName, "plain text: $plainText")
         val key = cryptoED25519Repository.generateKey()
@@ -170,6 +174,7 @@ class ExampleCryptoUseCaseImpl(
     }
 
     override fun exampleECKeyExchange() {
+        Log.d(this::class.java.simpleName, "example EC Key Exchange")
         val aliceKey = cryptoECRepository.generateKey()
         Log.d(this::class.java.simpleName, "alice private key: ${aliceKey.privateKey}")
         Log.d(this::class.java.simpleName, "alice public key: ${aliceKey.publicKey}")
@@ -219,6 +224,7 @@ class ExampleCryptoUseCaseImpl(
 
     override fun exampleEC() {
         try {
+            Log.d(this::class.java.simpleName, "example EC")
             val plainText = "P4ssw0rd!Sus4h!Bgt"
             val key = cryptoECRepository.generateKey()
 
