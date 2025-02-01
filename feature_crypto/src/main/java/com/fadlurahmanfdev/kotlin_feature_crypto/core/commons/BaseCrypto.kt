@@ -1,4 +1,4 @@
-package com.fadlurahmanfdev.kotlin_feature_crypto.others
+package com.fadlurahmanfdev.kotlin_feature_crypto.core.commons
 
 import android.util.Base64
 import javax.crypto.Cipher

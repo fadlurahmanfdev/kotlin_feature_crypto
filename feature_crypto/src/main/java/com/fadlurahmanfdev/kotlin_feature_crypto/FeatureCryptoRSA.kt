@@ -1,26 +1,21 @@
-package com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories
+package com.fadlurahmanfdev.kotlin_feature_crypto
 
 import android.util.Log
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoAlgorithm
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoBlockMode
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoPadding
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoSignatureAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoBlockMode
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoPadding
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoSignatureAlgorithm
 import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoKey
 import com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories.CryptoRSARepository
-import com.fadlurahmanfdev.kotlin_feature_crypto.others.BaseAsymmetricCrypto
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.commons.BaseAsymmetricCrypto
 import java.security.KeyFactory
 import java.security.Signature
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import javax.crypto.Cipher
 
-class CryptoRSARepositoryImpl : BaseAsymmetricCrypto(), CryptoRSARepository {
+class FeatureCryptoRSA : BaseAsymmetricCrypto(), CryptoRSARepository {
     private val algorithm = FeatureCryptoAlgorithm.RSA
-
-
-    override val whitelistedSignature: Set<FeatureCryptoSignatureAlgorithm> = setOf(
-        FeatureCryptoSignatureAlgorithm.SHA1withRSA
-    )
 
     /**
      * Generate Asymmetric key

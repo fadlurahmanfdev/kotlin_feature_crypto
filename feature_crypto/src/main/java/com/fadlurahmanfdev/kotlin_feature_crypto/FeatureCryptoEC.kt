@@ -1,10 +1,10 @@
-package com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories
+package com.fadlurahmanfdev.kotlin_feature_crypto
 
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoAlgorithm
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoSignatureAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoSignatureAlgorithm
 import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoKey
 import com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories.CryptoECRepository
-import com.fadlurahmanfdev.kotlin_feature_crypto.others.BaseAsymmetricCrypto
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.commons.BaseAsymmetricCrypto
 import org.spongycastle.jce.provider.BouncyCastleProvider
 import java.security.KeyFactory
 import java.security.MessageDigest
@@ -15,13 +15,9 @@ import javax.crypto.Cipher
 import javax.crypto.KeyAgreement
 import javax.crypto.spec.SecretKeySpec
 
-class CryptoECRepositoryImpl : BaseAsymmetricCrypto(), CryptoECRepository {
+class FeatureCryptoEC : BaseAsymmetricCrypto(), CryptoECRepository {
     private val algorithm = FeatureCryptoAlgorithm.EC
     private val transformation = "ECIESwithAES-CBC"
-
-    override val whitelistedSignature: Set<FeatureCryptoSignatureAlgorithm> = setOf(
-        FeatureCryptoSignatureAlgorithm.ECDSA
-    )
 
     /**
      * Generate EC Pair Key

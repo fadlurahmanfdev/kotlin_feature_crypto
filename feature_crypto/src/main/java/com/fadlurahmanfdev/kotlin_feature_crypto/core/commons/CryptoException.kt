@@ -1,4 +1,4 @@
-package com.fadlurahmanfdev.kotlin_feature_crypto.others
+package com.fadlurahmanfdev.kotlin_feature_crypto.core.commons
 
 class CryptoException(
     override val message: String? = null

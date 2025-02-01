@@ -1,6 +1,6 @@
 package com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories
 
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoSignatureAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoSignatureAlgorithm
 
 interface CryptoED25519Repository : CryptoKeyPairRepository {
     /**

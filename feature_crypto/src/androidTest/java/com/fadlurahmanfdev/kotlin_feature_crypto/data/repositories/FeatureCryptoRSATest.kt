@@ -1,20 +1,20 @@
 package com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoSignatureAlgorithm
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoRSARepositoryImpl
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoSignatureAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoRSA
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class CryptoRSARepositoryImplTest {
+class FeatureCryptoRSATest {
     private lateinit var cryptoRSARepository: CryptoRSARepository
 
     @Before
     fun setUp() {
-        cryptoRSARepository = CryptoRSARepositoryImpl()
+        cryptoRSARepository = FeatureCryptoRSA()
     }
 
     @Test

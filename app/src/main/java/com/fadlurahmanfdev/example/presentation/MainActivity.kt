@@ -6,11 +6,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoAESRepositoryImpl
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoDynamicSymmetricRepositoryImpl
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoED25519RepositoryImpl
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoRSARepositoryImpl
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoECRepositoryImpl
+import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoAES
+import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoCustomSymmetric
+import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoED25519
+import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoRSA
+import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoEC
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
 import com.fadlurahmanfdev.example.domain.ExampleCryptoUseCaseImpl
@@ -86,11 +86,11 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
         viewModel = MainViewModel(
             exampleCryptoUseCase = ExampleCryptoUseCaseImpl(
-                cryptoAESRepository = CryptoAESRepositoryImpl(),
-                cryptoED25519Repository = CryptoED25519RepositoryImpl(),
-                cryptoRSARepository = CryptoRSARepositoryImpl(),
-                cryptoECRepository = CryptoECRepositoryImpl(),
-                cryptoDynamicSymmetricRepositoryImpl = CryptoDynamicSymmetricRepositoryImpl(),
+                cryptoAESRepository = FeatureCryptoAES(),
+                cryptoED25519Repository = FeatureCryptoED25519(),
+                cryptoRSARepository = FeatureCryptoRSA(),
+                cryptoECRepository = FeatureCryptoEC(),
+                featureCryptoCustomSymmetric = FeatureCryptoCustomSymmetric(),
             )
         )
 
@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         rv.adapter = adapter
     }
 
-    lateinit var eccRepositoryImpl: CryptoECRepositoryImpl
+    lateinit var eccRepositoryImpl: FeatureCryptoEC
 
 
     override fun onClicked(item: FeatureModel) {

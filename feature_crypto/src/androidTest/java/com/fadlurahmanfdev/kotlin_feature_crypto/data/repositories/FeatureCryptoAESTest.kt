@@ -1,7 +1,7 @@
 package com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoAESRepositoryImpl
+import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoAES
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -9,12 +9,12 @@ import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4::class)
-class CryptoAESRepositoryImplTest {
+class FeatureCryptoAESTest {
     private lateinit var cryptoAESRepository: CryptoAESRepository
 
     @Before
     fun setUp() {
-        cryptoAESRepository = CryptoAESRepositoryImpl()
+        cryptoAESRepository = FeatureCryptoAES()
     }
 
     @Test

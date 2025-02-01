@@ -1,10 +1,10 @@
-package com.fadlurahmanfdev.kotlin_feature_crypto.others
+package com.fadlurahmanfdev.kotlin_feature_crypto.core.commons
 
 import android.util.Log
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoAlgorithm
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoBlockMode
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoPadding
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoSignatureAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoBlockMode
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoPadding
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoSignatureAlgorithm
 import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoKey
 import java.security.KeyFactory
 import java.security.KeyPairGenerator
@@ -17,8 +17,6 @@ import javax.crypto.Cipher
  * Abstract class for asymmetric cryptography
  * */
 abstract class BaseAsymmetricCrypto : BaseCrypto() {
-
-    abstract val whitelistedSignature: Set<FeatureCryptoSignatureAlgorithm>
 
     /**
      * Generate key pair for asymmetric cryptography
