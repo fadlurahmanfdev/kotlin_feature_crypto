@@ -1,12 +1,12 @@
-package com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories
+package com.fadlurahmanfdev.kotlin_feature_crypto
 
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoAlgorithm
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoBlockMode
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoPadding
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoBlockMode
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoPadding
 import com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories.CryptoAESRepository
-import com.fadlurahmanfdev.kotlin_feature_crypto.others.BaseSymmetricCrypto
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.commons.BaseSymmetricCrypto
 
-class CryptoAESRepositoryImpl : BaseSymmetricCrypto(), CryptoAESRepository {
+class FeatureCryptoAES : BaseSymmetricCrypto(), CryptoAESRepository {
     /**
      * Generate AES Key
      *

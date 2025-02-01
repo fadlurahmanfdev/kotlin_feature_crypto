@@ -1,12 +1,12 @@
 package com.fadlurahmanfdev.example.domain
 
 import android.util.Log
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoAlgorithm
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoBlockMode
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoPadding
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoSignatureAlgorithm
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoAESRepositoryImpl
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.impl_repositories.CryptoDynamicSymmetricRepositoryImpl
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoBlockMode
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoPadding
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoSignatureAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoAES
+import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoCustomSymmetric
 import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoKey
 import com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories.CryptoAESRepository
 import com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories.CryptoECRepository
@@ -18,7 +18,7 @@ class ExampleCryptoUseCaseImpl(
     private val cryptoED25519Repository: CryptoED25519Repository,
     private val cryptoRSARepository: CryptoRSARepository,
     private val cryptoECRepository: CryptoECRepository,
-    private val cryptoDynamicSymmetricRepositoryImpl: CryptoDynamicSymmetricRepositoryImpl,
+    private val featureCryptoCustomSymmetric: FeatureCryptoCustomSymmetric,
 ) : ExampleCryptoUseCase {
 
     override fun exampleCryptoAES() {
@@ -200,12 +200,12 @@ class ExampleCryptoUseCaseImpl(
             "key from alice shared secret: $keyFromAliceSharedSecret"
         )
 
-        val cryptoAESRepositoryImpl = CryptoAESRepositoryImpl()
-        val aesIvKey = cryptoAESRepositoryImpl.generateIVKey()
+        val featureCryptoAES = FeatureCryptoAES()
+        val aesIvKey = featureCryptoAES.generateIVKey()
         Log.d(this::class.java.simpleName, "aes iv key: $aesIvKey")
 
         Log.d(this::class.java.simpleName, "plain text: $plainText")
-        val encryptedText = cryptoAESRepositoryImpl.encrypt(
+        val encryptedText = featureCryptoAES.encrypt(
             key = keyFromAliceSharedSecret,
             ivKey = aesIvKey,
             plainText = plainText,
@@ -252,7 +252,7 @@ class ExampleCryptoUseCaseImpl(
     override fun customSymmetricCrypto() {
         val plainText = "P4ssw0rd!Sus4h!B9t"
         val transformation = "${FeatureCryptoAlgorithm.ChaCha20}/${FeatureCryptoBlockMode.Poly1305}/${FeatureCryptoPadding.NoPadding}"
-        val isSupported = cryptoDynamicSymmetricRepositoryImpl.isSupported(
+        val isSupported = featureCryptoCustomSymmetric.isSupported(
             transformation = transformation
         )
 
@@ -264,10 +264,10 @@ class ExampleCryptoUseCaseImpl(
             return
         }
 
-        val key = cryptoDynamicSymmetricRepositoryImpl.generateKey(FeatureCryptoAlgorithm.ChaCha20)
-        val ivKey = cryptoDynamicSymmetricRepositoryImpl.generateIVKey(12)
+        val key = featureCryptoCustomSymmetric.generateKey(FeatureCryptoAlgorithm.ChaCha20)
+        val ivKey = featureCryptoCustomSymmetric.generateIVKey(12)
         Log.d(this::class.java.simpleName, "key: $key")
-        val encryptedText = cryptoDynamicSymmetricRepositoryImpl.encrypt(
+        val encryptedText = featureCryptoCustomSymmetric.encrypt(
             transformation = transformation,
             algorithm = FeatureCryptoAlgorithm.ChaCha20,
             plainText = plainText,
@@ -275,7 +275,7 @@ class ExampleCryptoUseCaseImpl(
             ivKey = ivKey
         )
         Log.d(this::class.java.simpleName, "encrypted text: $encryptedText")
-        val decryptedText = cryptoDynamicSymmetricRepositoryImpl.decrypt(
+        val decryptedText = featureCryptoCustomSymmetric.decrypt(
             algorithm = FeatureCryptoAlgorithm.ChaCha20,
             transformation = transformation,
             encryptedText = encryptedText,

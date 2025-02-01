@@ -1,8 +1,8 @@
-package com.fadlurahmanfdev.kotlin_feature_crypto.others
+package com.fadlurahmanfdev.kotlin_feature_crypto.core.commons
 
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoAlgorithm
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoBlockMode
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.enums.FeatureCryptoPadding
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoBlockMode
+import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoPadding
 import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator

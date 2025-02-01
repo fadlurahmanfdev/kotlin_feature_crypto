@@ -1,4 +1,4 @@
-package com.fadlurahmanfdev.kotlin_feature_crypto.data.enums
+package com.fadlurahmanfdev.kotlin_feature_crypto.core.enums
 
 enum class FeatureCryptoBlockMode(val value: String) {
     CBC("CBC"),
