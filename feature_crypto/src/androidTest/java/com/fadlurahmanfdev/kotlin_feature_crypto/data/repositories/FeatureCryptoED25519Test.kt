@@ -32,7 +32,7 @@ class FeatureCryptoED25519Test {
             plainText = plainSignatureText,
         )
         assertEquals(true, signature != null)
-        assertEquals(true, (signature ?: "").isNotEmpty())
+        assertEquals(true, signature.isNotEmpty())
         val isVerify = cryptoED25519Repository.verifySignature(
             encodedPublicKey = key.publicKey,
             signature = signature!!,

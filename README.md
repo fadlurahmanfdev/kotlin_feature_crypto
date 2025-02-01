@@ -191,6 +191,7 @@ val signature = featureED25519.generateSignature(
 Verify signature and plain text. It will return true if success, otherwise it will return false.
 
 
+
 ```kotlin
 val featureED25519 = FeatureCryptoED25519()
 val isSignatureVerified = featureED25519.verifySignature(
