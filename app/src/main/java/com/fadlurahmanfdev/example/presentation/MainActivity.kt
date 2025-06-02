@@ -1,19 +1,20 @@
 package com.fadlurahmanfdev.example.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoAES
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoCustomSymmetric
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoED25519
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoRSA
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoEC
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
 import com.fadlurahmanfdev.example.domain.ExampleCryptoUseCaseImpl
+import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoAES
+import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoCustomSymmetric
+import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoEC
+import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoED25519
+import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoRSA
 
 class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
     lateinit var viewModel: MainViewModel
@@ -110,7 +111,8 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
     override fun onClicked(item: FeatureModel) {
         when (item.enum) {
             "ENCRYPT_DECRYPT_AES" -> {
-                viewModel.encryptDecryptAES()
+                val intent = Intent(this, AESActivity::class.java)
+                startActivity(intent)
             }
 
             "ENCRYPT_DECRYPT_RSA" -> {
