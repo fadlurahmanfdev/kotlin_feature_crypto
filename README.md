@@ -157,16 +157,18 @@ val cryptoVaultED25519 = CryptoVaultED25519()
 val key = cryptoVaultED25519.generateKey()
 ```
 
-#### Generate Signature
+#### Generate & Verify Signature
 
 ```kotlin
 val cryptoVaultED25519 = CryptoVaultED25519()
 val key = cryptoVaultED25519.generateKey()
-```
-
-#### Verify Signature
-
-```kotlin
-val cryptoVaultED25519 = CryptoVaultED25519()
-val key = cryptoVaultED25519.generateKey()
+val signature = cryptoED25519Repository.generateSignature(
+    plainText = plainText,
+    encodedPrivateKey = key.privateKey,
+)
+val isVerified = cryptoED25519Repository.verifySignature(
+    plainText = plainText,
+    encodedPublicKey = key.publicKey,
+    signature = signature,
+)
 ```
