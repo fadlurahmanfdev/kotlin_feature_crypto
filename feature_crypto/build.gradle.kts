@@ -47,13 +47,19 @@ android {
     }
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "androidx.annotation" && requested.name == "annotation") {
+            useTarget("androidx.annotation:annotation-jvm:1.9.1")
+        }
+    }
+}
+
 dependencies {
     implementation(libs.androidx.annotation.jvm)
-    testImplementation(libs.junit.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-//    implementation(libs.bcprov.jdk18on)
     implementation("org.bouncycastle:bcprov-jdk18on:1.78")
 
     implementation("com.madgag.spongycastle:prov:1.54.0.0")

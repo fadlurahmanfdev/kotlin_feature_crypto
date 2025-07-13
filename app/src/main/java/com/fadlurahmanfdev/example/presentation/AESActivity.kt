@@ -1,5 +1,6 @@
 package com.fadlurahmanfdev.example.presentation
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
@@ -7,15 +8,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoAES
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoCustomSymmetric
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoED25519
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoRSA
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoEC
+import com.fadlurahmanfdev.kotlin_feature_crypto.CryptoVaultCustomKeyVault
+import com.fadlurahmanfdev.kotlin_feature_crypto.CryptoVaultED25519
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
 import com.fadlurahmanfdev.example.domain.ExampleCryptoUseCaseImpl
 import com.fadlurahmanfdev.kotlin_feature_crypto.CryptoVaultAES
+import com.fadlurahmanfdev.kotlin_feature_crypto.enums.aes.CryptoVaultAESBlockMode
+import com.fadlurahmanfdev.kotlin_feature_crypto.enums.aes.CryptoVaultAESEncryptionPadding
+import com.fadlurahmanfdev.kotlin_feature_crypto.exception.CryptoVaultException
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -30,33 +31,39 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
     private val features: List<FeatureModel> = listOf<FeatureModel>(
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Encrypt & Decrypt AES Simple Key With Custom IV Key",
-            desc = "Encrypt & Decrypt AES Simple Key With Custom IV Key & Without AndroidKeyStore",
-            enum = "ENCRYPT_DECRYPT_AES_SIMPLE_KEY_WITH_CUSTOM_IV_KEY"
+            title = "Encrypt & Decrypt AES Simple Key CBC PKCS5Padding With Custom IV Key",
+            desc = "Encrypt & Decrypt AES Simple Key CBC PKCS5Padding With Custom IV Key & Without AndroidKeyStore",
+            enum = "ENCRYPT_DECRYPT_AES_SIMPLE_KEY_CBC_PKCS5PADDING_CUSTOM_IV_KEY"
         ),
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Encrypt & Decrypt AES Simple Key With Custom IV GCM Key",
-            desc = "Encrypt & Decrypt AES Simple Key With Custom IV GCM Key & Without AndroidKeyStore",
-            enum = "ENCRYPT_DECRYPT_AES_SIMPLE_KEY_WITH_CUSTOM_IV_GCM_KEY"
+            title = "Encrypt & Decrypt AES Simple Key GCM No Padding With Custom IV GCM Key",
+            desc = "Encrypt & Decrypt AES Simple Key GCM No Padding With Custom IV GCM Key & Without AndroidKeyStore",
+            enum = "ENCRYPT_DECRYPT_AES_SIMPLE_KEY_GCM_NO_PADDING_CUSTOM_GCM_KEY"
         ),
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Encrypt & Decrypt AES Simple Key With IV GCM Key \uD83D\uDC4D \uD83D\uDC4D \uD83D\uDC4D",
-            desc = "Encrypt & Decrypt AES Simple Key With IV GCM Key & Without AndroidKeyStore",
-            enum = "ENCRYPT_DECRYPT_AES_SIMPLE_KEY_WITH_IV_GCM_KEY"
+            title = "Encrypt & Decrypt AES Simple Key GCM No Padding With Custom IV Key",
+            desc = "Encrypt & Decrypt AES Simple Key GCM No Padding With Custom IV Key & Without AndroidKeyStore",
+            enum = "ENCRYPT_DECRYPT_AES_SIMPLE_KEY_GCM_NO_PADDING_CUSTOM_IV_KEY"
         ),
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Encrypt & Decrypt AES Via Android KeyStore With Generated IV \uD83D\uDC4D \uD83D\uDC4D \uD83D\uDC4D",
-            desc = "Encrypt & Decrypt AES Via AES Key generated from Android KeyStore With Generated IV",
-            enum = "ENCRYPT_DECRYPT_AES_KEYSTORE_WITH_GENERATED_IV"
+            title = "Encrypt & Decrypt AES Simple Key GCM No Padding With Generated IV GCM Key",
+            desc = "Encrypt & Decrypt AES Simple Key GCM No Padding With Generated IV GCM Key & Without AndroidKeyStore",
+            enum = "ENCRYPT_DECRYPT_AES_SIMPLE_KEY_GCM_NO_PADDING_GENERATED_IV_GCM_KEY"
         ),
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Encrypt & Decrypt AES Via Android KeyStore With Custom IV",
-            desc = "Encrypt & Decrypt AES Via AES Key generated from Android KeyStore With Custom IV",
-            enum = "ENCRYPT_DECRYPT_AES_KEYSTORE_WITH_CUSTOM_IV"
+            title = "Encrypt & Decrypt AES Via Android KeyStore GCM No Padding With Generated IV GCM \uD83D\uDC4D \uD83D\uDC4D \uD83D\uDC4D",
+            desc = "Encrypt & Decrypt AES Via Key generated from Android KeyStore GCM No Padding With Generated IV",
+            enum = "ENCRYPT_DECRYPT_AES_KEYSTORE_GCM_NO_PADDING_GENERATED_IV_GCM_KEY"
+        ),
+        FeatureModel(
+            featureIcon = R.drawable.baseline_developer_mode_24,
+            title = "Encrypt & Decrypt AES Via Android KeyStore GCM No Padding With Custom IV GCM",
+            desc = "Encrypt & Decrypt AES Via Key generated from Android KeyStore GCM No Padding With Custom IV GCM",
+            enum = "ENCRYPT_DECRYPT_AES_KEYSTORE_GCM_NO_PADDING_CUSTOM_IV_GCM_KEY"
         ),
     )
 
@@ -79,11 +86,8 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
         viewModel = MainViewModel(
             exampleCryptoUseCase = ExampleCryptoUseCaseImpl(
-                cryptoAESRepository = FeatureCryptoAES(),
-                cryptoED25519Repository = FeatureCryptoED25519(),
-                cryptoRSARepository = FeatureCryptoRSA(),
-                cryptoECRepository = FeatureCryptoEC(),
-                featureCryptoCustomSymmetric = FeatureCryptoCustomSymmetric(),
+                cryptoED25519Repository = CryptoVaultED25519(),
+                cryptoVaultCustomSymmetric = CryptoVaultCustomKeyVault(),
             )
         )
 
@@ -97,20 +101,17 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         rv.adapter = adapter
     }
 
-    lateinit var eccRepositoryImpl: FeatureCryptoEC
-
 
     override fun onClicked(item: FeatureModel) {
         when (item.enum) {
-            "ENCRYPT_DECRYPT_AES_SIMPLE_KEY_WITH_CUSTOM_IV_KEY" -> {
-                val secretKey = cryptoVaultAES.generateKey()
-                val encodedSecretKey = cryptoVaultAES.encode(secretKey.encoded)
+            "ENCRYPT_DECRYPT_AES_SIMPLE_KEY_CBC_PKCS5PADDING_CUSTOM_IV_KEY" -> {
+                val encodedSecretKey = cryptoVaultAES.generateKey()
                 Log.d(
                     this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% secret key: $encodedSecretKey"
+                    "Example-CryptoVault-LOG %%% encoded secret key: $encodedSecretKey"
                 )
 
-                ivKey = cryptoVaultAES.generateIVParameterSpecKey(16)
+                ivKey = cryptoVaultAES.generateIVParameterSpecKey()
                 Log.d(
                     this::class.java.simpleName,
                     "Example-CryptoVault-LOG %%% iv spec key: $ivKey"
@@ -118,9 +119,11 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
                 encryptedText =
                     cryptoVaultAES.encrypt(
-                        secretKey,
-                        IvParameterSpec(cryptoVaultAES.decode(ivKey)),
-                        "Passw0rd!"
+                        encodedSecretKey = encodedSecretKey,
+                        blockMode = CryptoVaultAESBlockMode.CBC,
+                        padding = CryptoVaultAESEncryptionPadding.PKCS5Padding,
+                        algorithmParameterSpec = IvParameterSpec(cryptoVaultAES.decode(ivKey)),
+                        plainText = "Passw0rd!"
                     )
 
                 Log.d(
@@ -129,80 +132,9 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                 )
 
                 val decryptedText = cryptoVaultAES.decrypt(
-                    secretKey = SecretKeySpec(cryptoVaultAES.decode(encodedSecretKey), "AES"),
-                    algorithmParameterSpec = GCMParameterSpec(128, cryptoVaultAES.decode(ivKey)),
-                    encryptedText = encryptedText
-                )
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% decrypted text: $decryptedText"
-                )
-            }
-
-            "ENCRYPT_DECRYPT_AES_SIMPLE_KEY_WITH_CUSTOM_IV_GCM_KEY" -> {
-                val secretKey = cryptoVaultAES.generateKey()
-                val encodedSecretKey = cryptoVaultAES.encode(secretKey.encoded)
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% secret key: $encodedSecretKey"
-                )
-
-                ivKey = cryptoVaultAES.generateIVGCMParameterSpecKey(12)
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% iv gvm spec key: $ivKey"
-                )
-
-                encryptedText =
-                    cryptoVaultAES.encrypt(
-                        secretKey,
-                        GCMParameterSpec(128, cryptoVaultAES.decode(ivKey)),
-                        "Passw0rd!"
-                    )
-
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% encrypted text: $encryptedText"
-                )
-
-                val decryptedText = cryptoVaultAES.decrypt(
-                    secretKey = SecretKeySpec(cryptoVaultAES.decode(encodedSecretKey), "AES"),
-                    parameterSpec = ivKey,
-                    encryptedText = encryptedText
-                )
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% decrypted text: $decryptedText"
-                )
-            }
-
-            "ENCRYPT_DECRYPT_AES_SIMPLE_KEY_WITH_IV_GCM_KEY" -> {
-                val secretKey = cryptoVaultAES.generateKey()
-                val encodedSecretKey = cryptoVaultAES.encode(secretKey.encoded)
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% secret key: $encodedSecretKey"
-                )
-
-                val encryptedModel =
-                    cryptoVaultAES.encrypt(
-                        secretKey,
-                        "Passw0rd!"
-                    )
-                encryptedText = encryptedModel.encryptedText
-                ivKey = encryptedModel.ivKey
-
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% encrypted text: $encryptedText"
-                )
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% iv key: $ivKey"
-                )
-
-                val decryptedText = cryptoVaultAES.decrypt(
-                    secretKey = SecretKeySpec(cryptoVaultAES.decode(encodedSecretKey), "AES"),
+                    encodedSecretKey = encodedSecretKey,
+                    blockMode = CryptoVaultAESBlockMode.CBC,
+                    padding = CryptoVaultAESEncryptionPadding.PKCS5Padding,
                     algorithmParameterSpec = IvParameterSpec(cryptoVaultAES.decode(ivKey)),
                     encryptedText = encryptedText
                 )
@@ -212,104 +144,289 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                 )
             }
 
-            "ENCRYPT_DECRYPT_AES_KEYSTORE_WITH_GENERATED_IV" -> {
-                val isStrongBoxBackedSupported =
-                    cryptoVaultAES.isStrongBoxBackedSupported("example_aes")
+            "ENCRYPT_DECRYPT_AES_SIMPLE_KEY_GCM_NO_PADDING_CUSTOM_GCM_KEY" -> {
+                val encodedSecretKey = cryptoVaultAES.generateKey()
                 Log.d(
                     this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% is strong box backed supported: $isStrongBoxBackedSupported"
-                )
-                var secretKeyFromAndroidKeyStore =
-                    cryptoVaultAES.getKeyFromAndroidKeyStore(keystoreAlias = "example_aes")
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% is secret key from AndroidKeyStore exist: ${secretKeyFromAndroidKeyStore != null}"
+                    "Example-CryptoVault-LOG %%% encoded secret key: $encodedSecretKey"
                 )
 
-                if (secretKeyFromAndroidKeyStore == null) {
-                    secretKeyFromAndroidKeyStore = cryptoVaultAES.generateKey(
-                        "example_aes",
-                        strongBoxBacked = isStrongBoxBackedSupported
+                ivKey = cryptoVaultAES.generateIVGCMParameterSpecKey()
+                Log.d(
+                    this::class.java.simpleName,
+                    "Example-CryptoVault-LOG %%% iv gcm spec key: $ivKey"
+                )
+
+                encryptedText =
+                    cryptoVaultAES.encrypt(
+                        encodedSecretKey = encodedSecretKey,
+                        blockMode = CryptoVaultAESBlockMode.GCM,
+                        padding = CryptoVaultAESEncryptionPadding.NoPadding,
+                        algorithmParameterSpec = GCMParameterSpec(
+                            128,
+                            cryptoVaultAES.decode(ivKey)
+                        ),
+                        plainText = "Passw0rd!"
                     )
-                    Log.d(
-                        this::class.java.simpleName,
-                        "Example-CryptoVault-LOG %%% successfully generate secret key from AndroidKeyStore"
-                    )
-                }
 
-                val encryptedModel =
-                    cryptoVaultAES.encrypt(secretKeyFromAndroidKeyStore, plainText = "Passw0rd!")
-                encryptedText = encryptedModel.encryptedText
-                ivKey = encryptedModel.ivKey
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% encrypted text: $encryptedText"
-                )
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% iv key: $ivKey"
-                )
-
-                val decryptedText = cryptoVaultAES.decrypt(
-                    secretKeyFromAndroidKeyStore,
-                    encryptedText = encryptedText,
-                    parameterSpec = ivKey
-                )
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% decryptedText text: $decryptedText"
-                )
-            }
-
-            "ENCRYPT_DECRYPT_AES_KEYSTORE_WITH_CUSTOM_IV" -> {
-                val isStrongBoxBackedSupported =
-                    cryptoVaultAES.isStrongBoxBackedSupported("example_aes_2")
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% is strong box backed supported: $isStrongBoxBackedSupported"
-                )
-                var secretKey =
-                    cryptoVaultAES.getKeyFromAndroidKeyStore(keystoreAlias = "example_aes_2")
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% is secret key exist: ${secretKey != null}"
-                )
-
-                if (secretKey == null) {
-                    secretKey = cryptoVaultAES.generateKey(
-                        "example_aes_2",
-                        strongBoxBacked = isStrongBoxBackedSupported
-                    )
-                    Log.d(
-                        this::class.java.simpleName,
-                        "Example-CryptoVault-LOG %%% successfully generate secret key"
-                    )
-                }
-
-                ivKey = cryptoVaultAES.generateIVGCMParameterSpecKey(12)
-                Log.d(
-                    this::class.java.simpleName,
-                    "Example-CryptoVault-LOG %%% iv gcm key: $ivKey"
-                )
-                encryptedText = cryptoVaultAES.encrypt(
-                    secretKey,
-                    GCMParameterSpec(128, cryptoVaultAES.decode(ivKey)),
-                    "Passw0rd!"
-                )
                 Log.d(
                     this::class.java.simpleName,
                     "Example-CryptoVault-LOG %%% encrypted text: $encryptedText"
                 )
 
                 val decryptedText = cryptoVaultAES.decrypt(
-                    secretKey,
-                    GCMParameterSpec(128, cryptoVaultAES.decode(ivKey)),
-                    encryptedText
+                    encodedSecretKey = encodedSecretKey,
+                    blockMode = CryptoVaultAESBlockMode.GCM,
+                    padding = CryptoVaultAESEncryptionPadding.NoPadding,
+                    algorithmParameterSpec = GCMParameterSpec(128, cryptoVaultAES.decode(ivKey)),
+                    encryptedText = encryptedText
                 )
                 Log.d(
                     this::class.java.simpleName,
                     "Example-CryptoVault-LOG %%% decrypted text: $decryptedText"
                 )
+            }
+
+            "ENCRYPT_DECRYPT_AES_SIMPLE_KEY_GCM_NO_PADDING_CUSTOM_IV_KEY" -> {
+                val encodedSecretKey = cryptoVaultAES.generateKey()
+                Log.d(
+                    this::class.java.simpleName,
+                    "Example-CryptoVault-LOG %%% secret key: $encodedSecretKey"
+                )
+
+                ivKey = cryptoVaultAES.generateIVParameterSpecKey()
+                Log.d(
+                    this::class.java.simpleName,
+                    "Example-CryptoVault-LOG %%% iv spec key: $ivKey"
+                )
+
+                encryptedText =
+                    cryptoVaultAES.encrypt(
+                        encodedSecretKey = encodedSecretKey,
+                        blockMode = CryptoVaultAESBlockMode.GCM,
+                        padding = CryptoVaultAESEncryptionPadding.NoPadding,
+                        algorithmParameterSpec = IvParameterSpec(cryptoVaultAES.decode(ivKey)),
+                        plainText = "Passw0rd!"
+                    )
+
+                Log.d(
+                    this::class.java.simpleName,
+                    "Example-CryptoVault-LOG %%% encrypted text: $encryptedText"
+                )
+
+                val decryptedText = cryptoVaultAES.decrypt(
+                    encodedSecretKey = encodedSecretKey,
+                    blockMode = CryptoVaultAESBlockMode.GCM,
+                    padding = CryptoVaultAESEncryptionPadding.NoPadding,
+                    algorithmParameterSpec = IvParameterSpec(cryptoVaultAES.decode(ivKey)),
+                    encryptedText = encryptedText
+                )
+                Log.d(
+                    this::class.java.simpleName,
+                    "Example-CryptoVault-LOG %%% decrypted text: $decryptedText"
+                )
+            }
+
+            "ENCRYPT_DECRYPT_AES_SIMPLE_KEY_GCM_NO_PADDING_GENERATED_IV_GCM_KEY" -> {
+                val encodedSecretKey = cryptoVaultAES.generateKey()
+                Log.d(
+                    this::class.java.simpleName,
+                    "Example-CryptoVault-LOG %%% secret key: $encodedSecretKey"
+                )
+
+                val encryptedModel =
+                    cryptoVaultAES.encrypt(
+                        encodedSecretKey = encodedSecretKey,
+                        blockMode = CryptoVaultAESBlockMode.GCM,
+                        padding = CryptoVaultAESEncryptionPadding.NoPadding,
+                        plainText = "Passw0rd!"
+                    )
+                encryptedText = encryptedModel.encryptedText
+                ivKey = encryptedModel.ivKey
+
+                Log.d(
+                    this::class.java.simpleName,
+                    "Example-CryptoVault-LOG %%% encrypted text: $encryptedText"
+                )
+                Log.d(
+                    this::class.java.simpleName,
+                    "Example-CryptoVault-LOG %%% generated iv gcm key: $ivKey"
+                )
+
+                val decryptedText = cryptoVaultAES.decrypt(
+                    secretKey = SecretKeySpec(cryptoVaultAES.decode(encodedSecretKey), "AES"),
+                    blockMode = CryptoVaultAESBlockMode.GCM,
+                    padding = CryptoVaultAESEncryptionPadding.NoPadding,
+                    algorithmParameterSpec = GCMParameterSpec(128, cryptoVaultAES.decode(ivKey)),
+                    encryptedText = encryptedText
+                )
+                Log.d(
+                    this::class.java.simpleName,
+                    "Example-CryptoVault-LOG %%% decrypted text: $decryptedText"
+                )
+            }
+
+            "ENCRYPT_DECRYPT_AES_KEYSTORE_GCM_NO_PADDING_GENERATED_IV_GCM_KEY" -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    val keyStoreAlias = "example_aes"
+
+                    var secretKeyFromAndroidKeyStore =
+                        cryptoVaultAES.getKeyFromAndroidKeyStore(keystoreAlias = keyStoreAlias)
+
+                    Log.d(
+                        this::class.java.simpleName,
+                        "Example-CryptoVault-LOG %%% is secret key from AndroidKeyStore exist: ${secretKeyFromAndroidKeyStore != null}"
+                    )
+
+                    if (secretKeyFromAndroidKeyStore == null) {
+                        try {
+                            secretKeyFromAndroidKeyStore =
+                                cryptoVaultAES.generateKeyFromAndroidKeyStore(
+                                    keystoreAlias = keyStoreAlias,
+                                    strongBoxBacked = true,
+                                    blockMode = CryptoVaultAESBlockMode.GCM,
+                                    encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
+                                )
+                            Log.d(
+                                this::class.java.simpleName,
+                                "Example-CryptoVault-LOG %%% successfully generate secret key from AndroidKeyStore"
+                            )
+                        } catch (e: CryptoVaultException) {
+                            if (e.code == "STRONG_BOX_NOT_SUPPORTED") {
+                                Log.d(
+                                    this::class.java.simpleName,
+                                    "Example-CryptoVault-LOG %%% strong box not supported"
+                                )
+                                secretKeyFromAndroidKeyStore =
+                                    cryptoVaultAES.generateKeyFromAndroidKeyStore(
+                                        keystoreAlias = keyStoreAlias,
+                                        strongBoxBacked = false,
+                                        blockMode = CryptoVaultAESBlockMode.GCM,
+                                        encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
+                                    )
+                                Log.d(
+                                    this::class.java.simpleName,
+                                    "Example-CryptoVault-LOG %%% successfully generate secret key from AndroidKeyStore"
+                                )
+                            } else {
+                                throw e
+                            }
+                        }
+                    }
+
+                    val encryptedModel =
+                        cryptoVaultAES.encrypt(
+                            secretKey = secretKeyFromAndroidKeyStore!!,
+                            blockMode = CryptoVaultAESBlockMode.GCM,
+                            padding = CryptoVaultAESEncryptionPadding.NoPadding,
+                            plainText = "Passw0rd!"
+                        )
+                    encryptedText = encryptedModel.encryptedText
+                    ivKey = encryptedModel.ivKey
+                    Log.d(
+                        this::class.java.simpleName,
+                        "Example-CryptoVault-LOG %%% encrypted text: $encryptedText"
+                    )
+                    Log.d(
+                        this::class.java.simpleName,
+                        "Example-CryptoVault-LOG %%% generated iv gcm key: $ivKey"
+                    )
+
+                    val decryptedText = cryptoVaultAES.decrypt(
+                        secretKey = secretKeyFromAndroidKeyStore,
+                        blockMode = CryptoVaultAESBlockMode.GCM,
+                        padding = CryptoVaultAESEncryptionPadding.NoPadding,
+                        encryptedText = encryptedText,
+                        algorithmParameterSpec = GCMParameterSpec(128, cryptoVaultAES.decode(ivKey))
+                    )
+                    Log.d(
+                        this::class.java.simpleName,
+                        "Example-CryptoVault-LOG %%% decryptedText text: $decryptedText"
+                    )
+                }
+            }
+
+            "ENCRYPT_DECRYPT_AES_KEYSTORE_GCM_NO_PADDING_CUSTOM_IV_GCM_KEY" -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    val keystoreAlias = "example_aes_2"
+                    var secretKeyFromAndroidKeyStore =
+                        cryptoVaultAES.getKeyFromAndroidKeyStore(keystoreAlias = keystoreAlias)
+                    Log.d(
+                        this::class.java.simpleName,
+                        "Example-CryptoVault-LOG %%% is secret key exist: ${secretKeyFromAndroidKeyStore != null}"
+                    )
+
+                    if (secretKeyFromAndroidKeyStore == null) {
+                        try {
+                            secretKeyFromAndroidKeyStore =
+                                cryptoVaultAES.generateKeyFromAndroidKeyStore(
+                                    keystoreAlias = keystoreAlias,
+                                    strongBoxBacked = true,
+                                    blockMode = CryptoVaultAESBlockMode.GCM,
+                                    encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
+                                )
+                            Log.d(
+                                this::class.java.simpleName,
+                                "Example-CryptoVault-LOG %%% successfully generate secret key from AndroidKeyStore"
+                            )
+                        } catch (e: CryptoVaultException) {
+                            if (e.code == "STRONG_BOX_NOT_SUPPORTED") {
+                                Log.d(
+                                    this::class.java.simpleName,
+                                    "Example-CryptoVault-LOG %%% strong box not supported"
+                                )
+                                secretKeyFromAndroidKeyStore =
+                                    cryptoVaultAES.generateKeyFromAndroidKeyStore(
+                                        keystoreAlias = keystoreAlias,
+                                        strongBoxBacked = false,
+                                        blockMode = CryptoVaultAESBlockMode.GCM,
+                                        encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
+                                    )
+                                Log.d(
+                                    this::class.java.simpleName,
+                                    "Example-CryptoVault-LOG %%% successfully generate secret key from AndroidKeyStore"
+                                )
+                            } else {
+                                throw e
+                            }
+                        }
+                    }
+
+                    ivKey = cryptoVaultAES.generateIVGCMParameterSpecKey()
+                    Log.d(
+                        this::class.java.simpleName,
+                        "Example-CryptoVault-LOG %%% iv gcm key: $ivKey"
+                    )
+                    encryptedText = cryptoVaultAES.encrypt(
+                        secretKey = secretKeyFromAndroidKeyStore!!,
+                        blockMode = CryptoVaultAESBlockMode.GCM,
+                        padding = CryptoVaultAESEncryptionPadding.NoPadding,
+                        algorithmParameterSpec = GCMParameterSpec(
+                            128,
+                            cryptoVaultAES.decode(ivKey)
+                        ),
+                        plainText = "Passw0rd!"
+                    )
+                    Log.d(
+                        this::class.java.simpleName,
+                        "Example-CryptoVault-LOG %%% encrypted text: $encryptedText"
+                    )
+
+                    val decryptedText = cryptoVaultAES.decrypt(
+                        secretKey = secretKeyFromAndroidKeyStore,
+                        blockMode = CryptoVaultAESBlockMode.GCM,
+                        padding = CryptoVaultAESEncryptionPadding.NoPadding,
+                        algorithmParameterSpec = GCMParameterSpec(
+                            128,
+                            cryptoVaultAES.decode(ivKey)
+                        ),
+                        encryptedText = encryptedText
+                    )
+                    Log.d(
+                        this::class.java.simpleName,
+                        "Example-CryptoVault-LOG %%% decrypted text: $decryptedText"
+                    )
+                }
             }
         }
     }

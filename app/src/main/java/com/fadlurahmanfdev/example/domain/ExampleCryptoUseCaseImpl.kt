@@ -1,145 +1,19 @@
 package com.fadlurahmanfdev.example.domain
 
 import android.util.Log
-import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoAlgorithm
-import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoBlockMode
-import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoPadding
-import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoSignatureAlgorithm
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoAES
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoCustomSymmetric
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoKey
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories.CryptoAESRepository
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories.CryptoECRepository
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories.CryptoED25519Repository
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories.CryptoRSARepository
+import com.fadlurahmanfdev.kotlin_feature_crypto.CryptoVaultED25519
+import com.fadlurahmanfdev.kotlin_feature_crypto.CryptoVaultCustomKeyVault
+import com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultBlockMode
+import com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultPadding
+import com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoVaultKey
 
 class ExampleCryptoUseCaseImpl(
-    private val cryptoAESRepository: CryptoAESRepository,
-    private val cryptoED25519Repository: CryptoED25519Repository,
-    private val cryptoRSARepository: CryptoRSARepository,
-    private val cryptoECRepository: CryptoECRepository,
-    private val featureCryptoCustomSymmetric: FeatureCryptoCustomSymmetric,
+    private val cryptoED25519Repository: CryptoVaultED25519,
+    private val cryptoVaultCustomSymmetric: CryptoVaultCustomKeyVault,
 ) : ExampleCryptoUseCase {
 
-    override fun exampleCryptoAES() {
-        try {
-            Log.d(this::class.java.simpleName, "example AES")
-            val plainText = "Passw0rd!Sus4h"
-            Log.d(this::class.java.simpleName, "plain text: $plainText")
-            val key = cryptoAESRepository.generateKey()
-            Log.d(this::class.java.simpleName, "key: $key")
-            val ivKey = cryptoAESRepository.generateIVKey()
-            Log.d(this::class.java.simpleName, "iv key: $ivKey")
-            val encryptedText = cryptoAESRepository.encrypt(
-                key = key,
-                ivKey = ivKey,
-                plainText = plainText
-            )
-            Log.d(this::class.java.simpleName, "encrypted text: $encryptedText")
-            val decryptedText = cryptoAESRepository.decrypt(
-                key = key,
-                ivKey = ivKey,
-                encryptedText = encryptedText,
-            )
-            Log.d(this::class.java.simpleName, "decrypted text: $decryptedText")
-        } catch (e: Throwable) {
-            Log.e(this::class.java.simpleName, "failed aes: ${e.message}")
-        }
-    }
-
-    override fun exampleCryptoRSA() {
-        try {
-            Log.d(this::class.java.simpleName, "example RSA")
-            val plainText = "Passw0rd!Sus4hB9t"
-            Log.d(this::class.java.simpleName, "plain text: $plainText")
-            val key = cryptoRSARepository.generateKey()
-            Log.d(this::class.java.simpleName, "private key: ${key.privateKey}")
-            Log.d(this::class.java.simpleName, "public key: ${key.publicKey}")
-            val encryptedText = cryptoRSARepository.encrypt(
-                encodedPublicKey = key.publicKey,
-                plainText = plainText,
-            )
-            Log.d(this::class.java.simpleName, "encrypted text: $encryptedText")
-            val decryptedText = cryptoRSARepository.decrypt(
-                encodedPrivateKey = key.privateKey,
-                encryptedText = encryptedText,
-            )
-            Log.d(this::class.java.simpleName, "decrypted text: $decryptedText")
-            val signature = cryptoRSARepository.generateSignature(
-                encodedPrivateKey = key.privateKey,
-                plainText = plainText,
-                signatureAlgorithm = FeatureCryptoSignatureAlgorithm.SHA256withRSA
-            )
-            Log.d(this::class.java.simpleName, "signature: $signature")
-            val isSignatureVerified = cryptoRSARepository.verifySignature(
-                encodedPublicKey = key.publicKey,
-                plainText = "Passw0rd!",
-                signature = signature,
-                signatureAlgorithm = FeatureCryptoSignatureAlgorithm.MD5withRSA
-            )
-            Log.d(this::class.java.simpleName, "is signature verified: $isSignatureVerified")
-        } catch (e: Throwable) {
-            Log.e(this::class.java.simpleName, "failed rsa signature: ${e.message}")
-        }
-    }
-
-    override fun exampleCombineRSAAndAES() {
-        try {
-            Log.d(this::class.java.simpleName, "example combine RSA & AES")
-            val rsaKey = cryptoRSARepository.generateKey()
-            Log.d(this::class.java.simpleName, "rsa private key: ${rsaKey.privateKey}")
-            Log.d(this::class.java.simpleName, "rsa public key: ${rsaKey.publicKey}")
-
-            val plainText = "Passw0rd!Sus4hB9t"
-
-            Log.d(this::class.java.simpleName, "plain text: $plainText")
-            val aesKey = cryptoAESRepository.generateKey()
-            Log.d(this::class.java.simpleName, "aes key: $aesKey")
-            val aesIVKey = cryptoAESRepository.generateIVKey()
-            Log.d(this::class.java.simpleName, "aes iv key: $aesIVKey")
-
-            val encryptedText = cryptoAESRepository.encrypt(
-                key = aesKey,
-                ivKey = aesIVKey,
-                plainText = plainText
-            )
-            Log.d(this::class.java.simpleName, "encrypted text: $encryptedText")
-
-            val encryptedAESKey = cryptoRSARepository.encrypt(
-                encodedPublicKey = rsaKey.publicKey,
-                plainText = aesKey
-            )
-            Log.d(this::class.java.simpleName, "encrypted aes key: $encryptedAESKey")
-            val encryptedAESIVKey = cryptoRSARepository.encrypt(
-                encodedPublicKey = rsaKey.publicKey,
-                plainText = aesIVKey
-            )
-            Log.d(this::class.java.simpleName, "encrypted aes iv key: $encryptedAESIVKey")
-
-            val decryptedAESKey = cryptoRSARepository.decrypt(
-                encodedPrivateKey = rsaKey.privateKey,
-                encryptedText = encryptedAESKey,
-            )
-            Log.d(this::class.java.simpleName, "decrypted aes key: $decryptedAESKey")
-
-            val decryptedAESIVKey = cryptoRSARepository.decrypt(
-                encodedPrivateKey = rsaKey.privateKey,
-                encryptedText = encryptedAESIVKey,
-            )
-            Log.d(this::class.java.simpleName, "decrypted aes iv key: $decryptedAESIVKey")
-
-            val decryptedText = cryptoAESRepository.decrypt(
-                key = decryptedAESKey,
-                ivKey = decryptedAESIVKey,
-                encryptedText = encryptedText
-            )
-            Log.d(this::class.java.simpleName, "decrypted text: $decryptedText")
-        } catch (e: Throwable) {
-            Log.e(this::class.java.simpleName, "failed combine rsa & aes: ${e.message}")
-        }
-    }
-
-    override fun generateED25519Key(): CryptoKey {
+    override fun generateED25519Key(): CryptoVaultKey {
         return cryptoED25519Repository.generateKey()
     }
 
@@ -173,86 +47,10 @@ class ExampleCryptoUseCaseImpl(
         Log.d(this::class.java.simpleName, "is signature verified: $isVerified")
     }
 
-    override fun exampleECKeyExchange() {
-        Log.d(this::class.java.simpleName, "example EC Key Exchange")
-        val aliceKey = cryptoECRepository.generateKey()
-        Log.d(this::class.java.simpleName, "alice private key: ${aliceKey.privateKey}")
-        Log.d(this::class.java.simpleName, "alice public key: ${aliceKey.publicKey}")
-        val bobKey = cryptoECRepository.generateKey()
-        Log.d(this::class.java.simpleName, "bob private key: ${bobKey.privateKey}")
-        Log.d(this::class.java.simpleName, "bob public key: ${bobKey.publicKey}")
-
-        val aliceSharedSecret = cryptoECRepository.generateSharedSecret(
-            ourEncodedPrivateKey = aliceKey.privateKey,
-            otherEncodedPublicKey = bobKey.publicKey
-        )
-        Log.d(this::class.java.simpleName, "alice shared secret: $aliceSharedSecret")
-        val bobSharedSecret = cryptoECRepository.generateSharedSecret(
-            ourEncodedPrivateKey = bobKey.privateKey,
-            otherEncodedPublicKey = aliceKey.publicKey
-        )
-        Log.d(this::class.java.simpleName, "bob shared secret: $bobSharedSecret")
-
-        val plainText = "P4ssw0rd!Sus4hB9t"
-        val keyFromAliceSharedSecret = cryptoECRepository.derivedSharedSecret(aliceSharedSecret)
-        Log.d(
-            this::class.java.simpleName,
-            "key from alice shared secret: $keyFromAliceSharedSecret"
-        )
-
-        val featureCryptoAES = FeatureCryptoAES()
-        val aesIvKey = featureCryptoAES.generateIVKey()
-        Log.d(this::class.java.simpleName, "aes iv key: $aesIvKey")
-
-        Log.d(this::class.java.simpleName, "plain text: $plainText")
-        val encryptedText = featureCryptoAES.encrypt(
-            key = keyFromAliceSharedSecret,
-            ivKey = aesIvKey,
-            plainText = plainText,
-        )
-        Log.d(this::class.java.simpleName, "encrypted text via alice: $encryptedText")
-
-        val keyFromBobSharedSecret = cryptoECRepository.derivedSharedSecret(bobSharedSecret)
-        Log.d(this::class.java.simpleName, "key from bob shared secret: $keyFromBobSharedSecret")
-        val decryptedText = cryptoAESRepository.decrypt(
-            key = keyFromBobSharedSecret,
-            ivKey = aesIvKey,
-            encryptedText = encryptedText
-        )
-        Log.d(this::class.java.simpleName, "decrypted text via bob: $decryptedText")
-    }
-
-    override fun exampleEC() {
-        try {
-            Log.d(this::class.java.simpleName, "example EC")
-            val plainText = "P4ssw0rd!Sus4h!Bgt"
-            val key = cryptoECRepository.generateKey()
-
-            Log.d(this::class.java.simpleName, "public key: ${key.publicKey}")
-            Log.d(this::class.java.simpleName, "private key: ${key.privateKey}")
-
-            val signature = cryptoECRepository.generateSignature(
-                encodedPrivateKey = key.privateKey,
-                plainText = plainText,
-                signatureAlgorithm = FeatureCryptoSignatureAlgorithm.ECDSA,
-            )
-            Log.d(this::class.java.simpleName, "signature: $signature")
-            val isVerified = cryptoECRepository.verifySignature(
-                encodedPublicKey = key.publicKey,
-                signature = signature,
-                plainText = plainText,
-                signatureAlgorithm = FeatureCryptoSignatureAlgorithm.ECDSA,
-            )
-            Log.d(this::class.java.simpleName, "is verified: $isVerified")
-        } catch (e: Throwable) {
-            Log.d(this::class.java.simpleName, "failed ec: ${e.message}")
-        }
-    }
-
     override fun customSymmetricCrypto() {
         val plainText = "P4ssw0rd!Sus4h!B9t"
-        val transformation = "${FeatureCryptoAlgorithm.ChaCha20}/${FeatureCryptoBlockMode.Poly1305}/${FeatureCryptoPadding.NoPadding}"
-        val isSupported = featureCryptoCustomSymmetric.isSupported(
+        val transformation = "${com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultAlgorithm.ChaCha20}/${com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultBlockMode.Poly1305}/${com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultPadding.NoPadding}"
+        val isSupported = cryptoVaultCustomSymmetric.isSupported(
             transformation = transformation
         )
 
@@ -264,25 +62,25 @@ class ExampleCryptoUseCaseImpl(
             return
         }
 
-        val key = featureCryptoCustomSymmetric.generateKey(FeatureCryptoAlgorithm.ChaCha20)
-        val ivKey = featureCryptoCustomSymmetric.generateIVKey(12)
-        Log.d(this::class.java.simpleName, "key: $key")
-        val encryptedText = featureCryptoCustomSymmetric.encrypt(
-            transformation = transformation,
-            algorithm = FeatureCryptoAlgorithm.ChaCha20,
-            plainText = plainText,
-            key = key,
-            ivKey = ivKey
-        )
-        Log.d(this::class.java.simpleName, "encrypted text: $encryptedText")
-        val decryptedText = featureCryptoCustomSymmetric.decrypt(
-            algorithm = FeatureCryptoAlgorithm.ChaCha20,
-            transformation = transformation,
-            encryptedText = encryptedText,
-            key = key,
-            ivKey = ivKey
-        )
-        Log.d(this::class.java.simpleName, "decrypted text: $decryptedText")
+        val key = cryptoVaultCustomSymmetric.generateKey(com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultAlgorithm.ChaCha20)
+        val ivKey = ""
+//        Log.d(this::class.java.simpleName, "key: $key")
+//        val encryptedText = cryptoVaultCustomSymmetric.encrypt(
+//            transformation = transformation,
+//            algorithm = com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultAlgorithm.ChaCha20,
+//            plainText = plainText,
+//            encodedKey = key,
+//            ivKey = ivKey
+//        )
+//        Log.d(this::class.java.simpleName, "encrypted text: $encryptedText")
+//        val decryptedText = cryptoVaultCustomSymmetric.decrypt(
+//            algorithm = com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultAlgorithm.ChaCha20,
+//            transformation = transformation,
+//            encryptedText = encryptedText,
+//            key = key,
+//            ivKey = ivKey
+//        )
+//        Log.d(this::class.java.simpleName, "decrypted text: $decryptedText")
     }
 
     override fun customAsymmetricCrypto() {

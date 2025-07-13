@@ -3,114 +3,245 @@ package com.fadlurahmanfdev.kotlin_feature_crypto
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import android.security.keystore.StrongBoxUnavailableException
-import com.fadlurahmanfdev.kotlin_feature_crypto.core.commons.BaseCryptoVault
+import androidx.annotation.RequiresApi
+import com.fadlurahmanfdev.kotlin_feature_crypto.base.BaseKeyCryptoVault
+import com.fadlurahmanfdev.kotlin_feature_crypto.constant.CryptoVaultExceptionConstant
 import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoVaultEncryptedModel
+import com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.enums.aes.CryptoVaultAESBlockMode
+import com.fadlurahmanfdev.kotlin_feature_crypto.enums.aes.CryptoVaultAESEncryptionPadding
 import java.security.SecureRandom
 import java.security.spec.AlgorithmParameterSpec
-import javax.crypto.Cipher
-import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.IvParameterSpec
 
-class CryptoVaultAES : BaseCryptoVault() {
-    fun isStrongBoxBackedSupported(keystoreAlias: String): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            try {
-                generateKey(keystoreAlias, strongBoxBacked = true)
-                return true
-            } catch (e: StrongBoxUnavailableException) {
-                return false
-            } catch (e: Throwable) {
-                throw e
+class CryptoVaultAES : BaseKeyCryptoVault() {
+    private val algorithm = CryptoVaultAlgorithm.AES
+
+    /**
+     * Generate AES Key from android keystore.
+     *
+     * @param keystoreAlias Key identifier.
+     * @param strongBoxBacked Sets whether this key should be protected by a StrongBox security chip.
+     * @param blockMode Block mode of aes mode
+     * @param encryptionPadding Padding will be added into an encryption text.
+     *
+     * @throws [CryptoVaultExceptionConstant.STRONG_BOX_NOT_SUPPORTED] if strong box backed not supported.
+     * */
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun generateKeyFromAndroidKeyStore(
+        keystoreAlias: String,
+        strongBoxBacked: Boolean,
+        blockMode: CryptoVaultAESBlockMode,
+        encryptionPadding: CryptoVaultAESEncryptionPadding,
+    ): SecretKey {
+        val keyGenParameterSpec = KeyGenParameterSpec.Builder(
+            keystoreAlias,
+            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+        ).apply {
+            setBlockModes(blockMode.value)
+            setEncryptionPaddings(encryptionPadding.value)
+            setKeySize(256)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                setIsStrongBoxBacked(strongBoxBacked)
             }
-        } else {
-            return false
-        }
+
+        }.build()
+        return generateKeyFromAndroidKeyStore(
+            algorithm = CryptoVaultAlgorithm.AES,
+            keyGenParameterSpec = keyGenParameterSpec
+        )
     }
 
-    fun generateKey(keystoreAlias: String, strongBoxBacked: Boolean = false): SecretKey {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val keyGenParameterSpec = KeyGenParameterSpec.Builder(
-                keystoreAlias,
-                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-            ).apply {
-                setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-                setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                setKeySize(256)
+    /**
+     * Generate AES Key Non Android KeyStore.
+     *
+     * @return [String] encoded AES key.
+     * */
+    fun generateKey(): String = generateKey(CryptoVaultAlgorithm.AES)
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    setIsStrongBoxBacked(strongBoxBacked)
-                }
-
-                setRandomizedEncryptionRequired(false)
-            }.build()
-            return generateKeyFromAndroidKeyStore(keyGenParameterSpec)
-        } else {
-            return generateKey()
-        }
-    }
-
-    fun generateKey(): SecretKey {
-        val keyGenerator = KeyGenerator.getInstance("AES")
-        return keyGenerator.generateKey()
-    }
-
-    fun generateIVParameterSpecKey(size: Int): String {
+    /**
+     * Generate IV Key.
+     *
+     * @return [String] encoded IV Key.
+     * */
+    fun generateIVParameterSpecKey(): String {
         val secureRandom = SecureRandom()
-        val ivBytes = ByteArray(size)
+        val ivBytes = ByteArray(16)
         secureRandom.nextBytes(ivBytes)
         val ivParameterSpec = IvParameterSpec(ivBytes)
         return encode(ivParameterSpec.iv)
     }
 
-    fun generateIVGCMParameterSpecKey(size: Int): String {
+    /**
+     * Generate IV GCM Key.
+     *
+     * @return [String] encoded IV GCM Key.
+     */
+    fun generateIVGCMParameterSpecKey(): String {
         val secureRandom = SecureRandom()
-        val ivBytes = ByteArray(size)
+        val ivBytes = ByteArray(12)
         secureRandom.nextBytes(ivBytes)
         val ivParameterSpec = GCMParameterSpec(128, ivBytes)
         return encode(ivParameterSpec.iv)
     }
 
     /**
-     * Encrypt text using gcm parameter spec key custom.
+     * Encrypt plain text using AES Algorithm & Secret key from Android Keystore
      *
-     * GCM Parameter Spec custom can be support by enable [KeyGenParameterSpec.Builder.setRandomizedEncryptionRequired]
-     *
-     * @param secretKey secret key get from [generateKey]
+     * @param secretKey Secret key get from [generateKeyFromAndroidKeyStore]
+     * @param blockMode AES block mode.
+     * @param padding AES encryption padding.
+     * @param algorithmParameterSpec parameter spec will be used (IV or IV GCM).
+     * @param plainText plain text want to be encrypted.
      *
      * */
-    fun encrypt(secretKey: SecretKey, algorithmParameterSpec: AlgorithmParameterSpec, plainText: String): String {
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        cipher.init(
-            Cipher.ENCRYPT_MODE,
-            secretKey,
-            algorithmParameterSpec,
+    fun encrypt(
+        secretKey: SecretKey,
+        blockMode: CryptoVaultAESBlockMode,
+        padding: CryptoVaultAESEncryptionPadding,
+        algorithmParameterSpec: AlgorithmParameterSpec,
+        plainText: String,
+    ): String {
+        val transformation = "${algorithm.name}/${blockMode.value}/${padding.value}"
+        return encrypt(
+            secretKey = secretKey,
+            transformation = transformation,
+            plainText = plainText,
+            algorithmParameterSpec = algorithmParameterSpec
         )
-        return encode(cipher.doFinal(plainText.toByteArray()))
     }
 
-    fun encrypt(secretKey: SecretKey, plainText: String): CryptoVaultEncryptedModel {
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-        val encryptedText = encode(cipher.doFinal(plainText.toByteArray()))
-        val ivKey = encode(cipher.iv)
-        return CryptoVaultEncryptedModel(
+    /**
+     * Encrypt plain text using AES Algorithm & Secret key from Android Keystore
+     *
+     * IV will be generated from cipher
+     *
+     * @param secretKey Secret key get from [generateKeyFromAndroidKeyStore].
+     * @param blockMode AES block mode.
+     * @param padding AES encryption padding.
+     * @param plainText text want to be encrypted.
+     *
+     * */
+    fun encrypt(
+        secretKey: SecretKey,
+        blockMode: CryptoVaultAESBlockMode,
+        padding: CryptoVaultAESEncryptionPadding,
+        plainText: String,
+    ): CryptoVaultEncryptedModel {
+        val transformation = "${algorithm.name}/${blockMode.value}/${padding.value}"
+        return encrypt(
+            secretKey = secretKey,
+            transformation = transformation,
+            plainText = plainText,
+        )
+    }
+
+    /**
+     * Encrypt plain text using encoded secret key & AES algorithm.
+     *
+     * @param encodedSecretKey encoded secret key.
+     * @param blockMode AES block mode.
+     * @param padding AES encryption padding.
+     * @param algorithmParameterSpec algorithm parameter spec will be used (IV or IV GCM).
+     * @param plainText plain text want to be encrypted.
+     * */
+    fun encrypt(
+        encodedSecretKey: String,
+        blockMode: CryptoVaultAESBlockMode,
+        padding: CryptoVaultAESEncryptionPadding,
+        algorithmParameterSpec: AlgorithmParameterSpec,
+        plainText: String,
+    ): String {
+        val transformation = "${algorithm.name}/${blockMode.value}/${padding.value}"
+        return encrypt(
+            algorithm = algorithm,
+            encodedSecretKey = encodedSecretKey,
+            transformation = transformation,
+            plainText = plainText,
+            algorithmParameterSpec = algorithmParameterSpec
+
+        )
+    }
+
+    /**
+     * Encrypt plain text using Secret key from Android Keystore.
+     *
+     * IV will be generated from cipher.
+     *
+     * @param encodedSecretKey encoded secret key.
+     * @param blockMode AES block mode.
+     * @param padding AES encryption padding.
+     * @param plainText text want to be encrypted.
+     *
+     * */
+    fun encrypt(
+        encodedSecretKey: String,
+        blockMode: CryptoVaultAESBlockMode,
+        padding: CryptoVaultAESEncryptionPadding,
+        plainText: String,
+    ): CryptoVaultEncryptedModel {
+        val transformation = "${algorithm.name}/${blockMode.value}/${padding.value}"
+        return encrypt(
+            algorithm = algorithm,
+            encodedSecretKey = encodedSecretKey,
+            transformation = transformation,
+            plainText = plainText
+        )
+    }
+
+    /**
+     * Decrypt encrypted text using Secret key from Android Keystore.
+     *
+     * @param secretKey secret key from Android Keystore.
+     * @param blockMode AES block mode.
+     * @param padding AES encryption padding.
+     * @param algorithmParameterSpec iv/gcm that used for decrypt.
+     * @param encryptedText encrypted text want to be decrypt.
+     *
+     * */
+    fun decrypt(
+        secretKey: SecretKey,
+        blockMode: CryptoVaultAESBlockMode,
+        padding: CryptoVaultAESEncryptionPadding,
+        algorithmParameterSpec: AlgorithmParameterSpec,
+        encryptedText: String,
+    ): String {
+        val transformation = "${algorithm.name}/${blockMode.value}/${padding.value}"
+        return decrypt(
+            secretKey = secretKey,
+            transformation = transformation,
             encryptedText = encryptedText,
-            ivKey = ivKey
+            algorithmParameterSpec = algorithmParameterSpec,
         )
     }
 
-    fun decrypt(secretKey: SecretKey, parameterSpec: String, encryptedText: String): String {
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(128, decode(parameterSpec)))
-        return String(cipher.doFinal(decode(encryptedText)))
-    }
-
-    fun decrypt(secretKey: SecretKey, algorithmParameterSpec: AlgorithmParameterSpec, encryptedText: String): String {
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, algorithmParameterSpec)
-        return String(cipher.doFinal(decode(encryptedText)))
+    /**
+     * Decrypt encrypted text using Secret key from Android Keystore.
+     *
+     * @param encodedSecretKey encoded secret key.
+     * @param blockMode AES block mode.
+     * @param padding AES encryption padding.
+     * @param algorithmParameterSpec iv/gcm that used for decrypt.
+     * @param encryptedText encrypted text want to be decrypt.
+     *
+     * */
+    fun decrypt(
+        encodedSecretKey: String,
+        blockMode: CryptoVaultAESBlockMode,
+        padding: CryptoVaultAESEncryptionPadding,
+        algorithmParameterSpec: AlgorithmParameterSpec,
+        encryptedText: String,
+    ): String {
+        val transformation = "${algorithm.name}/${blockMode.value}/${padding.value}"
+        return decrypt(
+            algorithm = algorithm,
+            transformation = transformation,
+            encodedSecretKey = encodedSecretKey,
+            algorithmParameterSpec = algorithmParameterSpec,
+            encryptedText = encryptedText,
+        )
     }
 }

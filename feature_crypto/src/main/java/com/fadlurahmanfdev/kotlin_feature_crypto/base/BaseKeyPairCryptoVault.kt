@@ -1,13 +1,22 @@
-package com.fadlurahmanfdev.kotlin_feature_crypto.core.commons
+package com.fadlurahmanfdev.kotlin_feature_crypto.base
 
+import android.os.Build
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.StrongBoxUnavailableException
 import android.util.Log
-import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoAlgorithm
-import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoBlockMode
-import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoPadding
-import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoSignatureAlgorithm
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoKey
+import androidx.annotation.RequiresApi
+import com.fadlurahmanfdev.kotlin_feature_crypto.constant.CryptoVaultExceptionConstant
+import com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultBlockMode
+import com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultPadding
+import com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultSignatureAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoVaultKey
 import java.security.KeyFactory
+import java.security.KeyPair
 import java.security.KeyPairGenerator
+import java.security.KeyStore
+import java.security.PrivateKey
+import java.security.PublicKey
 import java.security.Signature
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
@@ -16,25 +25,78 @@ import javax.crypto.Cipher
 /**
  * Abstract class for asymmetric cryptography
  * */
-abstract class BaseAsymmetricCrypto : BaseCrypto() {
+abstract class BaseKeyPairCryptoVault : BaseCryptoVault() {
+    /**
+     * Load Private Key from Android KeyStore.
+     *
+     * @param keystoreAlias unique identifier of key.
+     *
+     * if the key is not exist in Android KeyStore, it will return null.
+     * */
+    fun getPrivateKeyAndroidKeyStore(keystoreAlias: String): PrivateKey? {
+        val keyStore = KeyStore.getInstance("AndroidKeyStore")
+        keyStore.load(null)
+        return keyStore.getKey(keystoreAlias, null) as PrivateKey?
+    }
+
+    /**
+     * Load Public Key from Android KeyStore.
+     *
+     * @param keystoreAlias unique identifier of key.
+     *
+     * if the key is not exist in Android KeyStore, it will return null.
+     * */
+    fun getPublicAndroidKeyStore(keystoreAlias: String): PublicKey? {
+        val keyStore = KeyStore.getInstance("AndroidKeyStore")
+        keyStore.load(null)
+        return keyStore.getCertificate(keystoreAlias)?.publicKey
+    }
 
     /**
      * Generate key pair for asymmetric cryptography
      *
      * @param algorithm algorithm used for generate key
      *
-     * @return [CryptoKey] - encoded key pair (private & public)
+     * @return [CryptoVaultKey] - encoded key pair (private & public)
      * */
-    fun generateKey(algorithm: FeatureCryptoAlgorithm, keySize: Int?): CryptoKey {
+    fun generateKey(algorithm: CryptoVaultAlgorithm, keySize: Int?): CryptoVaultKey {
         val keyPairGenerator = KeyPairGenerator.getInstance(algorithm.name)
         if (keySize != null) {
             keyPairGenerator.initialize(keySize)
         }
         val key = keyPairGenerator.generateKeyPair()
-        return CryptoKey(
+        return CryptoVaultKey(
             privateKey = encode(key.private.encoded),
             publicKey = encode(key.public.encoded)
         )
+    }
+
+    /**
+     * Generate Key Pair from Android KeyStore.
+     *
+     * @param algorithm encryption algorithm for the key pair.
+     * @param keyGenParameterSpec specification for key.
+     *
+     * @return [KeyPair] keypair that cannot be decoded because, it safely store in Android KeyStore.
+     * */
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun generateKeyFromAndroidKeyStore(
+        algorithm: CryptoVaultAlgorithm,
+        keyGenParameterSpec: KeyGenParameterSpec,
+    ): KeyPair {
+        try {
+            val keyPairGenerator =
+                KeyPairGenerator.getInstance(algorithm.name, "AndroidKeyStore")
+            keyPairGenerator.initialize(keyGenParameterSpec)
+            return keyPairGenerator.generateKeyPair()
+        } catch (e: Throwable) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                if (e is StrongBoxUnavailableException) {
+                    throw CryptoVaultExceptionConstant.STRONG_BOX_NOT_SUPPORTED.copy(message = e.message)
+                }
+            }
+            throw CryptoVaultExceptionConstant.UNKNOWN.copy(message = e.message)
+        }
     }
 
     /**
@@ -48,14 +110,14 @@ abstract class BaseAsymmetricCrypto : BaseCrypto() {
      * @return encoded signature
      *
      * @see generateKey
-     * @see FeatureCryptoAlgorithm
-     * @see FeatureCryptoSignatureAlgorithm
+     * @see CryptoVaultAlgorithm
+     * @see CryptoVaultSignatureAlgorithm
      * */
     fun generateSignature(
         encodedPrivateKey: String,
         plainText: String,
-        algorithm: FeatureCryptoAlgorithm,
-        signatureAlgorithm: FeatureCryptoSignatureAlgorithm,
+        algorithm: CryptoVaultAlgorithm,
+        signatureAlgorithm: CryptoVaultSignatureAlgorithm,
     ): String {
         val privateKeySpec = PKCS8EncodedKeySpec(decode(encodedPrivateKey))
         val privateKey = KeyFactory.getInstance(algorithm.name).generatePrivate(privateKeySpec)
@@ -77,15 +139,15 @@ abstract class BaseAsymmetricCrypto : BaseCrypto() {
      *
      * @see generateKey
      * @see generateSignature
-     * @see FeatureCryptoAlgorithm
-     * @see FeatureCryptoSignatureAlgorithm
+     * @see CryptoVaultAlgorithm
+     * @see CryptoVaultSignatureAlgorithm
      * */
     fun verifySignature(
         encodedPublicKey: String,
         signature: String,
         plainText: String,
-        algorithm: FeatureCryptoAlgorithm,
-        signatureAlgorithm: FeatureCryptoSignatureAlgorithm
+        algorithm: CryptoVaultAlgorithm,
+        signatureAlgorithm: CryptoVaultSignatureAlgorithm
     ): Boolean {
         return try {
             val publicKeySpec = X509EncodedKeySpec(decode(encodedPublicKey))
@@ -113,13 +175,13 @@ abstract class BaseAsymmetricCrypto : BaseCrypto() {
      *
      * @see generateKey
      * @see generateSignature
-     * @see FeatureCryptoAlgorithm
-     * @see FeatureCryptoBlockMode
-     * @see FeatureCryptoPadding
+     * @see CryptoVaultAlgorithm
+     * @see CryptoVaultBlockMode
+     * @see CryptoVaultPadding
      * */
     fun encrypt(
         transformation: String,
-        algorithm: FeatureCryptoAlgorithm,
+        algorithm: CryptoVaultAlgorithm,
         encodedPublicKey: String,
         plainText: String,
     ): String {
@@ -143,13 +205,13 @@ abstract class BaseAsymmetricCrypto : BaseCrypto() {
      *
      * @see generateKey
      * @see generateSignature
-     * @see FeatureCryptoAlgorithm
-     * @see FeatureCryptoBlockMode
-     * @see FeatureCryptoPadding
+     * @see CryptoVaultAlgorithm
+     * @see CryptoVaultBlockMode
+     * @see CryptoVaultPadding
      * */
     fun decrypt(
         transformation: String,
-        algorithm: FeatureCryptoAlgorithm,
+        algorithm: CryptoVaultAlgorithm,
         encodedPrivateKey: String,
         encryptedText: String,
     ): String {

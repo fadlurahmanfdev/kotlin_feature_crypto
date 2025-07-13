@@ -1,10 +1,9 @@
 package com.fadlurahmanfdev.kotlin_feature_crypto
 
 import android.util.Log
-import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoSignatureAlgorithm
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoKey
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories.CryptoED25519Repository
-import com.fadlurahmanfdev.kotlin_feature_crypto.core.commons.BaseAsymmetricCrypto
+import com.fadlurahmanfdev.kotlin_feature_crypto.base.BaseCryptoVault
+import com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultSignatureAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoVaultKey
 import org.bouncycastle.crypto.generators.Ed25519KeyPairGenerator
 import org.bouncycastle.crypto.params.Ed25519KeyGenerationParameters
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters
@@ -12,15 +11,15 @@ import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters
 import org.bouncycastle.crypto.signers.Ed25519Signer
 import java.security.SecureRandom
 
-class FeatureCryptoED25519 : BaseAsymmetricCrypto(), CryptoED25519Repository {
+class CryptoVaultED25519 : BaseCryptoVault() {
     /**
      * Generate Asymmetric Crypto Key
      *
      * @return encoded key (private & public)
      *
-     * @return [CryptoKey] ]encoded key (private & public)
+     * @return [CryptoVaultKey] ]encoded key (private & public)
      * */
-    override fun generateKey(): CryptoKey {
+    fun generateKey(): CryptoVaultKey {
         val secureRandom = SecureRandom()
         val keyPairGenerator = Ed25519KeyPairGenerator()
         keyPairGenerator.init(Ed25519KeyGenerationParameters(secureRandom))
@@ -29,7 +28,7 @@ class FeatureCryptoED25519 : BaseAsymmetricCrypto(), CryptoED25519Repository {
         val publicKey = key.public as Ed25519PublicKeyParameters
         val privateKeyEncoded = encode(privateKey.encoded)
         val publicKeyEncoded = encode(publicKey.encoded)
-        return CryptoKey(privateKeyEncoded, publicKeyEncoded)
+        return CryptoVaultKey(privateKeyEncoded, publicKeyEncoded)
     }
 
     /**
@@ -41,9 +40,9 @@ class FeatureCryptoED25519 : BaseAsymmetricCrypto(), CryptoED25519Repository {
      * @return encoded signature
      *
      * @see generateKey
-     * @see FeatureCryptoSignatureAlgorithm
+     * @see CryptoVaultSignatureAlgorithm
      * */
-    override fun generateSignature(
+    fun generateSignature(
         encodedPrivateKey: String,
         plainText: String
     ): String {
@@ -66,9 +65,9 @@ class FeatureCryptoED25519 : BaseAsymmetricCrypto(), CryptoED25519Repository {
      *
      * @see generateKey
      * @see generateSignature
-     * @see FeatureCryptoSignatureAlgorithm
+     * @see CryptoVaultSignatureAlgorithm
      * */
-    override fun verifySignature(
+    fun verifySignature(
         encodedPublicKey: String,
         plainText: String,
         signature: String,

@@ -1,15 +1,10 @@
 package com.fadlurahmanfdev.example.domain
 
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoKey
+import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoVaultKey
 
 
 interface ExampleCryptoUseCase {
-    fun exampleCryptoAES()
-    fun exampleCryptoRSA()
-
-    fun exampleCombineRSAAndAES()
-
-    fun generateED25519Key(): CryptoKey
+    fun generateED25519Key(): CryptoVaultKey
 
     fun generateED25519Signature(
         encodedPrivateKey: String,
@@ -17,10 +12,6 @@ interface ExampleCryptoUseCase {
     ): String?
 
     fun exampleED25519()
-
-    fun exampleECKeyExchange()
-
-    fun exampleEC()
 
     fun customSymmetricCrypto()
 

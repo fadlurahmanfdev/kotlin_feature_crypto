@@ -1,6 +1,6 @@
-package com.fadlurahmanfdev.kotlin_feature_crypto.core.enums
+package com.fadlurahmanfdev.kotlin_feature_crypto.enums
 
-enum class FeatureCryptoPadding(val value: String) {
+enum class CryptoVaultPadding(val value: String) {
     NoPadding("NoPadding"),
     PKCS1Padding("PKCS1Padding"),
     PKCS5Padding("PKCS5Padding"),

@@ -1,6 +1,6 @@
-package com.fadlurahmanfdev.kotlin_feature_crypto.core.enums
+package com.fadlurahmanfdev.kotlin_feature_crypto.enums
 
-enum class FeatureCryptoSignatureAlgorithm {
+enum class CryptoVaultSignatureAlgorithm {
     SHA1withRSA,
     SHA256withRSA,
     SHA512withRSA,

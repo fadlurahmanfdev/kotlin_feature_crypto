@@ -1,6 +1,6 @@
 package com.fadlurahmanfdev.kotlin_feature_crypto.data.model
 
-data class CryptoKey(
+data class CryptoVaultKey(
     /**
      * base64 encoded private key
      **/

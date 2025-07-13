@@ -1,6 +1,6 @@
 package com.fadlurahmanfdev.kotlin_feature_crypto.data.repositories
 
-import com.fadlurahmanfdev.kotlin_feature_crypto.core.enums.FeatureCryptoSignatureAlgorithm
+import com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultSignatureAlgorithm
 
 interface CryptoECRepository : CryptoKeyPairRepository {
     /**
@@ -13,12 +13,12 @@ interface CryptoECRepository : CryptoKeyPairRepository {
      * @return encoded signature
      *
      * @see generateKey
-     * @see FeatureCryptoSignatureAlgorithm
+     * @see CryptoVaultSignatureAlgorithm
      * */
     fun generateSignature(
         encodedPrivateKey: String,
         plainText: String,
-        signatureAlgorithm: FeatureCryptoSignatureAlgorithm,
+        signatureAlgorithm: com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultSignatureAlgorithm,
     ): String
 
     /**
@@ -33,13 +33,13 @@ interface CryptoECRepository : CryptoKeyPairRepository {
      *
      * @see generateKey
      * @see generateSignature
-     * @see FeatureCryptoSignatureAlgorithm
+     * @see CryptoVaultSignatureAlgorithm
      * */
     fun verifySignature(
         encodedPublicKey: String,
         signature: String,
         plainText: String,
-        signatureAlgorithm: FeatureCryptoSignatureAlgorithm,
+        signatureAlgorithm: com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultSignatureAlgorithm,
     ): Boolean
 
     /**
