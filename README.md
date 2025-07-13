@@ -2,6 +2,13 @@
 
 Library provides cryptography implementation, generated via Android KeyStore or Non Android KeyStore
 
+## 🙏 Support Me
+
+If you find my apps, libraries, or plugins helpful and would like to support their development and maintenance, you can consider buying me a coffee:
+
+- 🌍 [Support me on Ko-fi (Global)](https://ko-fi.com/fadlurahmanfdev)
+- 🇮🇩 [Dukung saya di Trakteer (Indonesia)](https://trakteer.id/fadlurahmanfdev/tip)
+
 ## Methods
 
 ### AES
