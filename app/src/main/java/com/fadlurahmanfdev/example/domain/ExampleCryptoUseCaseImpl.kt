@@ -1,16 +1,12 @@
 package com.fadlurahmanfdev.example.domain
 
 import android.util.Log
-import com.fadlurahmanfdev.kotlin_feature_crypto.CryptoVaultED25519
-import com.fadlurahmanfdev.kotlin_feature_crypto.CryptoVaultCustomKeyVault
-import com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultBlockMode
-import com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultPadding
-import com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultAlgorithm
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoVaultKey
+import com.fadlurahmanfdev.crypto_vault.CryptoVaultED25519
+import com.fadlurahmanfdev.crypto_vault.data.model.CryptoVaultKey
 
 class ExampleCryptoUseCaseImpl(
     private val cryptoED25519Repository: CryptoVaultED25519,
-    private val cryptoVaultCustomSymmetric: CryptoVaultCustomKeyVault,
+    private val cryptoVaultCustomSymmetric: com.fadlurahmanfdev.crypto_vault.CryptoVaultCustomKeyVault,
 ) : ExampleCryptoUseCase {
 
     override fun generateED25519Key(): CryptoVaultKey {
@@ -49,7 +45,7 @@ class ExampleCryptoUseCaseImpl(
 
     override fun customSymmetricCrypto() {
         val plainText = "P4ssw0rd!Sus4h!B9t"
-        val transformation = "${com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultAlgorithm.ChaCha20}/${com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultBlockMode.Poly1305}/${com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultPadding.NoPadding}"
+        val transformation = "${com.fadlurahmanfdev.crypto_vault.enums.CryptoVaultAlgorithm.ChaCha20}/${com.fadlurahmanfdev.crypto_vault.enums.CryptoVaultBlockMode.Poly1305}/${com.fadlurahmanfdev.crypto_vault.enums.CryptoVaultPadding.NoPadding}"
         val isSupported = cryptoVaultCustomSymmetric.isSupported(
             transformation = transformation
         )
@@ -62,19 +58,19 @@ class ExampleCryptoUseCaseImpl(
             return
         }
 
-        val key = cryptoVaultCustomSymmetric.generateKey(com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultAlgorithm.ChaCha20)
+        val key = cryptoVaultCustomSymmetric.generateKey(com.fadlurahmanfdev.crypto_vault.enums.CryptoVaultAlgorithm.ChaCha20)
         val ivKey = ""
 //        Log.d(this::class.java.simpleName, "key: $key")
 //        val encryptedText = cryptoVaultCustomSymmetric.encrypt(
 //            transformation = transformation,
-//            algorithm = com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultAlgorithm.ChaCha20,
+//            algorithm = com.fadlurahmanfdev.crypto_vault.enums.CryptoVaultAlgorithm.ChaCha20,
 //            plainText = plainText,
 //            encodedKey = key,
 //            ivKey = ivKey
 //        )
 //        Log.d(this::class.java.simpleName, "encrypted text: $encryptedText")
 //        val decryptedText = cryptoVaultCustomSymmetric.decrypt(
-//            algorithm = com.fadlurahmanfdev.kotlin_feature_crypto.enums.CryptoVaultAlgorithm.ChaCha20,
+//            algorithm = com.fadlurahmanfdev.crypto_vault.enums.CryptoVaultAlgorithm.ChaCha20,
 //            transformation = transformation,
 //            encryptedText = encryptedText,
 //            key = key,

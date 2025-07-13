@@ -25,6 +25,9 @@
       <SelectionState runConfigName="CryptoVaultED25519Test">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="CryptoVaultRSATest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

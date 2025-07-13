@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
 import com.fadlurahmanfdev.example.domain.ExampleCryptoUseCaseImpl
-import com.fadlurahmanfdev.kotlin_feature_crypto.CryptoVaultRSA
-import com.fadlurahmanfdev.kotlin_feature_crypto.CryptoVaultCustomKeyVault
-import com.fadlurahmanfdev.kotlin_feature_crypto.CryptoVaultED25519
+import com.fadlurahmanfdev.crypto_vault.CryptoVaultED25519
+import com.fadlurahmanfdev.crypto_vault.CryptoVaultRSA
+
 class RSAActivity : AppCompatActivity(), ListExampleAdapter.Callback {
     lateinit var viewModel: MainViewModel
     lateinit var cryptoVaultRSA: CryptoVaultRSA
@@ -58,7 +58,7 @@ class RSAActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         viewModel = MainViewModel(
             exampleCryptoUseCase = ExampleCryptoUseCaseImpl(
                 cryptoED25519Repository = CryptoVaultED25519(),
-                cryptoVaultCustomSymmetric = CryptoVaultCustomKeyVault(),
+                cryptoVaultCustomSymmetric = com.fadlurahmanfdev.crypto_vault.CryptoVaultCustomKeyVault(),
             )
         )
 
@@ -89,8 +89,8 @@ class RSAActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                     "Example-CryptoVault-LOG %%% public key: ${key.publicKey}"
                 )
 
-                val blockMode = com.fadlurahmanfdev.kotlin_feature_crypto.enums.rsa.CryptoVaultRSATransformationMode.ECB
-                val padding = com.fadlurahmanfdev.kotlin_feature_crypto.enums.rsa.CryptoVaultRSATransformationPadding.OAEPWithSHAAndMGF1Padding
+                val blockMode = com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSATransformationMode.ECB
+                val padding = com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSATransformationPadding.OAEPWithSHAAndMGF1Padding
 
                 val encryptedText = cryptoVaultRSA.encrypt(
                     encodedPublicKey = key.publicKey,
@@ -114,7 +114,7 @@ class RSAActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                     "Example-CryptoVault-LOG %%% decrypted text: $decryptedText"
                 )
 
-                val signatureAlgorithm = com.fadlurahmanfdev.kotlin_feature_crypto.enums.rsa.CryptoVaultRSASignatureAlgorithm.MD5withRSA
+                val signatureAlgorithm = com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSASignatureAlgorithm.MD5withRSA
 
                 val signature = cryptoVaultRSA.generateSignature(
                     encodedPrivateKey = key.privateKey,
@@ -160,10 +160,10 @@ class RSAActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                             cryptoVaultRSA.generateKeyFromAndroidKeyStore(
                                 keystoreAlias = keystoreAlias,
                                 encryptionPaddings = arrayOf(
-                                    com.fadlurahmanfdev.kotlin_feature_crypto.enums.rsa.CryptoVaultRSAEncryptionPadding.RSA_PKCS1
+                                    com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSAEncryptionPadding.RSA_PKCS1
                                 ),
                                 signaturePaddings = arrayOf(
-                                    com.fadlurahmanfdev.kotlin_feature_crypto.enums.rsa.CryptoVaultRSASignaturePadding.RSA_PKCS1
+                                    com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSASignaturePadding.RSA_PKCS1
                                 )
                             )
                         rsaPrivateKey = key.private
@@ -174,8 +174,8 @@ class RSAActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                         )
                     }
 
-                    val blockMode = com.fadlurahmanfdev.kotlin_feature_crypto.enums.rsa.CryptoVaultRSATransformationMode.ECB
-                    val padding = com.fadlurahmanfdev.kotlin_feature_crypto.enums.rsa.CryptoVaultRSATransformationPadding.PKCS1Padding
+                    val blockMode = com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSATransformationMode.ECB
+                    val padding = com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSATransformationPadding.PKCS1Padding
 
                     val encryptedText = cryptoVaultRSA.encrypt(
                         publicKey = rsaPublicKey!!,
@@ -209,7 +209,7 @@ class RSAActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                     val rsaPublicKey =
                         cryptoVaultRSA.getPublicAndroidKeyStore(keystoreAlias = keystoreAlias)!!
 
-                    val signatureAlgorithm = com.fadlurahmanfdev.kotlin_feature_crypto.enums.rsa.CryptoVaultRSASignatureAlgorithm.MD5withRSA
+                    val signatureAlgorithm = com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSASignatureAlgorithm.MD5withRSA
 
                     val signature = cryptoVaultRSA.generateSignature(
                         privateKey = rsaPrivateKey,

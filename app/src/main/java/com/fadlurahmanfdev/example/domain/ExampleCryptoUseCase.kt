@@ -1,6 +1,6 @@
 package com.fadlurahmanfdev.example.domain
 
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoVaultKey
+import com.fadlurahmanfdev.crypto_vault.data.model.CryptoVaultKey
 
 
 interface ExampleCryptoUseCase {
