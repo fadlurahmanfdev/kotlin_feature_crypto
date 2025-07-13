@@ -44,8 +44,8 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           script: |
-            ./gradlew :feature_crypto:connectedAndroidTest --stacktrace
-            ./gradlew :feature_crypto:connectedCheck --stacktrace
+            ./gradlew :crypto_vault:connectedAndroidTest --stacktrace
+            ./gradlew :crypto_vault:connectedCheck --stacktrace
       - name: Android Test Report
         uses: asadmansr/android-test-report-action@v1.2.0
         if: ${{ always() }}
@@ -92,6 +92,6 @@ jobs:
           echo "---------------------------||---------------------------"
           echo "---------------------------||---------------------------"
           chmod +x update_version.sh
-          ./update_version.sh feature_crypto/build.gradle.kts 0.0.1-beta ${{ steps.setup.outputs.release_name }}
-          ./gradlew :feature_crypto:publishMavenPublicationToMavenCentralRepository
+          ./update_version.sh crypto_vault/build.gradle.kts 0.0.1-beta ${{ steps.setup.outputs.release_name }}
+          ./gradlew :crypto_vault:publishMavenPublicationToMavenCentralRepository
           

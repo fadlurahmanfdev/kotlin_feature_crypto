@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.fadlurahmanfdev.kotlin_feature_crypto"
+    namespace = "com.fadlurahmanfdev.crypto_vault"
     compileSdk = 34
 
     defaultConfig {
@@ -70,12 +70,12 @@ mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
 
-    coordinates("com.fadlurahmanfdev", "kotlin_feature_crypto", "0.0.1-beta")
+    coordinates("com.fadlurahmanfdev", "crypto_vault", "0.0.1-beta")
 
     pom {
-        name.set("Kotlin's Library Feature Crypto")
-        description.set("user-friendly encryption library that makes securing your data easy. It supports AES for fast encryption, RSA for secure key exchange, and ED25519 for digital signatures. With CryptX, you can quickly add strong encryption and decryption features to your app, ensuring your data stays safe with minimal effort.")
-        inceptionYear.set("2024")
+        name.set("Crypto Vault")
+        description.set("Cryptography library, handle securely key using Android KeyStore")
+        inceptionYear.set("2025")
         url.set("https://github.com/fadlurahmanfdev/kotlin_feature_crypto/")
         licenses {
             license {
