@@ -1,7 +1,7 @@
 package com.fadlurahmanfdev.example.presentation
 
 import androidx.lifecycle.ViewModel
-import com.fadlurahmanfdev.kotlin_feature_crypto.data.model.CryptoKey
+import com.fadlurahmanfdev.crypto_vault.data.model.CryptoVaultKey
 import com.fadlurahmanfdev.example.domain.ExampleCryptoUseCase
 
 class MainViewModel(
@@ -13,37 +13,17 @@ class MainViewModel(
     private lateinit var encryptedAESText: String
 
     // RSA
-    private lateinit var rsaKey: CryptoKey
+    private lateinit var rsaKey: CryptoVaultKey
     private lateinit var encryptedAESKey: String
     private lateinit var encryptedRSAText: String
     private lateinit var signatureRSA: String
 
     // ED25519
-    private lateinit var ed25519Key: CryptoKey
+    private lateinit var ed25519Key: CryptoVaultKey
     private lateinit var signatureED25519: String
-
-    fun encryptDecryptAES() {
-        exampleCryptoUseCase.exampleCryptoAES()
-    }
-
-    fun encryptDecryptRSA() {
-        exampleCryptoUseCase.exampleCryptoRSA()
-    }
-
-    fun encryptCombineRSAAndAES() {
-        exampleCryptoUseCase.exampleCombineRSAAndAES()
-    }
 
     fun exampleED25519() {
         exampleCryptoUseCase.exampleED25519()
-    }
-
-    fun exampleECKeyExchange() {
-        exampleCryptoUseCase.exampleECKeyExchange()
-    }
-
-    fun exampleEC(){
-        exampleCryptoUseCase.exampleEC()
     }
 
     fun customSymmetricCrypto() {

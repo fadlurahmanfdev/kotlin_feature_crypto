@@ -20,6 +20,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "kotlin_core_crypto"
+rootProject.name = "crypto_vault"
 include(":app")
-include(":feature_crypto")
+include(":crypto_vault")

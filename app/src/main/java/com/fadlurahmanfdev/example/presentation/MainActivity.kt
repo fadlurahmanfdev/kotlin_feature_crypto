@@ -1,16 +1,13 @@
 package com.fadlurahmanfdev.example.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoAES
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoCustomSymmetric
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoED25519
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoRSA
-import com.fadlurahmanfdev.kotlin_feature_crypto.FeatureCryptoEC
+import com.fadlurahmanfdev.crypto_vault.CryptoVaultED25519
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
 import com.fadlurahmanfdev.example.domain.ExampleCryptoUseCaseImpl
@@ -33,27 +30,15 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         ),
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Combine RSA & AES",
-            desc = "Combine RSA & AES",
-            enum = "COMBINE_RSA_AES"
-        ),
-        FeatureModel(
-            featureIcon = R.drawable.baseline_developer_mode_24,
             title = "Example Crypto ED25519",
             desc = "Example Crypto ED25519",
             enum = "EXAMPLE_ED25519"
         ),
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Example EC Key Exchange",
-            desc = "Example EC Key Exchange",
-            enum = "EXAMPLE_EC_KEY_EXCHANGE"
-        ),
-        FeatureModel(
-            featureIcon = R.drawable.baseline_developer_mode_24,
-            title = "Example EC",
-            desc = "Example EC",
-            enum = "EXAMPLE_EC"
+            title = "Encryption Decryption EC",
+            desc = "Encryption Decryption using EC",
+            enum = "ENCRYPT_DECRYPT_EC"
         ),
         FeatureModel(
             featureIcon = R.drawable.baseline_developer_mode_24,
@@ -86,11 +71,8 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
         viewModel = MainViewModel(
             exampleCryptoUseCase = ExampleCryptoUseCaseImpl(
-                cryptoAESRepository = FeatureCryptoAES(),
-                cryptoED25519Repository = FeatureCryptoED25519(),
-                cryptoRSARepository = FeatureCryptoRSA(),
-                cryptoECRepository = FeatureCryptoEC(),
-                featureCryptoCustomSymmetric = FeatureCryptoCustomSymmetric(),
+                cryptoED25519Repository = CryptoVaultED25519(),
+                cryptoVaultCustomSymmetric = com.fadlurahmanfdev.crypto_vault.CryptoVaultCustomKeyVault(),
             )
         )
 
@@ -104,33 +86,26 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         rv.adapter = adapter
     }
 
-    lateinit var eccRepositoryImpl: FeatureCryptoEC
-
 
     override fun onClicked(item: FeatureModel) {
         when (item.enum) {
             "ENCRYPT_DECRYPT_AES" -> {
-                viewModel.encryptDecryptAES()
+                val intent = Intent(this, AESActivity::class.java)
+                startActivity(intent)
             }
 
             "ENCRYPT_DECRYPT_RSA" -> {
-                viewModel.encryptDecryptRSA()
-            }
-
-            "COMBINE_RSA_AES" -> {
-                viewModel.encryptCombineRSAAndAES()
+                val intent = Intent(this, RSAActivity::class.java)
+                startActivity(intent)
             }
 
             "EXAMPLE_ED25519" -> {
                 viewModel.exampleED25519()
             }
 
-            "EXAMPLE_EC_KEY_EXCHANGE" -> {
-                viewModel.exampleECKeyExchange()
-            }
-
-            "EXAMPLE_EC" -> {
-                viewModel.exampleEC()
+            "ENCRYPT_DECRYPT_EC" -> {
+                val intent = Intent(this, ECActivity::class.java)
+                startActivity(intent)
             }
 
             "CUSTOM_SYMMETRIC_CRYPTO" -> {

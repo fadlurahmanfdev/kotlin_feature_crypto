@@ -1,208 +1,174 @@
 # Overview
 
-Kotlin library that provides a cryptography solution using a repository implementation. This library provides encryption for AES, RSA & ED25519.
+Library provides cryptography implementation, generated via Android KeyStore or Non Android KeyStore
+
+## 🙏 Support Me
+
+If you find my apps, libraries, or plugins helpful and would like to support their development and maintenance, you can consider buying me a coffee:
+
+- 🌍 [Support me on Ko-fi (Global)](https://ko-fi.com/fadlurahmanfdev)
+- 🇮🇩 [Dukung saya di Trakteer (Indonesia)](https://trakteer.id/fadlurahmanfdev/tip)
 
 ## Methods
 
 ### AES
 
-#### Generate Key
+#### Generate Secret Key
 
-Generate AES Key. It will return in format `base64`.
-
-```kotlin
-val featureAES = FeatureCryptoAES()
-val key = featureAES.generateKey()
-```
-
-#### Generate IV Key
-
-Generate Initialization Vector Key. It will return in format `base64`.
+##### Generate AES Secret Key Via Android KeyStore
 
 ```kotlin
-val featureAES = FeatureCryptoAES()
-val ivKey = featureAES.generateIVKey()
-```
-
-#### Encrypt
-
-Encrypt a plain text, it will return base64 encrypted text, otherwise if not success, it will return null.
-
-
-```kotlin
-val featureAES = FeatureCryptoAES()
-val encryptedText = featureAES.encrypt(
-    key = "encoded key",
-    plainText = "plain text",
-    ivKey = "encoded iv key"
+val cryptoAES = CryptoVaultAES()
+val secretKeyViaAndroidKeyStore = cryptoVaultAES.generateKeyFromAndroidKeyStore(
+    keystoreAlias = "example_aes",
+    strongBoxBacked = true,
+    blockMode = CryptoVaultAESBlockMode.GCM,
+    encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
 )
 ```
 
-| Parameter Name | Type       | Required  | Description                                                             |
-|----------------|------------|-----------|-------------------------------------------------------------------------|
-| `key`          | string     | Yes       | Key generated from `Generate Key`                                       |
-| `ivKey`        | string     | Yes       | Vector key generated from `Generate IV Key` or `Generate Secure IV Key` |
-| `plainText`    | string     | Yes       | Text to be encrypted                                                    |
-
-#### Decrypt
-
-Decrypt encrypted text, it will return plain text if success, otherwise it will return null.
-
+##### Generate Encoded AES Secret Key Non Android KeyStore
 
 ```kotlin
-val featureAES = FeatureCryptoAES()
-val decryptedText = featureAES.decrypt(
-  key = "encoded key",
-  encryptedText = "encrypted text",
-  ivKey = "encoded iv key",
+val cryptoAES = CryptoVaultAES()
+val encodedSecretKey = cryptoVaultAES.generateKey()
+```
+
+##### Get AES Secret Key Android KeyStore
+
+```kotlin
+val cryptoAES = CryptoVaultAES()
+var secretKeyViaAndroidKeyStore = cryptoVaultAES.getKeyFromAndroidKeyStore(
+    keystoreAlias = "example_aes"
 )
 ```
 
-| Parameter Name  | Type       | Required  | Description                                                             |
-|-----------------|------------|-----------|-------------------------------------------------------------------------|
-| `key`           | string     | Yes       | Key generated from `Generate Key` or `Generate Secure Key`              |
-| `ivKey`         | string     | Yes       | Vector key generated from `Generate IV Key` or `Generate Secure IV Key` |
-| `encryptedText` | string     | Yes       | Encrypted text                                                          |
+#### Encrypt/Decrypt
 
+##### Encrypt Using Secret Key From Android KeyStore With Generated IV
+
+```kotlin
+val encryptedModel = cryptoVaultAES.encrypt(
+    secretKey = secretKeyViaAndroidKeyStore!!,
+    blockMode = CryptoVaultAESBlockMode.GCM,
+    padding = CryptoVaultAESEncryptionPadding.NoPadding,
+    plainText = "Passw0rd!"
+)
+val encryptedText = encryptedModel.encryptedText
+val encodedIV = encryptedModel.ivKey
+```
+
+##### Encrypt With Custom IV
+
+```kotlin
+val ivKey = cryptoVaultAES.generateIVGCMParameterSpecKey()
+val encryptedModel = cryptoVaultAES.encrypt(
+    secretKey = secretKeyViaAndroidKeyStore!!,
+    blockMode = CryptoVaultAESBlockMode.GCM,
+    padding = CryptoVaultAESEncryptionPadding.NoPadding,
+    algorithmParameterSpec = GCMParameterSpec(
+        128,
+        cryptoVaultAES.decode(ivKey)
+    ),
+    plainText = plainText,
+)
+```
 
 ### RSA
 
-#### Generate Key
+#### Generate Key Pair
 
-Generate RSA Key, it will return CryptoKey with base64 private key & base 64 public key.
-
-
-```kotlin
-val featureRSA = FeatureCryptoRSA()
-val key = featureRSA.generateKey()
-```
-
-#### Encrypt
-
-Encrypt plain text and return base64 encoded if success, null if not success.
-
+##### Generate RSA Key Pair Via Android KeyStore
 
 ```kotlin
-val featureRSA = FeatureCryptoRSA()
-val encryptedText = featureRSA.encrypt(
-    encodedPublicKey = "{encoded string}",
-    plainText = "plain text",
+val cryptoVaultRSA = CryptoVaultRSA()
+val keyPairViaAndroidKeyStore = cryptoVaultRSA.generateKeyFromAndroidKeyStore(
+    keystoreAlias = "example_rsa",
+    encryptionPaddings = arrayOf(
+        CryptoVaultRSAEncryptionPadding.RSA_PKCS1
+    ),
+    signaturePaddings = arrayOf(
+        CryptoVaultRSASignaturePadding.RSA_PKCS1
+    )
 )
 ```
 
-| Parameter Name     | Type         | Required  | Description                                                        |
-|--------------------|--------------|-----------|--------------------------------------------------------------------|
-| `encodedPublicKey` | string       | Yes       | Public key generated from `Generate Key`                           |
-| `plainText`        | string       | Yes       | Text to be encrypted                                               |
-
-#### Decrypt
-
-Decrypt encrypted text, return plain text if success, return null if not success.
+##### Get RSA Key Pair
 
 ```kotlin
-val featureRSA = FeatureCryptoRSA()
-val decryptedText = featureRSA.decrypt(
-    encodedPrivateKey = "encoded private key",
-    encryptedText = "encrypted text",
+val cryptoVaultRSA = CryptoVaultRSA()
+val rsaPrivateKey =
+    cryptoVaultRSA.getPrivateKeyAndroidKeyStore(keystoreAlias = "example_rsa")
+val rsaPublicKey =
+    cryptoVaultRSA.getPublicAndroidKeyStore(keystoreAlias = "example_rsa")
+```
+
+##### Generate RSA Key Pair Non Android KeyStore
+
+```kotlin
+val cryptoVaultRSA = CryptoVaultRSA()
+val keyPair = cryptoVaultRSA.generateKey()
+```
+
+#### Signing
+
+```kotlin
+val cryptoVaultRSA = CryptoVaultRSA()
+
+// Generate Signature from the plain text
+val signature = cryptoVaultRSA.generateSignature(
+    privateKey = rsaPrivateKey,
+    signatureAlgorithm = signatureAlgorithm,
+    plainText = "Passw0rd!"
+)
+
+// Verify the signature with the plain text
+val isVerifySignature = cryptoVaultRSA.verifySignature(
+    publicKey = rsaPublicKey,
+    signatureAlgorithm = signatureAlgorithm,
+    signature = signature,
+    plainText = "Passw0rd!"
 )
 ```
 
-| Parameter Name      | Type        | Required  | Description                                                        |
-|---------------------|-------------|-----------|--------------------------------------------------------------------|
-| `encodedPrivateKey` | string      | Yes       | Private key generated from `Generate Key`                          |
-| `encryptedText`     | string      | Yes       | Encrypted Text to be decrypted                                     |
-
-#### Generate Signature
-
-Generate Signature from plain text, it will return base64 signature.
-
-Signature cannot be change into plain text, it just for verify.
-
+#### Encrypt/Decrypt
 
 ```kotlin
-val signature = cryptoRSARepository.generateSignature(
-    encodedPrivateKey = "encoded private key",
-    plainText = "plain text",
-    signatureAlgorithm = FeatureCryptoSignatureAlgorithm.SHA256withRSA,
+val cryptoVaultRSA = CryptoVaultRSA()
+val encryptedText = cryptoVaultRSA.encrypt(
+    publicKey = rsaPublicKey!!,
+    blockMode = blockMode,
+    padding = padding,
+    plainText = "Passw0rd!"
+)
+val decryptedText = cryptoVaultRSA.decrypt(
+    privateKey = rsaPrivateKey!!,
+    blockMode = blockMode,
+    padding = padding,
+    encryptedText = encryptedText
 )
 ```
-
-| Parameter Name       | Type                            | Required | Description                                |
-|----------------------|---------------------------------|----------|--------------------------------------------|
-| `encodedPrivateKey`  | string                          | Yes      | Private key generated from `Generate Key`  |
-| `plainText`          | string                          | Yes      | Text to be signature                       |
-| `signatureAlgorithm` | FeatureCryptoSignatureAlgorithm | yes      | FeatureCryptoSignatureAlgorithm method.    |
-
-
-#### Verify Signature
-
-Verify signature and plain text. It will return true if success, otherwise it will return false.
-
-
-```kotlin
-val isVerified = cryptoRSARepository.verifySignature(
-    encodedPublicKey = "encoded public key",
-    plainText = "plain text",
-    signature = "signature",
-    signatureAlgorithm = FeatureCryptoSignatureAlgorithm.SHA256withRSA,
-)
-```
-
-| Parameter Name          | Type                            | Required | Description                                |
-|-------------------------|---------------------------------|----------|--------------------------------------------|
-| `encodedPublicKey`      | string                          | Yes      | Public key generated from `Generate Key`   |
-| `plainText`             | string                          | Yes      | Text to be signature                       |
-| `signature`             | string                          | Yes      | Signature to be verified                   |
-| `signatureAlgorithm`    | FeatureCryptoSignatureAlgorithm | yes      | FeatureCryptoSignatureAlgorithm method.    |
-
 ### ED25519
 
 #### Generate Key
 
-Generate ED25519 Key, it will return CryptoKey with base64 private key & base64 public key.
-
 ```kotlin
-val featureED25519 = FeatureCryptoED25519()
-val key = featureED25519.generateKey()
+val cryptoVaultED25519 = CryptoVaultED25519()
+val key = cryptoVaultED25519.generateKey()
 ```
 
-#### Generate Signature
-
-Generate Signature from plain text, it will return base64 signature.
-
-Signature cannot be change into plain text, it just for verify.
-
+#### Generate & Verify Signature
 
 ```kotlin
-val featureED25519 = FeatureCryptoED25519()
-val signature = featureED25519.generateSignature(
-    plainText = "plain text",
-    encodedPrivateKey = "encoded private key",
+val cryptoVaultED25519 = CryptoVaultED25519()
+val key = cryptoVaultED25519.generateKey()
+val signature = cryptoED25519Repository.generateSignature(
+    plainText = plainText,
+    encodedPrivateKey = key.privateKey,
+)
+val isVerified = cryptoED25519Repository.verifySignature(
+    plainText = plainText,
+    encodedPublicKey = key.publicKey,
+    signature = signature,
 )
 ```
-
-| Parameter Name      | Type    | Required | Description                               |
-|---------------------|---------|----------|-------------------------------------------|
-| `encodedPrivateKey` | string  | Yes      | Private key generated from `Generate Key` |
-| `plainText`         | string  | Yes      | Text to be signature                      |
-
-#### Verify Signature
-
-Verify signature and plain text. It will return true if success, otherwise it will return false.
-
-
-
-```kotlin
-val featureED25519 = FeatureCryptoED25519()
-val isSignatureVerified = featureED25519.verifySignature(
-    plainText = "plain text",
-    encodedPublicKey = "encoded public key",
-    signature = "signature",
-)
-```
-
-| Parameter Name          | Type    | Required | Description                              |
-|-------------------------|---------|----------|------------------------------------------|
-| `encodedPublicKey`      | string  | Yes      | Public key generated from `Generate Key` |
-| `plainText`             | string  | Yes      | Text to be signature                     |
-| `signature`             | string  | Yes      | Signature to be verified                 |
