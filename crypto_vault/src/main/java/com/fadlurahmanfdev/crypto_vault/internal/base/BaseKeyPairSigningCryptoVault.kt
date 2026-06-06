@@ -1,6 +1,7 @@
-package com.fadlurahmanfdev.crypto_vault.base
+package com.fadlurahmanfdev.crypto_vault.internal.base
 
 import android.util.Log
+import com.fadlurahmanfdev.crypto_vault.enum.CryptoVaultAlgorithm
 import java.security.KeyFactory
 import java.security.PrivateKey
 import java.security.PublicKey
@@ -8,24 +9,11 @@ import java.security.Signature
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 
-/**
- * Abstract class for asymmetric cryptography
- * */
 abstract class BaseKeyPairSigningCryptoVault : BaseKeyPairCryptoVault() {
-    /**
-     * Generate Signature using encoded private key
-     *
-     * @param encodedPrivateKey encoded private key
-     * @param plainText text want to be convert into signature
-     * @param algorithm encryption algorithm
-     * @param signatureAlgorithm algorithm want to be used for generated signature
-     *
-     * @return [String] encoded signature
-     * */
-    fun generateSignature(
+    open fun generateSignature(
         encodedPrivateKey: String,
         plainText: String,
-        algorithm: com.fadlurahmanfdev.crypto_vault.enums.CryptoVaultAlgorithm,
+        algorithm: CryptoVaultAlgorithm,
         signatureAlgorithm: String,
     ): String {
         val privateKeySpec = PKCS8EncodedKeySpec(decode(encodedPrivateKey))
@@ -36,15 +24,6 @@ abstract class BaseKeyPairSigningCryptoVault : BaseKeyPairCryptoVault() {
         return encode(signer.sign())
     }
 
-    /**
-     * Generate Signature using private key
-     *
-     * @param privateKey private key get from Android Keystore
-     * @param plainText text want to be convert into signature
-     * @param signatureAlgorithm algorithm want to be used for generated signature
-     *
-     * @return [String] encoded signature
-     * */
     open fun generateSignature(
         privateKey: PrivateKey,
         plainText: String,
@@ -56,22 +35,11 @@ abstract class BaseKeyPairSigningCryptoVault : BaseKeyPairCryptoVault() {
         return encode(signer.sign())
     }
 
-    /**
-     * Verify the signature using encoded public key.
-     *
-     * @param encodedPublicKey encoded public key.
-     * @param signature signature want to be verified.
-     * @param plainText text want to be verified.
-     * @param algorithm encryption algorithm from requested key.
-     * @param signatureAlgorithm algorithm of signature want to be used.
-     *
-     * @return [Boolean] if plain text match with the given signature.
-     * */
-    fun verifySignature(
+    open fun verifySignature(
         encodedPublicKey: String,
         signature: String,
         plainText: String,
-        algorithm: com.fadlurahmanfdev.crypto_vault.enums.CryptoVaultAlgorithm,
+        algorithm: CryptoVaultAlgorithm,
         signatureAlgorithm: String,
     ): Boolean {
         return try {
@@ -88,17 +56,7 @@ abstract class BaseKeyPairSigningCryptoVault : BaseKeyPairCryptoVault() {
         }
     }
 
-    /**
-     * Verify the signature using public key from Android Keystore.
-     *
-     * @param publicKey public key generated from Android KeyStore.
-     * @param signature signature want to be verified.
-     * @param plainText text want to be verified.
-     * @param signatureAlgorithm algorithm of signature want to be used.
-     *
-     * @return [Boolean] if plain text match with the given signature.
-     * */
-    fun verifySignature(
+    open fun verifySignature(
         publicKey: PublicKey,
         signature: String,
         plainText: String,
