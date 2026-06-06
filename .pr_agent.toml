@@ -1,0 +1,74 @@
+[github_app]
+handle_push_trigger = true
+push_commands = [
+    "/agentic_review"
+]
+
+[pr_code_suggestions]
+enable_chat_in_code_suggestions = true
+
+[config]
+allow_only_specific_folders=['.github','app', 'gradle', 'crypto_vault']
+
+[review_agent]
+issues_user_guidelines = """
+Project Type:
+- Android Kotlin package/library
+- Production-ready reusable SDK
+
+Architecture:
+- Use clean architecture principles & SOLID principle when applicable
+- Keep public API simple and minimal
+- Separate public API from internal implementation
+- Keep function from public API open to edit by consumer
+- Prefer inheritance over composition
+- Avoid tight coupling between modules
+- Use best practice android recommendation as possible
+- Keep API can use in SDK >= 21
+
+Library Capabilities
+- Ensure using or generate key inside tee or hardware key backed when applicable
+
+Android Package/Library Directory Structure:
+- crypto_vault/src/main/java/com.fadlurahmanfdev.crypto_vault
+  - enum
+  - model
+  - exception
+  - internal
+  - api
+
+Rules:
+- api is the lower directory and for public
+- api can depend or import class from internal, exception and model, enum
+- internal cannot depend or import class from api, but can depend or import class from model or exception or enum
+- internal package may depend on each other
+- api -> internal -> model/exception
+- do not convert throw into null in public API function for consumer
+
+Code Style:
+- Use val models whenever possible
+- Prefer small focused classes/functions
+- Avoid god classes
+- Use meaningful naming
+- Avoid duplicated logic
+- Keep files focused and small
+
+Exception:
+- exception have a minimal variable for code:String, message:String, cause:Throwable
+
+Documentation:
+- Every public class/function needs documentation
+- Provide README usage examples
+- Add migration guide for breaking changes
+- Include minimal reproducible examples
+
+Versioning:
+- do not change versioning
+
+CI/CD:
+- Use Github Workflow under .github/workflows
+- Use existing variable or secret from .gith
+- Ensure should doing testing every PR to main or push inside main
+- Ensure for deploying to maven central after tag using "v*"
+- for deployment, test -> deployment -> create release
+"""
