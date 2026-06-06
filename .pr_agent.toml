@@ -67,7 +67,7 @@ Versioning:
 
 CI/CD:
 - Use Github Workflow under .github/workflows
-- Use existing variable or secret from .gith
+- Use existing variable or secret
 - Ensure should doing testing every PR to main or push inside main
 - Ensure for deploying to maven central after tag using "v*"
 - for deployment, test -> deployment -> create release
