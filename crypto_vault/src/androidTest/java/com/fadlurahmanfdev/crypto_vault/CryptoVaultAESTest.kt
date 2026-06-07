@@ -2,12 +2,17 @@ package com.fadlurahmanfdev.crypto_vault
 
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESEncryptionPadding
+import android.os.Build
+import com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESBlockMode
+import com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESEncryptionPadding
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import javax.crypto.spec.GCMParameterSpec
+import javax.crypto.spec.IvParameterSpec
 
 
 @RunWith(AndroidJUnit4::class)
@@ -31,7 +36,7 @@ class CryptoVaultAESTest {
         val key = cryptoVaultAES.generateKeyFromAndroidKeyStore(
             keystoreAlias = keystoreAlias,
             strongBoxBacked = false,
-            blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+            blockMode = CryptoVaultAESBlockMode.GCM,
             encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
         )
         assertEquals("AES", key.algorithm)
@@ -56,12 +61,12 @@ class CryptoVaultAESTest {
         val key = cryptoVaultAES.generateKeyFromAndroidKeyStore(
             keystoreAlias = aesAliasForTest,
             strongBoxBacked = false,
-            blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+            blockMode = CryptoVaultAESBlockMode.GCM,
             encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
         )
         val encrypted = cryptoVaultAES.encrypt(
             secretKey = key,
-            blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+            blockMode = CryptoVaultAESBlockMode.GCM,
             padding = CryptoVaultAESEncryptionPadding.NoPadding,
             plainText = "Passw0rd!"
         )
@@ -69,7 +74,7 @@ class CryptoVaultAESTest {
         assertEquals(true, encrypted.ivKey.isNotEmpty())
         val decrypted = cryptoVaultAES.decrypt(
             secretKey = key,
-            blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+            blockMode = CryptoVaultAESBlockMode.GCM,
             padding = CryptoVaultAESEncryptionPadding.NoPadding,
             algorithmParameterSpec = GCMParameterSpec(
                 128,
@@ -85,7 +90,7 @@ class CryptoVaultAESTest {
         val key = cryptoVaultAES.generateKey()
         val encrypted = cryptoVaultAES.encrypt(
             encodedSecretKey = key,
-            blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+            blockMode = CryptoVaultAESBlockMode.GCM,
             padding = CryptoVaultAESEncryptionPadding.NoPadding,
             plainText = "Passw0rd!"
         )
@@ -93,7 +98,7 @@ class CryptoVaultAESTest {
         assertEquals(true, encrypted.ivKey.isNotEmpty())
         val decrypted = cryptoVaultAES.decrypt(
             encodedSecretKey = key,
-            blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+            blockMode = CryptoVaultAESBlockMode.GCM,
             padding = CryptoVaultAESEncryptionPadding.NoPadding,
             algorithmParameterSpec = GCMParameterSpec(
                 128,
@@ -111,7 +116,7 @@ class CryptoVaultAESTest {
         val encrypted = try {
             cryptoVaultAES.encrypt(
                 encodedSecretKey = fakeEncodedSecretKey,
-                blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                blockMode = CryptoVaultAESBlockMode.GCM,
                 padding = CryptoVaultAESEncryptionPadding.NoPadding,
                 plainText = "Passw0rd!"
             )
@@ -130,7 +135,7 @@ class CryptoVaultAESTest {
         val encrypted = try {
             cryptoVaultAES.encrypt(
                 encodedSecretKey = fakeEncodedSecretKey,
-                blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                blockMode = CryptoVaultAESBlockMode.GCM,
                 padding = CryptoVaultAESEncryptionPadding.NoPadding,
                 algorithmParameterSpec = GCMParameterSpec(
                     128,
@@ -143,5 +148,78 @@ class CryptoVaultAESTest {
             null
         }
         assertEquals(true, encrypted == null)
+    }
+
+    @Test
+    fun encrypt_decrypt_aes_cbc_pkcs5_with_custom_iv_success() {
+        val key = cryptoVaultAES.generateKey()
+        val ivKey = cryptoVaultAES.generateIVParameterSpecKey()
+        val encrypted = cryptoVaultAES.encrypt(
+            encodedSecretKey = key,
+            blockMode = CryptoVaultAESBlockMode.CBC,
+            padding = CryptoVaultAESEncryptionPadding.PKCS5Padding,
+            algorithmParameterSpec = IvParameterSpec(cryptoVaultAES.decode(ivKey)),
+            plainText = "Passw0rd!",
+        )
+        val decrypted = cryptoVaultAES.decrypt(
+            encodedSecretKey = key,
+            blockMode = CryptoVaultAESBlockMode.CBC,
+            padding = CryptoVaultAESEncryptionPadding.PKCS5Padding,
+            algorithmParameterSpec = IvParameterSpec(cryptoVaultAES.decode(ivKey)),
+            encryptedText = encrypted,
+        )
+        assertEquals("Passw0rd!", decrypted)
+    }
+
+    @Test
+    fun encrypt_with_secret_key_and_custom_iv_success() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+
+        val alias = "aes_custom_iv_test_${System.currentTimeMillis()}"
+        cryptoVaultAES.deleteKey(alias)
+        val secretKey = cryptoVaultAES.generateKeyFromAndroidKeyStore(
+            keystoreAlias = alias,
+            strongBoxBacked = false,
+            blockMode = CryptoVaultAESBlockMode.GCM,
+            encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
+            randomizedEncryptionRequired = false,
+        )
+        val ivKey = cryptoVaultAES.generateIVGCMParameterSpecKey()
+        val encrypted = cryptoVaultAES.encrypt(
+            secretKey = secretKey,
+            blockMode = CryptoVaultAESBlockMode.GCM,
+            padding = CryptoVaultAESEncryptionPadding.NoPadding,
+            algorithmParameterSpec = GCMParameterSpec(128, cryptoVaultAES.decode(ivKey)),
+            plainText = "Passw0rd!",
+        )
+        val decrypted = cryptoVaultAES.decrypt(
+            secretKey = secretKey,
+            blockMode = CryptoVaultAESBlockMode.GCM,
+            padding = CryptoVaultAESEncryptionPadding.NoPadding,
+            algorithmParameterSpec = GCMParameterSpec(128, cryptoVaultAES.decode(ivKey)),
+            encryptedText = encrypted,
+        )
+        assertEquals("Passw0rd!", decrypted)
+    }
+
+    @Test
+    fun get_key_from_android_keystore_returns_null_when_missing() {
+        val missingAlias = "missing_aes_alias_${System.currentTimeMillis()}"
+        assertNull(cryptoVaultAES.getKeyFromAndroidKeyStore(missingAlias))
+    }
+
+    @Test
+    fun get_key_from_android_keystore_returns_key_when_present() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+
+        val alias = "aes_get_key_test_${System.currentTimeMillis()}"
+        cryptoVaultAES.deleteKey(alias)
+        cryptoVaultAES.generateKeyFromAndroidKeyStore(
+            keystoreAlias = alias,
+            strongBoxBacked = false,
+            blockMode = CryptoVaultAESBlockMode.GCM,
+            encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
+        )
+        assertNotNull(cryptoVaultAES.getKeyFromAndroidKeyStore(alias))
     }
 }
