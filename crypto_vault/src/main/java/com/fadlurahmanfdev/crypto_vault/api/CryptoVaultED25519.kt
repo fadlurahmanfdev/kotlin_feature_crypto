@@ -38,7 +38,8 @@ open class CryptoVaultED25519 : BaseCryptoVault() {
         val nativeKey = Ed25519PrivateKeyParameters(decode(encodedPrivateKey), 0)
         val signer = Ed25519Signer()
         signer.init(true, nativeKey)
-        signer.update(plainText.toByteArray(), 0, plainText.length)
+        val bytes = plainText.toByteArray()
+        signer.update(bytes, 0, bytes.size)
         return encode(signer.generateSignature())
     }
 
