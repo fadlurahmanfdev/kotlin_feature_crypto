@@ -53,7 +53,8 @@ open class CryptoVaultED25519 : BaseCryptoVault() {
             val nativeKey = Ed25519PublicKeyParameters(decode(encodedPublicKey), 0)
             val verifier = Ed25519Signer()
             verifier.init(false, nativeKey)
-            verifier.update(plainText.toByteArray(), 0, plainText.length)
+            val byte = plainText.toByteArray()
+            verifier.update(byte, 0, byte.size)
             verifier.verifySignature(decode(signature))
         } catch (e: Throwable) {
             Log.e(this::class.java.simpleName, "failed verifySignature: ${e.message}")
