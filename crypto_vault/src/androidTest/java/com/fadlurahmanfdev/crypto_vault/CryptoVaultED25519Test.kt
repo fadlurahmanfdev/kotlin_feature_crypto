@@ -2,6 +2,8 @@ package com.fadlurahmanfdev.crypto_vault
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,5 +39,25 @@ class CryptoVaultED25519Test {
             plainText = plainSignatureText,
         )
         assertEquals(true, isVerify)
+    }
+
+    @Test
+    fun verify_signature_returns_false_for_invalid_signature() {
+        val key = cryptoVaultED25519.generateKey()
+        assertFalse(
+            cryptoVaultED25519.verifySignature(
+                encodedPublicKey = key.publicKey,
+                plainText = "Plain Signature Text",
+                signature = key.privateKey,
+            )
+        )
+    }
+
+    @Test
+    fun encode_and_decode_roundtrip() {
+        val payload = "ed25519-payload".toByteArray()
+        val encoded = cryptoVaultED25519.encode(payload)
+        assertTrue(encoded.isNotEmpty())
+        assertTrue(cryptoVaultED25519.decode(encoded).contentEquals(payload))
     }
 }

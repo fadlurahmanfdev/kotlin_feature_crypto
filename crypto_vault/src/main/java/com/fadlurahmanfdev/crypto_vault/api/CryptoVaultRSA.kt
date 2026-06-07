@@ -105,7 +105,6 @@ open class CryptoVaultRSA : BaseKeyPairCryptoVault() {
             signer.initVerify(publicKey)
             signer.update(plainText.toByteArray())
             signer.verify(decode(signature))
-            true
         } catch (e: Throwable) {
             Log.e(this::class.java.simpleName, "failed verifySignature: ${e.message}")
             false
@@ -123,7 +122,6 @@ open class CryptoVaultRSA : BaseKeyPairCryptoVault() {
             signer.initVerify(publicKey)
             signer.update(plainText.toByteArray())
             signer.verify(decode(signature))
-            true
         } catch (e: Throwable) {
             Log.e(this::class.java.simpleName, "failed verifySignature: ${e.message}", e)
             false

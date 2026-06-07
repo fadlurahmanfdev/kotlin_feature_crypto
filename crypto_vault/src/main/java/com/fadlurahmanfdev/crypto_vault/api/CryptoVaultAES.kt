@@ -31,6 +31,8 @@ open class CryptoVaultAES : BaseKeyCryptoVault() {
      * @param strongBoxBacked Request StrongBox backing on API 28+.
      * @param blockMode AES block mode.
      * @param encryptionPadding AES padding mode.
+     * @param randomizedEncryptionRequired When true, the cipher must generate its own IV.
+     *        Set to false only when you need to supply a custom IV during encryption.
      * @throws com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException when key generation fails.
      */
     @RequiresApi(Build.VERSION_CODES.M)
@@ -39,6 +41,7 @@ open class CryptoVaultAES : BaseKeyCryptoVault() {
         strongBoxBacked: Boolean,
         blockMode: CryptoVaultAESBlockMode,
         encryptionPadding: CryptoVaultAESEncryptionPadding,
+        randomizedEncryptionRequired: Boolean = true,
     ): SecretKey {
         val keyGenParameterSpec = KeyGenParameterSpec.Builder(
             keystoreAlias,
@@ -47,6 +50,7 @@ open class CryptoVaultAES : BaseKeyCryptoVault() {
             setBlockModes(blockMode.value)
             setEncryptionPaddings(encryptionPadding.value)
             setKeySize(256)
+            setRandomizedEncryptionRequired(randomizedEncryptionRequired)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 setIsStrongBoxBacked(strongBoxBacked)
             }

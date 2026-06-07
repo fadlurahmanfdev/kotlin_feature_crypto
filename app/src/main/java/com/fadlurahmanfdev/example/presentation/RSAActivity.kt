@@ -10,9 +10,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
-import com.fadlurahmanfdev.example.domain.ExampleCryptoUseCaseImpl
-import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultCustomKeyVault
-import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultED25519
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultRSA
 import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSAEncryptionPadding
 import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSASignatureAlgorithm
@@ -21,7 +18,6 @@ import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSATransformationMod
 import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSATransformationPadding
 
 class RSAActivity : AppCompatActivity(), ListExampleAdapter.Callback {
-    lateinit var viewModel: MainViewModel
     lateinit var cryptoVaultRSA: CryptoVaultRSA
 
     private val features: List<FeatureModel> = listOf<FeatureModel>(
@@ -61,12 +57,6 @@ class RSAActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         rv = findViewById<RecyclerView>(R.id.rv)
 
         cryptoVaultRSA = CryptoVaultRSA()
-        viewModel = MainViewModel(
-            exampleCryptoUseCase = ExampleCryptoUseCaseImpl(
-                cryptoED25519Repository = CryptoVaultED25519(),
-                cryptoVaultCustomSymmetric = CryptoVaultCustomKeyVault(),
-            )
-        )
 
         rv.setItemViewCacheSize(features.size)
         rv.setHasFixedSize(true)

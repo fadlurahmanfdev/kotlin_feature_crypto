@@ -11,6 +11,7 @@ Architecture:
 - Avoid tight coupling between modules
 - Use best practice android recommendation as possible
 - Keep API can use in SDK >= 21
+- Keep library is testable for unit test, please using Test Driven Development
 
 Library Capabilities
 - Ensure using or generate key inside tee or hardware key backed, strong box when applicable
