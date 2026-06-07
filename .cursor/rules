@@ -46,9 +46,9 @@ Exception:
 
 Documentation:
 - Every public class/function needs documentation
-- Provide README usage examples
-- Add migration guide for breaking changes
-- Include minimal reproducible examples
+- use README.md as a file to provide documentation
+- Include minimal examples for each algorithm
+- Keep Trakteer or Ko-fi in top of Readme
 
 Versioning:
 - do not change versioning
