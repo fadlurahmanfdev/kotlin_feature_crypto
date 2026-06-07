@@ -1,11 +1,16 @@
 package com.fadlurahmanfdev.crypto_vault
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSAEncryptionPadding
-import com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSASignatureAlgorithm
-import com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSASignaturePadding
-import com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSATransformationPadding
+import com.fadlurahmanfdev.crypto_vault.enum.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSAEncryptionPadding
+import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSASignatureAlgorithm
+import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSASignaturePadding
+import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSATransformationMode
+import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSATransformationPadding
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -125,7 +130,7 @@ class CryptoVaultRSATest {
         val encrypted = try {
             cryptoVaultRSA.encrypt(
                 publicKey = key.public,
-                blockMode = com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSATransformationMode.ECB,
+                blockMode = CryptoVaultRSATransformationMode.ECB,
                 padding = CryptoVaultRSATransformationPadding.PKCS1Padding,
                 plainText = plainText,
             )
@@ -138,7 +143,7 @@ class CryptoVaultRSATest {
         val decrypted = try {
             cryptoVaultRSA.decrypt(
                 privateKey = key.private,
-                blockMode = com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSATransformationMode.ECB,
+                blockMode = CryptoVaultRSATransformationMode.ECB,
                 padding = CryptoVaultRSATransformationPadding.PKCS1Padding,
                 encryptedText = encrypted!!,
             )
@@ -156,7 +161,7 @@ class CryptoVaultRSATest {
         val encrypted = try {
             cryptoVaultRSA.encrypt(
                 encodedPublicKey = key.publicKey,
-                blockMode = com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSATransformationMode.ECB,
+                blockMode = CryptoVaultRSATransformationMode.ECB,
                 padding = CryptoVaultRSATransformationPadding.PKCS1Padding,
                 plainText = plainText,
             )
@@ -169,7 +174,7 @@ class CryptoVaultRSATest {
         val decrypted = try {
             cryptoVaultRSA.decrypt(
                 encodedPrivateKey = key.privateKey,
-                blockMode = com.fadlurahmanfdev.crypto_vault.enums.rsa.CryptoVaultRSATransformationMode.ECB,
+                blockMode = CryptoVaultRSATransformationMode.ECB,
                 padding = CryptoVaultRSATransformationPadding.PKCS1Padding,
                 encryptedText = encrypted!!,
             )
@@ -218,4 +223,50 @@ class CryptoVaultRSATest {
 //        }
 //        assertEquals(true, decrypted == null)
 //    }
+
+    @Test
+    fun isSupported_returns_true_for_rsa_transformation() {
+        val transformation = "${CryptoVaultAlgorithm.RSA}/${CryptoVaultRSATransformationMode.ECB}/${CryptoVaultRSATransformationPadding.PKCS1Padding}"
+        assertTrue(cryptoVaultRSA.isSupported(transformation))
+    }
+
+    @Test
+    fun verify_signature_returns_false_for_invalid_signature() {
+        val key = cryptoVaultRSA.generateKey()
+        val invalidSignature = cryptoVaultRSA.encode(ByteArray(128))
+        assertFalse(
+            cryptoVaultRSA.verifySignature(
+                encodedPublicKey = key.publicKey,
+                signatureAlgorithm = CryptoVaultRSASignatureAlgorithm.MD5withRSA,
+                signature = invalidSignature,
+                plainText = "invalid signature case",
+            )
+        )
+    }
+
+    @Test
+    fun encrypt_decrypt_with_oaep_padding_non_keystore() {
+        val plainText = "Plain RSA OAEP Text"
+        val key = cryptoVaultRSA.generateKey()
+        val encrypted = cryptoVaultRSA.encrypt(
+            encodedPublicKey = key.publicKey,
+            blockMode = CryptoVaultRSATransformationMode.ECB,
+            padding = CryptoVaultRSATransformationPadding.OAEPWithSHAAndMGF1Padding,
+            plainText = plainText,
+        )
+        val decrypted = cryptoVaultRSA.decrypt(
+            encodedPrivateKey = key.privateKey,
+            blockMode = CryptoVaultRSATransformationMode.ECB,
+            padding = CryptoVaultRSATransformationPadding.OAEPWithSHAAndMGF1Padding,
+            encryptedText = encrypted,
+        )
+        assertEquals(plainText, decrypted)
+    }
+
+    @Test
+    fun get_keystore_keys_return_null_when_alias_missing() {
+        val missingAlias = "missing_rsa_alias_${System.currentTimeMillis()}"
+        assertNull(cryptoVaultRSA.getPrivateKeyAndroidKeyStore(missingAlias))
+        assertNull(cryptoVaultRSA.getPublicAndroidKeyStore(missingAlias))
+    }
 }

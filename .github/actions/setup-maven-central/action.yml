@@ -1,0 +1,36 @@
+name: Setup Maven Central Publishing
+description: Configures GPG signing and Maven Central credentials in gradle.properties
+
+inputs:
+  gpg_private_key:
+    description: Armored GPG private key
+    required: true
+  gpg_key_id:
+    description: GPG key id used for signing
+    required: true
+  gpg_key_password:
+    description: GPG key password
+    required: true
+  maven_central_username:
+    description: Maven Central portal username
+    required: true
+  maven_central_password:
+    description: Maven Central portal password
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Import GPG key and configure Gradle publishing
+      shell: bash
+      run: |
+        echo "${{ inputs.gpg_private_key }}" | gpg --dearmor > secret_key.gpg
+
+        {
+          echo ""
+          echo "mavenCentralUsername=${{ inputs.maven_central_username }}"
+          echo "mavenCentralPassword=${{ inputs.maven_central_password }}"
+          echo "signing.keyId=${{ inputs.gpg_key_id }}"
+          echo "signing.password=${{ inputs.gpg_key_password }}"
+          echo "signing.secretKeyRingFile=../secret_key.gpg"
+        } >> gradle.properties
