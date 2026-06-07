@@ -1,7 +1,6 @@
 package com.fadlurahmanfdev.example.domain
 
-import com.fadlurahmanfdev.crypto_vault.data.model.CryptoVaultKey
-
+import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultKey
 
 interface ExampleCryptoUseCase {
     fun generateED25519Key(): CryptoVaultKey

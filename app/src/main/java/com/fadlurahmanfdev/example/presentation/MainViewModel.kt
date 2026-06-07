@@ -1,7 +1,7 @@
 package com.fadlurahmanfdev.example.presentation
 
 import androidx.lifecycle.ViewModel
-import com.fadlurahmanfdev.crypto_vault.data.model.CryptoVaultKey
+import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultKey
 import com.fadlurahmanfdev.example.domain.ExampleCryptoUseCase
 
 class MainViewModel(

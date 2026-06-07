@@ -7,7 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.fadlurahmanfdev.crypto_vault.CryptoVaultED25519
+import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultCustomAsymmetricVault
+import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultCustomKeyVault
+import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultED25519
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
 import com.fadlurahmanfdev.example.domain.ExampleCryptoUseCaseImpl
@@ -72,7 +74,8 @@ class MainActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         viewModel = MainViewModel(
             exampleCryptoUseCase = ExampleCryptoUseCaseImpl(
                 cryptoED25519Repository = CryptoVaultED25519(),
-                cryptoVaultCustomSymmetric = com.fadlurahmanfdev.crypto_vault.CryptoVaultCustomKeyVault(),
+                cryptoVaultCustomSymmetric = CryptoVaultCustomKeyVault(),
+                cryptoVaultCustomAsymmetric = CryptoVaultCustomAsymmetricVault(),
             )
         )
 

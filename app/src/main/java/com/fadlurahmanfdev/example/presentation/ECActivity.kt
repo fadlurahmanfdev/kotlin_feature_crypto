@@ -8,18 +8,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.fadlurahmanfdev.crypto_vault.CryptoVaultED25519
+import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultCustomKeyVault
+import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultEC
+import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultED25519
+import com.fadlurahmanfdev.crypto_vault.enum.ec.CryptoVaultECSignatureAlgorithm
+import com.fadlurahmanfdev.crypto_vault.enum.ec.CryptoVaultECTransformation
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
 import com.fadlurahmanfdev.example.domain.ExampleCryptoUseCaseImpl
 
 class ECActivity : AppCompatActivity(), ListExampleAdapter.Callback {
     lateinit var viewModel: MainViewModel
-    lateinit var cryptoVaultEC: com.fadlurahmanfdev.crypto_vault.CryptoVaultEC
+    lateinit var cryptoVaultEC: CryptoVaultEC
     var encodedPrivateKey: String? = null
     var encodedPublicKey: String? = null
     var signatureText: String? = null
-    var signatureAlgorithm = com.fadlurahmanfdev.crypto_vault.enums.ec.CryptoVaultECSignatureAlgorithm.SHA256withECDSA
+    var signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA
 
     private val features: List<FeatureModel> = listOf<FeatureModel>(
         FeatureModel(
@@ -81,11 +85,11 @@ class ECActivity : AppCompatActivity(), ListExampleAdapter.Callback {
         }
         rv = findViewById<RecyclerView>(R.id.rv)
 
-        cryptoVaultEC = com.fadlurahmanfdev.crypto_vault.CryptoVaultEC()
+        cryptoVaultEC = CryptoVaultEC()
         viewModel = MainViewModel(
             exampleCryptoUseCase = ExampleCryptoUseCaseImpl(
                 cryptoED25519Repository = CryptoVaultED25519(),
-                cryptoVaultCustomSymmetric = com.fadlurahmanfdev.crypto_vault.CryptoVaultCustomKeyVault(),
+                cryptoVaultCustomSymmetric = CryptoVaultCustomKeyVault(),
             )
         )
 
@@ -116,7 +120,7 @@ class ECActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                     "Example-CryptoVault-LOG %%% public key: ${key.publicKey}"
                 )
 
-                val transformation = com.fadlurahmanfdev.crypto_vault.enums.ec.CryptoVaultECTransformation.ECIESwithAESCBC
+                val transformation = CryptoVaultECTransformation.ECIESwithAESCBC
                 val encryptedText = cryptoVaultEC.encrypt(
                     encodedPublicKey = key.publicKey,
                     transformation = transformation,
@@ -140,7 +144,7 @@ class ECActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                 val signatureText = cryptoVaultEC.generateSignature(
                     encodedPrivateKey = key.privateKey,
                     plainText = "Passw0rd!",
-                    signatureAlgorithm = com.fadlurahmanfdev.crypto_vault.enums.ec.CryptoVaultECSignatureAlgorithm.SHA256withECDSA
+                    signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA
                 )
                 Log.d(
                     this::class.java.simpleName,
@@ -151,7 +155,7 @@ class ECActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                     encodedPublicKey = key.publicKey,
                     signature = signatureText,
                     plainText = "Passw0rd!",
-                    signatureAlgorithm = com.fadlurahmanfdev.crypto_vault.enums.ec.CryptoVaultECSignatureAlgorithm.SHA256withECDSA
+                    signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA
                 )
                 Log.d(
                     this::class.java.simpleName,
@@ -248,7 +252,7 @@ class ECActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                         )
                     }
 
-                    val signatureAlgorithm = com.fadlurahmanfdev.crypto_vault.enums.ec.CryptoVaultECSignatureAlgorithm.SHA256withECDSA
+                    val signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA
 
                     val signatureText = cryptoVaultEC.generateSignature(
                         privateKey = ecPrivateKey!!,
@@ -290,7 +294,7 @@ class ECActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                         )
                     }
 
-                    val signatureAlgorithm = com.fadlurahmanfdev.crypto_vault.enums.ec.CryptoVaultECSignatureAlgorithm.SHA256withECDSA
+                    val signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA
 
                     val signatureText = cryptoVaultEC.generateSignature(
                         privateKey = ecPrivateKey!!,
@@ -332,7 +336,7 @@ class ECActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                     "Example-CryptoVault-LOG %%% public key: $encodedPublicKey"
                 )
 
-                signatureAlgorithm = com.fadlurahmanfdev.crypto_vault.enums.ec.CryptoVaultECSignatureAlgorithm.SHA256withECDSA
+                signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA
 
                 signatureText = cryptoVaultEC.generateSignature(
                     encodedPrivateKey = encodedPrivateKey!!,
@@ -363,7 +367,7 @@ class ECActivity : AppCompatActivity(), ListExampleAdapter.Callback {
             "ENCRYPT_DECRYPT" -> {
                 val encryptedText =  cryptoVaultEC.encrypt(
                     encodedPublicKey = encodedPublicKey!!,
-                    transformation = com.fadlurahmanfdev.crypto_vault.enums.ec.CryptoVaultECTransformation.ECIESwithAESCBC,
+                    transformation = CryptoVaultECTransformation.ECIESwithAESCBC,
                     plainText = "Passw0rd!",
                 )
                 Log.d(
@@ -373,7 +377,7 @@ class ECActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
                 val decryptedText =  cryptoVaultEC.decrypt(
                     encodedPrivateKey = encodedPrivateKey!!,
-                    transformation = com.fadlurahmanfdev.crypto_vault.enums.ec.CryptoVaultECTransformation.ECIESwithAESCBC,
+                    transformation = CryptoVaultECTransformation.ECIESwithAESCBC,
                     encryptedText = encryptedText,
                 )
                 Log.d(
