@@ -88,23 +88,41 @@ internal object EcEcdhAesGcmCipher {
     }
 
     private fun unpack(encryptedPayload: ByteArray): Triple<ByteArray, ByteArray, ByteArray> {
-        require(encryptedPayload.size > EPHEMERAL_PUBLIC_KEY_LENGTH_BYTES + GCM_IV_SIZE_BYTES) {
+        val minEnvelopeSize = EPHEMERAL_PUBLIC_KEY_LENGTH_BYTES + GCM_IV_SIZE_BYTES
+        require(encryptedPayload.size > minEnvelopeSize) {
             "Encrypted payload is too short to contain a valid ECDH-AES-GCM envelope"
         }
 
-        val ephemeralPublicKeyLength = ByteBuffer.wrap(encryptedPayload, 0, EPHEMERAL_PUBLIC_KEY_LENGTH_BYTES).int
-        val ephemeralPublicKeyEnd = EPHEMERAL_PUBLIC_KEY_LENGTH_BYTES + ephemeralPublicKeyLength
+        val ephemeralPublicKeyLength = ByteBuffer
+            .wrap(encryptedPayload, 0, EPHEMERAL_PUBLIC_KEY_LENGTH_BYTES)
+            .int
+        require(ephemeralPublicKeyLength >= 0) {
+            "Invalid ephemeral public key length prefix"
+        }
+
+        val payloadSize = encryptedPayload.size.toLong()
+        val ephemeralPublicKeyEnd = EPHEMERAL_PUBLIC_KEY_LENGTH_BYTES.toLong() + ephemeralPublicKeyLength
         val ivEnd = ephemeralPublicKeyEnd + GCM_IV_SIZE_BYTES
-        require(encryptedPayload.size > ivEnd) {
+
+        require(ephemeralPublicKeyEnd <= Int.MAX_VALUE && ivEnd <= Int.MAX_VALUE) {
+            "Invalid ephemeral public key length prefix"
+        }
+        require(ivEnd <= payloadSize) {
             "Encrypted payload is too short to contain a valid ECDH-AES-GCM envelope"
         }
+        require(ivEnd < payloadSize) {
+            "Encrypted payload is too short to contain ciphertext"
+        }
+
+        val ephemeralPublicKeyEndIndex = ephemeralPublicKeyEnd.toInt()
+        val ivEndIndex = ivEnd.toInt()
 
         val ephemeralPublicKeyBytes = encryptedPayload.copyOfRange(
             EPHEMERAL_PUBLIC_KEY_LENGTH_BYTES,
-            ephemeralPublicKeyEnd,
+            ephemeralPublicKeyEndIndex,
         )
-        val iv = encryptedPayload.copyOfRange(ephemeralPublicKeyEnd, ivEnd)
-        val cipherText = encryptedPayload.copyOfRange(ivEnd, encryptedPayload.size)
+        val iv = encryptedPayload.copyOfRange(ephemeralPublicKeyEndIndex, ivEndIndex)
+        val cipherText = encryptedPayload.copyOfRange(ivEndIndex, encryptedPayload.size)
         return Triple(ephemeralPublicKeyBytes, iv, cipherText)
     }
 }
