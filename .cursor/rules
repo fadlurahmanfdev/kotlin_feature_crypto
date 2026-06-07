@@ -59,6 +59,7 @@ CI/CD:
 - Ensure should doing testing every PR to main or push inside main
 - Ensure for deploying to maven central after tag using "v*"
 - for deployment, test -> deployment -> create release
+- list commit from current tag to previous tag as a release note (if applicable) or add last 10 commit as a release note (if applicable)
 
 Agent Instructions:
 - Ensure backward compatibility
