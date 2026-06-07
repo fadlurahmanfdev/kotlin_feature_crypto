@@ -1,5 +1,3 @@
 package com.fadlurahmanfdev.crypto_vault.enums.rsa
 
-enum class CryptoVaultRSATransformationMode(val value: String) {
-    ECB("ECB"),
-}
+typealias CryptoVaultRSATransformationMode = com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSATransformationMode

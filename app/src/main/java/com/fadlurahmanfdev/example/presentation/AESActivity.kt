@@ -8,19 +8,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.fadlurahmanfdev.crypto_vault.CryptoVaultAES
-import com.fadlurahmanfdev.crypto_vault.CryptoVaultED25519
-import com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESEncryptionPadding
+import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultAES
+import com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESBlockMode
+import com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESEncryptionPadding
 import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
-import com.fadlurahmanfdev.example.domain.ExampleCryptoUseCaseImpl
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
-    lateinit var viewModel: MainViewModel
     lateinit var cryptoVaultAES: CryptoVaultAES
 
     lateinit var encryptedText: String
@@ -82,13 +80,6 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
         cryptoVaultAES = CryptoVaultAES()
 
-        viewModel = MainViewModel(
-            exampleCryptoUseCase = ExampleCryptoUseCaseImpl(
-                cryptoED25519Repository = CryptoVaultED25519(),
-                cryptoVaultCustomSymmetric = com.fadlurahmanfdev.crypto_vault.CryptoVaultCustomKeyVault(),
-            )
-        )
-
         rv.setItemViewCacheSize(features.size)
         rv.setHasFixedSize(true)
 
@@ -118,7 +109,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                 encryptedText =
                     cryptoVaultAES.encrypt(
                         encodedSecretKey = encodedSecretKey,
-                        blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.CBC,
+                        blockMode = CryptoVaultAESBlockMode.CBC,
                         padding = CryptoVaultAESEncryptionPadding.PKCS5Padding,
                         algorithmParameterSpec = IvParameterSpec(cryptoVaultAES.decode(ivKey)),
                         plainText = "Passw0rd!"
@@ -131,7 +122,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
                 val decryptedText = cryptoVaultAES.decrypt(
                     encodedSecretKey = encodedSecretKey,
-                    blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.CBC,
+                    blockMode = CryptoVaultAESBlockMode.CBC,
                     padding = CryptoVaultAESEncryptionPadding.PKCS5Padding,
                     algorithmParameterSpec = IvParameterSpec(cryptoVaultAES.decode(ivKey)),
                     encryptedText = encryptedText
@@ -158,7 +149,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                 encryptedText =
                     cryptoVaultAES.encrypt(
                         encodedSecretKey = encodedSecretKey,
-                        blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                        blockMode = CryptoVaultAESBlockMode.GCM,
                         padding = CryptoVaultAESEncryptionPadding.NoPadding,
                         algorithmParameterSpec = GCMParameterSpec(
                             128,
@@ -174,7 +165,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
                 val decryptedText = cryptoVaultAES.decrypt(
                     encodedSecretKey = encodedSecretKey,
-                    blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                    blockMode = CryptoVaultAESBlockMode.GCM,
                     padding = CryptoVaultAESEncryptionPadding.NoPadding,
                     algorithmParameterSpec = GCMParameterSpec(128, cryptoVaultAES.decode(ivKey)),
                     encryptedText = encryptedText
@@ -201,7 +192,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                 encryptedText =
                     cryptoVaultAES.encrypt(
                         encodedSecretKey = encodedSecretKey,
-                        blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                        blockMode = CryptoVaultAESBlockMode.GCM,
                         padding = CryptoVaultAESEncryptionPadding.NoPadding,
                         algorithmParameterSpec = IvParameterSpec(cryptoVaultAES.decode(ivKey)),
                         plainText = "Passw0rd!"
@@ -214,7 +205,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
                 val decryptedText = cryptoVaultAES.decrypt(
                     encodedSecretKey = encodedSecretKey,
-                    blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                    blockMode = CryptoVaultAESBlockMode.GCM,
                     padding = CryptoVaultAESEncryptionPadding.NoPadding,
                     algorithmParameterSpec = IvParameterSpec(cryptoVaultAES.decode(ivKey)),
                     encryptedText = encryptedText
@@ -235,7 +226,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                 val encryptedModel =
                     cryptoVaultAES.encrypt(
                         encodedSecretKey = encodedSecretKey,
-                        blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                        blockMode = CryptoVaultAESBlockMode.GCM,
                         padding = CryptoVaultAESEncryptionPadding.NoPadding,
                         plainText = "Passw0rd!"
                     )
@@ -253,7 +244,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
                 val decryptedText = cryptoVaultAES.decrypt(
                     secretKey = SecretKeySpec(cryptoVaultAES.decode(encodedSecretKey), "AES"),
-                    blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                    blockMode = CryptoVaultAESBlockMode.GCM,
                     padding = CryptoVaultAESEncryptionPadding.NoPadding,
                     algorithmParameterSpec = GCMParameterSpec(128, cryptoVaultAES.decode(ivKey)),
                     encryptedText = encryptedText
@@ -282,7 +273,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                                 cryptoVaultAES.generateKeyFromAndroidKeyStore(
                                     keystoreAlias = keyStoreAlias,
                                     strongBoxBacked = true,
-                                    blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                                    blockMode = CryptoVaultAESBlockMode.GCM,
                                     encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
                                 )
                             Log.d(
@@ -299,7 +290,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                                     cryptoVaultAES.generateKeyFromAndroidKeyStore(
                                         keystoreAlias = keyStoreAlias,
                                         strongBoxBacked = false,
-                                        blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                                        blockMode = CryptoVaultAESBlockMode.GCM,
                                         encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
                                     )
                                 Log.d(
@@ -315,7 +306,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                     val encryptedModel =
                         cryptoVaultAES.encrypt(
                             secretKey = secretKeyFromAndroidKeyStore!!,
-                            blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                            blockMode = CryptoVaultAESBlockMode.GCM,
                             padding = CryptoVaultAESEncryptionPadding.NoPadding,
                             plainText = "Passw0rd!"
                         )
@@ -332,7 +323,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
                     val decryptedText = cryptoVaultAES.decrypt(
                         secretKey = secretKeyFromAndroidKeyStore,
-                        blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                        blockMode = CryptoVaultAESBlockMode.GCM,
                         padding = CryptoVaultAESEncryptionPadding.NoPadding,
                         encryptedText = encryptedText,
                         algorithmParameterSpec = GCMParameterSpec(128, cryptoVaultAES.decode(ivKey))
@@ -347,6 +338,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
             "ENCRYPT_DECRYPT_AES_KEYSTORE_GCM_NO_PADDING_CUSTOM_IV_GCM_KEY" -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     val keystoreAlias = "example_aes_2"
+                    cryptoVaultAES.deleteKey(keystoreAlias)
                     var secretKeyFromAndroidKeyStore =
                         cryptoVaultAES.getKeyFromAndroidKeyStore(keystoreAlias = keystoreAlias)
                     Log.d(
@@ -360,8 +352,9 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                                 cryptoVaultAES.generateKeyFromAndroidKeyStore(
                                     keystoreAlias = keystoreAlias,
                                     strongBoxBacked = true,
-                                    blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                                    blockMode = CryptoVaultAESBlockMode.GCM,
                                     encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
+                                    randomizedEncryptionRequired = false,
                                 )
                             Log.d(
                                 this::class.java.simpleName,
@@ -377,8 +370,9 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                                     cryptoVaultAES.generateKeyFromAndroidKeyStore(
                                         keystoreAlias = keystoreAlias,
                                         strongBoxBacked = false,
-                                        blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                                        blockMode = CryptoVaultAESBlockMode.GCM,
                                         encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
+                                        randomizedEncryptionRequired = false,
                                     )
                                 Log.d(
                                     this::class.java.simpleName,
@@ -397,7 +391,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
                     )
                     encryptedText = cryptoVaultAES.encrypt(
                         secretKey = secretKeyFromAndroidKeyStore!!,
-                        blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                        blockMode = CryptoVaultAESBlockMode.GCM,
                         padding = CryptoVaultAESEncryptionPadding.NoPadding,
                         algorithmParameterSpec = GCMParameterSpec(
                             128,
@@ -412,7 +406,7 @@ class AESActivity : AppCompatActivity(), ListExampleAdapter.Callback {
 
                     val decryptedText = cryptoVaultAES.decrypt(
                         secretKey = secretKeyFromAndroidKeyStore,
-                        blockMode = com.fadlurahmanfdev.crypto_vault.enums.aes.CryptoVaultAESBlockMode.GCM,
+                        blockMode = CryptoVaultAESBlockMode.GCM,
                         padding = CryptoVaultAESEncryptionPadding.NoPadding,
                         algorithmParameterSpec = GCMParameterSpec(
                             128,

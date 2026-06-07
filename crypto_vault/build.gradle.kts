@@ -57,12 +57,13 @@ configurations.all {
 
 dependencies {
     implementation(libs.androidx.annotation.jvm)
+    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation("org.bouncycastle:bcprov-jdk18on:1.78")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.84")
 
-    implementation("com.madgag.spongycastle:prov:1.54.0.0")
+    implementation("com.madgag.spongycastle:prov:1.58.0.0")
     implementation("com.madgag.spongycastle:pkix:1.54.0.0")
 }
 
@@ -70,7 +71,7 @@ mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
 
-    coordinates("com.fadlurahmanfdev", "crypto_vault", "0.0.1-beta")
+    coordinates("com.fadlurahmanfdev", "crypto_vault", "2.0.0")
 
     pom {
         name.set("Crypto Vault")
