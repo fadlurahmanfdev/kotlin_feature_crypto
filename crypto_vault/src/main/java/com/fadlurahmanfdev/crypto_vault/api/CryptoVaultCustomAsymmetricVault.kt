@@ -1,10 +1,10 @@
 package com.fadlurahmanfdev.crypto_vault.api
 
-import com.fadlurahmanfdev.crypto_vault.enum.CryptoVaultAlgorithm
-import com.fadlurahmanfdev.crypto_vault.enum.CryptoVaultBlockMode
-import com.fadlurahmanfdev.crypto_vault.enum.CryptoVaultPadding
-import com.fadlurahmanfdev.crypto_vault.enum.CryptoVaultSignatureAlgorithm
-import com.fadlurahmanfdev.crypto_vault.internal.base.BaseKeyPairCryptoVault
+import com.fadlurahmanfdev.crypto_vault.api.base.BaseKeyPairCryptoVault
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultBlockMode
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultPadding
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultSignatureAlgorithm
 import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultKey
 
 /**

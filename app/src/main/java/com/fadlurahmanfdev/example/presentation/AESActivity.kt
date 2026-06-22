@@ -9,9 +9,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultAES
-import com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESBlockMode
-import com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESEncryptionPadding
-import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
+import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESBlockMode
+import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESEncryptionPadding
+import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
 import javax.crypto.spec.GCMParameterSpec

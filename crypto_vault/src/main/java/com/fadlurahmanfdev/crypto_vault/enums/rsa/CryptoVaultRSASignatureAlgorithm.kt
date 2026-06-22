@@ -1,3 +1,0 @@
-package com.fadlurahmanfdev.crypto_vault.enums.rsa
-
-typealias CryptoVaultRSASignatureAlgorithm = com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSASignatureAlgorithm

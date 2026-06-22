@@ -4,10 +4,10 @@ import android.util.Log
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultCustomAsymmetricVault
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultCustomKeyVault
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultED25519
-import com.fadlurahmanfdev.crypto_vault.enum.CryptoVaultAlgorithm
-import com.fadlurahmanfdev.crypto_vault.enum.CryptoVaultBlockMode
-import com.fadlurahmanfdev.crypto_vault.enum.CryptoVaultPadding
-import com.fadlurahmanfdev.crypto_vault.enum.CryptoVaultSignatureAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultBlockMode
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultPadding
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultSignatureAlgorithm
 import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultKey
 import java.security.SecureRandom
 import javax.crypto.spec.IvParameterSpec

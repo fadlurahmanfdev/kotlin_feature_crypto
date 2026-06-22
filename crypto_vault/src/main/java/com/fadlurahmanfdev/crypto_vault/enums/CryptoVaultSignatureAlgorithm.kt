@@ -1,3 +1,0 @@
-package com.fadlurahmanfdev.crypto_vault.enums
-
-typealias CryptoVaultSignatureAlgorithm = com.fadlurahmanfdev.crypto_vault.enum.CryptoVaultSignatureAlgorithm

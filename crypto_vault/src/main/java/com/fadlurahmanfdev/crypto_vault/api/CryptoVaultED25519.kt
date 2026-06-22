@@ -1,7 +1,7 @@
 package com.fadlurahmanfdev.crypto_vault.api
 
 import android.util.Log
-import com.fadlurahmanfdev.crypto_vault.internal.base.BaseCryptoVault
+import com.fadlurahmanfdev.crypto_vault.api.base.BaseCryptoVault
 import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultKey
 import org.bouncycastle.crypto.generators.Ed25519KeyPairGenerator
 import org.bouncycastle.crypto.params.Ed25519KeyGenerationParameters

@@ -2,9 +2,9 @@ package com.fadlurahmanfdev.crypto_vault
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultAES
-import com.fadlurahmanfdev.crypto_vault.enum.CryptoVaultAlgorithm
-import com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESBlockMode
-import com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESEncryptionPadding
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESBlockMode
+import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESEncryptionPadding
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

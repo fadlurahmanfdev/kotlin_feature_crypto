@@ -9,8 +9,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultEC
-import com.fadlurahmanfdev.crypto_vault.enum.ec.CryptoVaultECSignatureAlgorithm
-import com.fadlurahmanfdev.crypto_vault.enum.ec.CryptoVaultECTransformation
+import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECSignatureAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
 

@@ -31,17 +31,20 @@ Public API lives under `com.fadlurahmanfdev.crypto_vault`:
 | Package     | Purpose                                                      |
 |-------------|--------------------------------------------------------------|
 | `api`       | Public vault classes (`CryptoVaultAES`, `CryptoVaultRSA`, …) |
-| `enum`      | Algorithm, block mode, padding, and transformation enums     |
+| `core`      | Enums, exceptions, and shared crypto primitives              |
+| `enum`      | Backward-compatible aliases to `core.enum`                   |
 | `model`     | `CryptoVaultKey`, `CryptoVaultEncryptedModel`                |
-| `exception` | `CryptoVaultException`                                       |
+| `exception` | Backward-compatible alias to `core.exception`                |
 
 ```kotlin
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultAES
-import com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESBlockMode
-import com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESEncryptionPadding
-import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
+import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESBlockMode
+import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESEncryptionPadding
+import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
 import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultEncryptedModel
 ```
+
+Legacy `enum` and `exception` imports remain supported via typealiases.
 
 All public vault classes are `open` so you can extend and override behavior in your app.
 

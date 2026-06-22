@@ -1,12 +1,12 @@
 package com.fadlurahmanfdev.crypto_vault
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.fadlurahmanfdev.crypto_vault.enum.CryptoVaultAlgorithm
-import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSAEncryptionPadding
-import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSASignatureAlgorithm
-import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSASignaturePadding
-import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSATransformationMode
-import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSATransformationPadding
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSAEncryptionPadding
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSASignatureAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSASignaturePadding
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSATransformationMode
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSATransformationPadding
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull

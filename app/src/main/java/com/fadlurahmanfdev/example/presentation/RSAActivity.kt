@@ -11,11 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultRSA
-import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSAEncryptionPadding
-import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSASignatureAlgorithm
-import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSASignaturePadding
-import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSATransformationMode
-import com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSATransformationPadding
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSAEncryptionPadding
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSASignatureAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSASignaturePadding
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSATransformationMode
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSATransformationPadding
 
 class RSAActivity : AppCompatActivity(), ListExampleAdapter.Callback {
     lateinit var cryptoVaultRSA: CryptoVaultRSA

@@ -1,52 +1,33 @@
-Project Type:
-- Android Kotlin package/library
-- Production-ready reusable SDK
+Project Description
 
-Architecture:
-- Use clean architecture principles & SOLID principle when applicable
-- Keep public API simple and minimal
-- Separate public API from internal implementation
-- Keep function from public API open to edit by consumer
-- Prefer inheritance over composition
-- Avoid tight coupling between modules
-- Use best practice android recommendation as possible
-- Keep API can use in SDK >= 21
-- Keep library is testable for unit test, please using Test Driven Development
+- Android Kotlin Library for Cryptography
 
 Library Capabilities
-- Ensure using or generate key inside tee or hardware key backed, strong box when applicable
+- Ensure using or generate key inside TEE or hardware key backed, strong box when applicable
 
-Android Package/Library Directory Structure:
-- crypto_vault/src/main/java/com.fadlurahmanfdev.crypto_vault
-  - enum
-  - model
-  - exception
-  - internal
-  - api
+Architecture:
+- Use clean architecture when applicable
+- use SOLID principle
+- Keep library is testable for unit test, please using Test Driven Development
+- Keep code testable
 
 Rules:
-- api is the lower directory and for public
-- api can depend or import class from internal, exception and model, enum
-- internal cannot depend or import class from api, but can depend or import class from model or exception or enum
-- internal package may depend on each other
-- api -> internal -> model/exception
-- do not convert throw into null in public API function for consumer
-- add comment code for public class oftenly used by consumer and add explanation
-
-Code Style:
-- Use val models whenever possible
-- Prefer small focused classes/functions
-- Avoid god classes
-- Use meaningful naming
-- Avoid duplicated logic
-- Keep files focused and small
-
-Exception:
+- Keep API can use in SDK >= 21
+- Add KDoc or comment for every public API or public Model used by Consumer
 - exception have a minimal variable for code:String, message:String, cause:Throwable
+- model & core depends on nothing
+- api depends on model and core
+- internal depends on api, model, and core
+
+Library Directory Structure:
+- model
+- core
+- api
+- internal
 
 Documentation:
-- Every public class/function needs documentation
 - use README.md as a file to provide documentation
+- Every public Class/API/Model needs documentation
 - Include minimal examples for each algorithm
 - Keep Trakteer or Ko-fi in top of Readme
 
@@ -61,6 +42,11 @@ CI/CD:
 - for deployment, test -> deployment -> create release
 - list commit from current tag to previous tag as a release note (if applicable) or add last 10 commit as a release note (if applicable)
 
+Example:
+- Every Algorithm have their own example and navigate to specific algorithm example activity
+- Inside nested specific algorithm example activity, there is a list example scenario that can be used for that algorithm
+- Instead just Log the result, display the result into textview
+
 Agent Instructions:
 - Ensure backward compatibility
 - Do not generate placeholder implementations
@@ -68,3 +54,5 @@ Agent Instructions:
 - Ask before introducing breaking changes
 - Prefer scalable and maintainable solutions
 - Follow existing repository patterns first
+- Update README.md documentation if there is any update on public API or Model
+- Update androidTest or Test if there is any update on library implementation

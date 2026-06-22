@@ -4,10 +4,10 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import androidx.annotation.RequiresApi
-import com.fadlurahmanfdev.crypto_vault.enum.CryptoVaultAlgorithm
-import com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESBlockMode
-import com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESEncryptionPadding
-import com.fadlurahmanfdev.crypto_vault.internal.base.BaseKeyCryptoVault
+import com.fadlurahmanfdev.crypto_vault.api.base.BaseKeyCryptoVault
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESBlockMode
+import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESEncryptionPadding
 import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultEncryptedModel
 import java.security.SecureRandom
 import java.security.spec.AlgorithmParameterSpec

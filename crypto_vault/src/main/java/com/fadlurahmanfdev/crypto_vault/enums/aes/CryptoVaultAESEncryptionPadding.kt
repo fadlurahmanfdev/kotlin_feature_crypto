@@ -1,3 +1,0 @@
-package com.fadlurahmanfdev.crypto_vault.enums.aes
-
-typealias CryptoVaultAESEncryptionPadding = com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESEncryptionPadding

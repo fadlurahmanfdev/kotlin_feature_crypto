@@ -3,8 +3,8 @@ package com.fadlurahmanfdev.crypto_vault
 import android.os.Build
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultEC
-import com.fadlurahmanfdev.crypto_vault.enum.ec.CryptoVaultECSignatureAlgorithm
-import com.fadlurahmanfdev.crypto_vault.enum.ec.CryptoVaultECTransformation
+import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECSignatureAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull

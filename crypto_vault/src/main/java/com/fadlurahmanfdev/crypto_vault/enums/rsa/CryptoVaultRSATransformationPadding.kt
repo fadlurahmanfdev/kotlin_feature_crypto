@@ -1,3 +1,0 @@
-package com.fadlurahmanfdev.crypto_vault.enums.rsa
-
-typealias CryptoVaultRSATransformationPadding = com.fadlurahmanfdev.crypto_vault.enum.rsa.CryptoVaultRSATransformationPadding
