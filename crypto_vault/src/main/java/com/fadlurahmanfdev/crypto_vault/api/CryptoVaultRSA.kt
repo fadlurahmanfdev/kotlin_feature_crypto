@@ -68,6 +68,7 @@ open class CryptoVaultRSA : BaseKeyPairCryptoVault() {
         return keyPairGenerator.generateKeyPair()
     }
 
+    /** Signs [plainText] with a Base64-encoded private key. */
     open fun generateSignature(
         encodedPrivateKey: String,
         signatureAlgorithm: CryptoVaultRSASignatureAlgorithm,
@@ -81,6 +82,7 @@ open class CryptoVaultRSA : BaseKeyPairCryptoVault() {
         return encode(signer.sign())
     }
 
+    /** Signs [plainText] with an in-memory [privateKey]. */
     open fun generateSignature(
         privateKey: PrivateKey,
         signatureAlgorithm: CryptoVaultRSASignatureAlgorithm,
@@ -92,6 +94,7 @@ open class CryptoVaultRSA : BaseKeyPairCryptoVault() {
         return encode(signer.sign())
     }
 
+    /** Verifies [signature] for [plainText] using a Base64-encoded public key. Returns false when verification fails. */
     open fun verifySignature(
         encodedPublicKey: String,
         signatureAlgorithm: CryptoVaultRSASignatureAlgorithm,
@@ -111,6 +114,7 @@ open class CryptoVaultRSA : BaseKeyPairCryptoVault() {
         }
     }
 
+    /** Verifies [signature] for [plainText] using an in-memory [publicKey]. Returns false when verification fails. */
     open fun verifySignature(
         publicKey: PublicKey,
         signatureAlgorithm: CryptoVaultRSASignatureAlgorithm,
@@ -128,6 +132,7 @@ open class CryptoVaultRSA : BaseKeyPairCryptoVault() {
         }
     }
 
+    /** Encrypts [plainText] with an in-memory [publicKey]. */
     open fun encrypt(
         publicKey: PublicKey,
         blockMode: CryptoVaultRSATransformationMode,
@@ -139,6 +144,7 @@ open class CryptoVaultRSA : BaseKeyPairCryptoVault() {
         return encode(cipher.doFinal(plainText.toByteArray()))
     }
 
+    /** Encrypts [plainText] with a Base64-encoded public key. */
     open fun encrypt(
         encodedPublicKey: String,
         blockMode: CryptoVaultRSATransformationMode,
@@ -152,6 +158,7 @@ open class CryptoVaultRSA : BaseKeyPairCryptoVault() {
         return encode(cipher.doFinal(plainText.toByteArray()))
     }
 
+    /** Decrypts [encryptedText] with an in-memory [privateKey]. */
     open fun decrypt(
         privateKey: PrivateKey,
         blockMode: CryptoVaultRSATransformationMode,
@@ -163,6 +170,7 @@ open class CryptoVaultRSA : BaseKeyPairCryptoVault() {
         return String(cipher.doFinal(decode(encryptedText)))
     }
 
+    /** Decrypts [encryptedText] with a Base64-encoded private key. */
     open fun decrypt(
         encodedPrivateKey: String,
         blockMode: CryptoVaultRSATransformationMode,

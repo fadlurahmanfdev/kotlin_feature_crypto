@@ -1,5 +1,8 @@
 package com.fadlurahmanfdev.crypto_vault.core.enum
 
+/**
+ * Signature algorithms supported by [com.fadlurahmanfdev.crypto_vault.api.CryptoVaultCustomAsymmetricVault].
+ */
 enum class CryptoVaultSignatureAlgorithm {
     SHA1withRSA,
     SHA256withRSA,

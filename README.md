@@ -26,15 +26,26 @@ dependencies {
 
 ## Package structure
 
-Public API lives under `com.fadlurahmanfdev.crypto_vault`:
+Library code is organized by layer under `com.fadlurahmanfdev.crypto_vault`:
 
-| Package     | Purpose                                                      |
-|-------------|--------------------------------------------------------------|
-| `api`       | Public vault classes (`CryptoVaultAES`, `CryptoVaultRSA`, …) |
-| `core`      | Enums, exceptions, and shared crypto primitives              |
-| `enum`      | Backward-compatible aliases to `core.enum`                   |
-| `model`     | `CryptoVaultKey`, `CryptoVaultEncryptedModel`                |
-| `exception` | Backward-compatible alias to `core.exception`                |
+| Package | Purpose |
+|---------|---------|
+| `api` | Public vault classes (`CryptoVaultAES`, `CryptoVaultRSA`, …) |
+| `api.base` | Open base classes for extending vault behavior |
+| `core.enum` | Algorithm, block mode, padding, and transformation enums |
+| `core.exception` | `CryptoVaultException` |
+| `model` | `CryptoVaultKey`, `CryptoVaultEncryptedModel` |
+| `enum` | Backward-compatible aliases to `core.enum` |
+| `enums` | Backward-compatible aliases to `core.enum` (v1.x plural package) |
+| `exception` | Backward-compatible alias to `core.exception` |
+
+Dependency rules:
+
+- `model` and `core` depend on nothing
+- `api` depends on `model` and `core`
+- `internal` depends on `api`, `model`, and `core`
+
+Recommended imports for new code:
 
 ```kotlin
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultAES
@@ -44,13 +55,25 @@ import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
 import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultEncryptedModel
 ```
 
-Legacy `enum` and `exception` imports remain supported via typealiases.
+Legacy imports still work:
+
+```kotlin
+import com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESBlockMode
+import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
+import com.fadlurahmanfdev.crypto_vault.CryptoVaultAES // root typealias to api.CryptoVaultAES
+```
 
 All public vault classes are `open` so you can extend and override behavior in your app.
 
 ## Exception handling
 
 Public APIs throw `CryptoVaultException` instead of returning `null` on failure.
+
+```kotlin
+import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
+import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESBlockMode
+import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESEncryptionPadding
+```
 
 ```kotlin
 try {
@@ -75,6 +98,14 @@ try {
 ## AES
 
 Hardware-backed AES via Android Keystore, or software keys encoded as Base64.
+
+```kotlin
+import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultAES
+import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESBlockMode
+import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESEncryptionPadding
+import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultEncryptedModel
+import javax.crypto.spec.GCMParameterSpec
+```
 
 ### Generate key (Android Keystore)
 
@@ -140,6 +171,15 @@ val encrypted = cryptoVaultAES.encrypt(
 
 RSA encryption, decryption, and signing with optional Android Keystore backing.
 
+```kotlin
+import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultRSA
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSAEncryptionPadding
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSASignatureAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSASignaturePadding
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSATransformationMode
+import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSATransformationPadding
+```
+
 ### Generate key pair
 
 ```kotlin
@@ -194,6 +234,12 @@ val decrypted = cryptoVaultRSA.decrypt(
 ## EC (Elliptic Curve)
 
 ECDSA signing, ECDH key exchange, and hybrid encryption (`ECDH + AES-GCM`).
+
+```kotlin
+import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultEC
+import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECSignatureAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation
+```
 
 ### Generate key pair
 
@@ -255,6 +301,10 @@ val aesKey = cryptoVaultEC.derivedSharedSecret(aliceSharedSecret)
 Software ED25519 signing via BouncyCastle.
 
 ```kotlin
+import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultED25519
+```
+
+```kotlin
 val cryptoVaultED25519 = CryptoVaultED25519()
 val key = cryptoVaultED25519.generateKey()
 
@@ -274,6 +324,13 @@ val isValid = cryptoVaultED25519.verifySignature(
 ## Custom symmetric crypto
 
 `CryptoVaultCustomKeyVault` supports algorithms such as AES, ChaCha20, DES, and 3DES with custom transformations.
+
+```kotlin
+import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultCustomKeyVault
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultBlockMode
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultPadding
+```
 
 ```kotlin
 val customVault = CryptoVaultCustomKeyVault()
@@ -299,6 +356,12 @@ if (customVault.isSupported(transformation)) {
 `CryptoVaultCustomAsymmetricVault` supports generic RSA/EC-style sign, verify, encrypt, and decrypt.
 
 ```kotlin
+import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultCustomAsymmetricVault
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultSignatureAlgorithm
+```
+
+```kotlin
 val customVault = CryptoVaultCustomAsymmetricVault()
 val key = customVault.generateKey(CryptoVaultAlgorithm.RSA, 2048)
 
@@ -316,11 +379,14 @@ val signature = customVault.generateSignature(
 
 ### Package imports
 
-| Before (v1.x)                                                | After (v2.0)                                            |
-|--------------------------------------------------------------|---------------------------------------------------------|
-| `com.fadlurahmanfdev.crypto_vault.CryptoVaultAES`            | `com.fadlurahmanfdev.crypto_vault.api.CryptoVaultAES`   |
-| `com.fadlurahmanfdev.crypto_vault.enums.*`                   | `com.fadlurahmanfdev.crypto_vault.enum.*`               |
-| `com.fadlurahmanfdev.crypto_vault.data.model.CryptoVaultKey` | `com.fadlurahmanfdev.crypto_vault.model.CryptoVaultKey` |
+| Before (v1.x) | After (v2.0 recommended) | Still supported |
+|---------------|----------------------------|-----------------|
+| `com.fadlurahmanfdev.crypto_vault.CryptoVaultAES` | `com.fadlurahmanfdev.crypto_vault.api.CryptoVaultAES` | Root typealias |
+| `com.fadlurahmanfdev.crypto_vault.enums.*` | `com.fadlurahmanfdev.crypto_vault.core.enum.*` | `enum.*` and `enums.*` typealiases |
+| `com.fadlurahmanfdev.crypto_vault.enum.*` | `com.fadlurahmanfdev.crypto_vault.core.enum.*` | `enum.*` typealias |
+| `com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException` | `com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException` | `exception.*` typealias |
+| `com.fadlurahmanfdev.crypto_vault.data.model.CryptoVaultKey` | `com.fadlurahmanfdev.crypto_vault.model.CryptoVaultKey` | — |
+| `com.fadlurahmanfdev.crypto_vault.internal.base.*` | `com.fadlurahmanfdev.crypto_vault.api.base.*` | `internal.base.*` typealias |
 
 ### EC encryption
 
@@ -340,15 +406,25 @@ When encrypting with a caller-provided IV on a Keystore-backed key, pass `random
 
 ### Exception model
 
-`CryptoVaultException` now includes an optional `cause: Throwable?` field.
+`CryptoVaultException` lives in `core.exception` and is thrown by public APIs instead of returning `null` on failure.
 
 ```kotlin
+import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
+
 data class CryptoVaultException(
     val code: String,
     override val message: String? = null,
     override val cause: Throwable? = null,
 )
 ```
+
+Common error codes:
+
+| Code | When |
+|------|------|
+| `STRONG_BOX_NOT_SUPPORTED` | StrongBox was requested but the device does not support it |
+| `UNKNOWN` | Unexpected Keystore or crypto failure |
+| `UNSUPPORTED_EC_TRANSFORMATION` | EC encrypt/decrypt called with an unsupported transformation |
 
 ---
 

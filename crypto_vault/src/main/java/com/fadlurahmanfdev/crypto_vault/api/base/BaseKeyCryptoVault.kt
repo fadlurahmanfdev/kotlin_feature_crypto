@@ -6,6 +6,7 @@ import android.security.keystore.StrongBoxUnavailableException
 import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
 import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
 import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultEncryptedModel
 import java.security.KeyStore
 import java.security.spec.AlgorithmParameterSpec
@@ -18,11 +19,17 @@ import javax.crypto.spec.SecretKeySpec
  * Base vault for symmetric key generation, encryption, and decryption.
  */
 abstract class BaseKeyCryptoVault : BaseCryptoVault() {
+    /** Generates a software secret key for [algorithm] encoded as Base64. */
     open fun generateKey(algorithm: CryptoVaultAlgorithm): String {
         val key = KeyGenerator.getInstance(algorithm.name)
         return encode(key.generateKey().encoded)
     }
 
+    /**
+     * Generates a secret key inside Android Keystore.
+     *
+     * @throws CryptoVaultException when key generation fails.
+     */
     @RequiresApi(Build.VERSION_CODES.M)
     open fun generateKeyFromAndroidKeyStore(
         algorithm: CryptoVaultAlgorithm,
@@ -40,6 +47,7 @@ abstract class BaseKeyCryptoVault : BaseCryptoVault() {
         }
     }
 
+    /** Loads a symmetric key from Android Keystore, or returns null when the alias does not exist. */
     open fun getKeyFromAndroidKeyStore(keystoreAlias: String): SecretKey? {
         val keyStore = KeyStore.getInstance("AndroidKeyStore")
         keyStore.load(null)

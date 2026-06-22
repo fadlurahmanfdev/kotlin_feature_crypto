@@ -1,5 +1,10 @@
 package com.fadlurahmanfdev.crypto_vault
 
+/**
+ * Backward-compatible typealiases for vault classes introduced in v2.0.
+ *
+ * Prefer importing from [com.fadlurahmanfdev.crypto_vault.api] in new code.
+ */
 typealias CryptoVaultAES = com.fadlurahmanfdev.crypto_vault.api.CryptoVaultAES
 typealias CryptoVaultRSA = com.fadlurahmanfdev.crypto_vault.api.CryptoVaultRSA
 typealias CryptoVaultEC = com.fadlurahmanfdev.crypto_vault.api.CryptoVaultEC

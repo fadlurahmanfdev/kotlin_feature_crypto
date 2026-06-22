@@ -8,6 +8,7 @@ import com.fadlurahmanfdev.crypto_vault.api.base.BaseKeyCryptoVault
 import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESBlockMode
 import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESEncryptionPadding
+import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
 import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultEncryptedModel
 import java.security.SecureRandom
 import java.security.spec.AlgorithmParameterSpec
@@ -33,7 +34,7 @@ open class CryptoVaultAES : BaseKeyCryptoVault() {
      * @param encryptionPadding AES padding mode.
      * @param randomizedEncryptionRequired When true, the cipher must generate its own IV.
      *        Set to false only when you need to supply a custom IV during encryption.
-     * @throws com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException when key generation fails.
+     * @throws CryptoVaultException when key generation fails.
      */
     @RequiresApi(Build.VERSION_CODES.M)
     open fun generateKeyFromAndroidKeyStore(
@@ -80,6 +81,7 @@ open class CryptoVaultAES : BaseKeyCryptoVault() {
         return encode(GCMParameterSpec(128, ivBytes).iv)
     }
 
+    /** Encrypts [plainText] with a caller-provided [algorithmParameterSpec]. */
     open fun encrypt(
         secretKey: SecretKey,
         blockMode: CryptoVaultAESBlockMode,
@@ -93,6 +95,7 @@ open class CryptoVaultAES : BaseKeyCryptoVault() {
         algorithmParameterSpec = algorithmParameterSpec,
     )
 
+    /** Encrypts [plainText] and returns ciphertext with a cipher-generated IV. */
     open fun encrypt(
         secretKey: SecretKey,
         blockMode: CryptoVaultAESBlockMode,
@@ -104,6 +107,7 @@ open class CryptoVaultAES : BaseKeyCryptoVault() {
         plainText = plainText,
     )
 
+    /** Encrypts [plainText] using a Base64-encoded software key and caller-provided IV. */
     open fun encrypt(
         encodedSecretKey: String,
         blockMode: CryptoVaultAESBlockMode,
@@ -118,6 +122,7 @@ open class CryptoVaultAES : BaseKeyCryptoVault() {
         algorithmParameterSpec = algorithmParameterSpec,
     )
 
+    /** Encrypts [plainText] using a Base64-encoded software key and a cipher-generated IV. */
     open fun encrypt(
         encodedSecretKey: String,
         blockMode: CryptoVaultAESBlockMode,
@@ -130,6 +135,7 @@ open class CryptoVaultAES : BaseKeyCryptoVault() {
         plainText = plainText,
     )
 
+    /** Decrypts [encryptedText] with a Keystore-backed or in-memory [secretKey]. */
     open fun decrypt(
         secretKey: SecretKey,
         blockMode: CryptoVaultAESBlockMode,
@@ -143,6 +149,7 @@ open class CryptoVaultAES : BaseKeyCryptoVault() {
         algorithmParameterSpec = algorithmParameterSpec,
     )
 
+    /** Decrypts [encryptedText] using a Base64-encoded software key. */
     open fun decrypt(
         encodedSecretKey: String,
         blockMode: CryptoVaultAESBlockMode,

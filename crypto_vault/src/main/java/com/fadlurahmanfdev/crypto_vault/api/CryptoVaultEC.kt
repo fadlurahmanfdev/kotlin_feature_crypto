@@ -33,6 +33,10 @@ open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
      * Generates an EC key pair inside Android Keystore.
      *
      * Keys stored in Keystore cannot be exported as encoded material.
+     *
+     * @param keystoreAlias Key identifier stored in Android Keystore.
+     * @param strongBoxBacked Request StrongBox backing on API 28+.
+     * @throws CryptoVaultException when key generation fails.
      */
     @RequiresApi(Build.VERSION_CODES.M)
     open fun generateKeyFromAndroidKeyStore(
@@ -61,6 +65,7 @@ open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
     /** Generates a software EC key pair encoded as Base64. */
     open fun generateKey(): CryptoVaultKey = generateKey(algorithm = algorithm, keySize = null)
 
+    /** Signs [plainText] with a Base64-encoded private key. */
     open fun generateSignature(
         encodedPrivateKey: String,
         plainText: String,
@@ -72,6 +77,7 @@ open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
         signatureAlgorithm = signatureAlgorithm.value,
     )
 
+    /** Signs [plainText] with an in-memory [privateKey]. */
     open fun generateSignature(
         privateKey: PrivateKey,
         plainText: String,
@@ -82,6 +88,7 @@ open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
         signatureAlgorithm = signatureAlgorithm.value,
     )
 
+    /** Verifies [signature] for [plainText] using a Base64-encoded public key. */
     open fun verifySignature(
         encodedPublicKey: String,
         signature: String,
@@ -95,6 +102,7 @@ open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
         signatureAlgorithm = signatureAlgorithm.value,
     )
 
+    /** Verifies [signature] for [plainText] using an in-memory [publicKey]. */
     open fun verifySignature(
         publicKey: PublicKey,
         signature: String,
@@ -111,6 +119,8 @@ open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
      * Encrypts [plainText] for the holder of the private key matching [encodedPublicKey].
      *
      * Uses [CryptoVaultECTransformation.ECDH_AES_GCM]: ephemeral ECDH + SHA-256 KDF + AES-GCM.
+     *
+     * @throws CryptoVaultException when [transformation] is not supported.
      */
     open fun encrypt(
         encodedPublicKey: String,
@@ -129,6 +139,8 @@ open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
 
     /**
      * Decrypts [encryptedText] produced by [encrypt] for the same [transformation].
+     *
+     * @throws CryptoVaultException when [transformation] is not supported.
      */
     open fun decrypt(
         encodedPrivateKey: String,

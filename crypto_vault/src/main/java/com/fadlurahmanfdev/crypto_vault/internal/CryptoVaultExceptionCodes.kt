@@ -1,3 +1,0 @@
-package com.fadlurahmanfdev.crypto_vault.internal
-
-internal typealias CryptoVaultExceptionCodes = com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
