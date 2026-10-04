@@ -58,6 +58,7 @@ configurations.all {
 dependencies {
     implementation(libs.androidx.annotation.jvm)
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
@@ -69,9 +70,9 @@ dependencies {
 
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-    signAllPublications()
+//    signAllPublications()
 
-    coordinates("com.fadlurahmanfdev", "crypto_vault", "2.0.0")
+    coordinates("com.fadlurahmanfdev", "crypto_vault", "3.0.0")
 
     pom {
         name.set("Crypto Vault")

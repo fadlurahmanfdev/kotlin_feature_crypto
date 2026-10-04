@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">core_crypto</string>
+    <string name="app_name">CryptoVault</string>
+    <string name="feature_selection_title">CryptoVault Examples</string>
+    <string name="close">Close</string>
 </resources>

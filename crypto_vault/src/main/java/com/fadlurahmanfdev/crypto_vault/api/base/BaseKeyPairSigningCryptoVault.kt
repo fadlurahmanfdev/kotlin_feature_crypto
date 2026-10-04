@@ -1,7 +1,7 @@
 package com.fadlurahmanfdev.crypto_vault.api.base
 
 import android.util.Log
-import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.crypto_vault.api.enums.CryptoVaultAlgorithm
 import java.security.KeyFactory
 import java.security.PrivateKey
 import java.security.PublicKey

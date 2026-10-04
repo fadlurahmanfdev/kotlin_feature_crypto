@@ -6,7 +6,7 @@ import android.security.keystore.StrongBoxUnavailableException
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
-import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.crypto_vault.api.enums.CryptoVaultAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultSignatureAlgorithm
 import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultKey
 import java.security.KeyFactory

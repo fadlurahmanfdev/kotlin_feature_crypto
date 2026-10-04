@@ -167,6 +167,135 @@ val encrypted = cryptoVaultAES.encrypt(
 
 ---
 
+## AES V2 (software key)
+
+`CryptoVaultAESV2` works with AES keys generated in software. The key lives in app memory, so you
+are responsible for storing it securely. Prefer Android Keystore when the key never needs to leave
+the device.
+
+```kotlin
+import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAESV2
+import javax.crypto.SecretKey
+```
+
+### Generate key
+
+`keySize` supports 128, 192, or 256 bits (default 256). An unsupported size throws
+`CryptoVaultException` with code `INVALID_KEY_SIZE`.
+
+```kotlin
+val cryptoVaultAESV2 = CryptoVaultAESV2.create()
+val secretKey: SecretKey = cryptoVaultAESV2.generateKey()
+val secretKey128: SecretKey = cryptoVaultAESV2.generateKey(keySize = 128)
+```
+
+---
+
+## AES V2 (Android Keystore key)
+
+`CryptoVaultAESAndroidKeyStoreV2` generates AES keys inside Android Keystore (API 23+). The key
+material never leaves the Keystore (TEE, or StrongBox on API 28+).
+
+```kotlin
+import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAESAndroidKeyStoreV2
+import javax.crypto.SecretKey
+```
+
+### Generate key
+
+Defaults: AES-256, GCM, no padding, randomized encryption required, and no StrongBox.
+`keySize` supports 128 or 256 bits. Generating a key with an alias that already exists replaces
+the old key.
+
+```kotlin
+val cryptoVaultAES = CryptoVaultAESAndroidKeyStoreV2.create()
+val secretKey: SecretKey = cryptoVaultAES.generateKey(keystoreAlias = "example_aes")
+```
+
+Generate inside StrongBox and add extra Keystore options. When `strongBoxBacked = true` and the
+device has no StrongBox (or runs below API 28), `CryptoVaultException` with code
+`STRONG_BOX_NOT_SUPPORTED` is thrown.
+
+```kotlin
+val secretKey: SecretKey = cryptoVaultAES.generateKey(
+    keystoreAlias = "example_aes_strongbox",
+    strongBoxBacked = true,
+) {
+    setUserAuthenticationRequired(true)
+}
+```
+
+| Code | When |
+|------|------|
+| `INVALID_KEY_ALIAS` | `keystoreAlias` is blank |
+| `INVALID_KEY_SIZE` | `keySize` is not 128 or 256 |
+| `STRONG_BOX_NOT_SUPPORTED` | `strongBoxBacked = true` on a device without StrongBox |
+| `UNKNOWN` | Any other Keystore failure |
+
+### Get key
+
+Load an existing key on later app launches. Returns `null` when no key exists for the alias.
+Do not call `generateKey` again for the same alias; it replaces the key and makes previously
+encrypted data unrecoverable.
+
+```kotlin
+val secretKey: SecretKey = cryptoVaultAES.getKey(keystoreAlias = "example_aes")
+    ?: cryptoVaultAES.generateKey(keystoreAlias = "example_aes")
+```
+
+| Code | When |
+|------|------|
+| `INVALID_KEY_ALIAS` | `keystoreAlias` is blank |
+| `KEY_TYPE_MISMATCH` | The alias holds a key that is not an AES secret key (for example an RSA key pair) |
+| `UNKNOWN` | The Keystore cannot be read |
+
+### Encrypt
+
+The cipher generates a fresh random IV on every call. Store both the ciphertext and the IV; the IV
+is required for decryption and is not secret.
+
+```kotlin
+import com.fadlurahmanfdev.crypto_vault.domain.models.EncryptedData
+```
+
+```kotlin
+val encrypted: EncryptedData = cryptoVaultAES.encrypt(
+    secretKey = secretKey,
+    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+)
+val cipherText: ByteArray = encrypted.text
+val iv: ByteArray = encrypted.iv
+```
+
+| Code | When |
+|------|------|
+| `KEY_PERMANENTLY_INVALIDATED` | Key was invalidated (for example biometric enrollment changed); regenerate it |
+| `USER_NOT_AUTHENTICATED` | Key requires user authentication that has not happened yet |
+| `UNKNOWN` | Any other encryption failure, such as a transformation the key is not authorized for |
+
+### Decrypt
+
+Pass the stored ciphertext and IV from `encrypt`. With GCM, modified data is rejected instead of
+returning corrupted plaintext.
+
+```kotlin
+val plainText: ByteArray = cryptoVaultAES.decrypt(
+    secretKey = secretKey,
+    encrypted = cipherText,
+    iv = iv,
+)
+val decrypted = String(plainText, Charsets.UTF_8)
+```
+
+| Code | When |
+|------|------|
+| `INTEGRITY_CHECK_FAILED` | Ciphertext or IV was modified, or belongs to a different key |
+| `KEY_PERMANENTLY_INVALIDATED` | Key was invalidated; data encrypted with it cannot be recovered |
+| `USER_NOT_AUTHENTICATED` | Key requires user authentication that has not happened yet |
+| `UNKNOWN` | Any other decryption failure |
+
+---
+
 ## RSA
 
 RSA encryption, decryption, and signing with optional Android Keystore backing.

@@ -3,8 +3,7 @@ package com.fadlurahmanfdev.crypto_vault
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import android.os.Build
-import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESBlockMode
-import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESEncryptionPadding
+import com.fadlurahmanfdev.crypto_vault.api.enums.aes.CryptoVaultAESEncryptionPadding
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull

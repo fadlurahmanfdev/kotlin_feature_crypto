@@ -2,28 +2,21 @@ Project Description
 
 - Android Kotlin Library for Cryptography
 
-Library Capabilities
-- Ensure using or generate key inside TEE or hardware key backed, strong box when applicable
-
 Architecture:
 - Use clean architecture when applicable
 - use SOLID principle
-- Keep library is testable for unit test, please using Test Driven Development
-- Keep code testable
+- Keep library is testable for unit test
 
 Rules:
 - Keep API can use in SDK >= 21
 - Add KDoc or comment for every public API or public Model used by Consumer
 - exception have a minimal variable for code:String, message:String, cause:Throwable
-- model & core depends on nothing
-- api depends on model and core
-- internal depends on api, model, and core
+- keep function open (e.g., lets say there is a parameter that we haven't handled it yet, user can modify it without change anything)
 
 Library Directory Structure:
-- model
-- core
-- api
-- internal
+- api (user facing class)
+- domain (contracts)
+- internal (internal contract, default implementation)
 
 Documentation:
 - use README.md as a file to provide documentation

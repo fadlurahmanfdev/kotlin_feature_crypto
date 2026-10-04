@@ -6,7 +6,7 @@ import android.security.keystore.KeyProperties
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.api.base.BaseKeyPairCryptoVault
-import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.crypto_vault.api.enums.CryptoVaultAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSAEncryptionPadding
 import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSASignatureAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSASignaturePadding

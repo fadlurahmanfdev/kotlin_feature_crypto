@@ -5,7 +5,7 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.StrongBoxUnavailableException
 import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
-import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.crypto_vault.api.enums.CryptoVaultAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
 import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultEncryptedModel
 import java.security.KeyStore
@@ -87,6 +87,7 @@ abstract class BaseKeyCryptoVault : BaseCryptoVault() {
         plainText: String,
         algorithmParameterSpec: AlgorithmParameterSpec,
     ): String {
+//        AES/GCM/NoPadding
         val secretKey = SecretKeySpec(decode(encodedSecretKey), algorithm.name)
         val cipher = Cipher.getInstance(transformation)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, algorithmParameterSpec)

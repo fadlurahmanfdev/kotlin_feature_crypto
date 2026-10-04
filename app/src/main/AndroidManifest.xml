@@ -13,16 +13,25 @@
         android:theme="@style/Theme.Core_crypto"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.ECActivity"
+            android:name=".presentation.CustomAsymmetricExampleActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.RSAActivity"
+            android:name=".presentation.CustomSymmetricExampleActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.AESActivity"
+            android:name=".presentation.ED25519ExampleActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.MainActivity"
+            android:name=".presentation.ECExampleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.RSAExampleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.AESExampleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.FeatureSelectionActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

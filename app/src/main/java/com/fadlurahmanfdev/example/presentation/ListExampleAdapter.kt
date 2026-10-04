@@ -3,11 +3,11 @@ package com.fadlurahmanfdev.example.presentation
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
+import com.google.android.material.card.MaterialCardView
 
 class ListExampleAdapter : RecyclerView.Adapter<ListExampleAdapter.ViewHolder>() {
     val items: ArrayList<FeatureModel> = arrayListOf()
@@ -26,10 +26,10 @@ class ListExampleAdapter : RecyclerView.Adapter<ListExampleAdapter.ViewHolder>()
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.tvFeatureTitle)
         val desc: TextView = view.findViewById(R.id.tvFeatureDesc)
-        val main: LinearLayout = view.findViewById(R.id.llMain)
+        val card: MaterialCardView = view.findViewById(R.id.cardFeature)
 
         init {
-            main.setOnClickListener {
+            card.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     val clickedItem = items[position]

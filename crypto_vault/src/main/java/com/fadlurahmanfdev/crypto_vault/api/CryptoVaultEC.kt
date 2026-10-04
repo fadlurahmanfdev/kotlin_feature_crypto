@@ -6,9 +6,10 @@ import android.security.keystore.KeyProperties
 import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.api.base.BaseKeyPairSigningCryptoVault
 import com.fadlurahmanfdev.crypto_vault.core.EcEcdhAesGcmCipher
-import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultAlgorithm
+import com.fadlurahmanfdev.crypto_vault.api.enums.CryptoVaultAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECSignatureAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation
+import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
 import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
 import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultKey
 import java.security.KeyFactory
@@ -183,8 +184,7 @@ open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
 
     private fun requireSupportedTransformation(transformation: CryptoVaultECTransformation) {
         if (transformation != CryptoVaultECTransformation.ECDH_AES_GCM) {
-            throw CryptoVaultException(
-                code = "UNSUPPORTED_EC_TRANSFORMATION",
+            throw CryptoVaultExceptionCodes.unsupportedEcTransformation(
                 message = "Unsupported EC transformation: $transformation",
             )
         }
