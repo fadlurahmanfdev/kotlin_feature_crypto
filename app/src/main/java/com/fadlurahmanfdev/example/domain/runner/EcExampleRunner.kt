@@ -1,7 +1,11 @@
 package com.fadlurahmanfdev.example.domain.runner
 
+import android.content.Context
 import android.os.Build
+import android.util.Base64
+import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultEC
+import com.fadlurahmanfdev.crypto_vault.api.ecdh.CryptoVaultECDHAndroidKeyStoreKeyPairManager
 import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECSignatureAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation
 import com.fadlurahmanfdev.example.data.ExampleResult
@@ -9,6 +13,7 @@ import com.fadlurahmanfdev.example.data.ResultLine
 
 class EcExampleRunner(
     private val cryptoVaultEC: CryptoVaultEC = CryptoVaultEC(),
+    private val cryptoVaultECDHAndroidKeyStoreKeyPairManager: CryptoVaultECDHAndroidKeyStoreKeyPairManager = CryptoVaultECDHAndroidKeyStoreKeyPairManager.create(),
 ) {
     var encodedPrivateKey: String? = null
         private set
@@ -57,34 +62,82 @@ class EcExampleRunner(
         )
     }
 
-    fun runKeyExchange(): ExampleResult {
-        val bobKey = cryptoVaultEC.generateKey()
-        val aliceKey = cryptoVaultEC.generateKey()
-        val bobSharedSecret = cryptoVaultEC.generateSharedSecret(
-            ourEncodedPrivateKey = bobKey.privateKey,
-            otherEncodedPublicKey = aliceKey.publicKey,
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun runKeyExchange(context: Context): ExampleResult {
+        val bobKeyStoreAlias = "ecdh_example_bob"
+        val aliceKeyStoreAlias = "ecdh_example_alice"
+
+        val isSupportStrongBox = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            cryptoVaultECDHAndroidKeyStoreKeyPairManager.isSupportStrongBox(context)
+        } else {
+            false
+        }
+
+        val bobKey = cryptoVaultECDHAndroidKeyStoreKeyPairManager.generateKey(
+            keyStoreAlias = bobKeyStoreAlias,
+            strongBoxBacked = isSupportStrongBox,
         )
-        val aliceSharedSecret = cryptoVaultEC.generateSharedSecret(
-            ourEncodedPrivateKey = aliceKey.privateKey,
-            otherEncodedPublicKey = bobKey.publicKey,
+
+        val aliceKey = cryptoVaultECDHAndroidKeyStoreKeyPairManager.generateKey(
+            keyStoreAlias = aliceKeyStoreAlias,
+            strongBoxBacked = isSupportStrongBox,
         )
-        val bobDerivedKey = cryptoVaultEC.derivedSharedSecret(sharedSecret = bobSharedSecret)
-        val aliceDerivedKey = cryptoVaultEC.derivedSharedSecret(sharedSecret = aliceSharedSecret)
+
+        val bobSharedSecret = cryptoVaultECDHAndroidKeyStoreKeyPairManager.generateSharedSecret(
+            privateKey = bobKey.private,
+            otherPublicKey = aliceKey.public,
+        )
+        val encodedBobSharedSecret = Base64.encodeToString(bobSharedSecret, Base64.NO_WRAP)
+
+        val aliceSharedSecret = cryptoVaultECDHAndroidKeyStoreKeyPairManager.generateSharedSecret(
+            privateKey = aliceKey.private,
+            otherPublicKey = bobKey.public,
+        )
+        val encodedAliceSharedSecret = Base64.encodeToString(aliceSharedSecret, Base64.NO_WRAP)
+        val bobDerivedKey = cryptoVaultEC.derivedSharedSecret(sharedSecret = Base64.encodeToString(bobSharedSecret,
+            Base64.NO_WRAP))
+        val aliceDerivedKey = cryptoVaultEC.derivedSharedSecret(sharedSecret = Base64.encodeToString(aliceSharedSecret,
+            Base64.NO_WRAP))
+
         return ExampleResult(
             scenarioTitle = "ECDH key exchange (Alice & Bob)",
             lines = listOf(
-                ResultLine("bob private key", bobKey.privateKey),
-                ResultLine("bob public key", bobKey.publicKey),
-                ResultLine("alice private key", aliceKey.privateKey),
-                ResultLine("alice public key", aliceKey.publicKey),
-                ResultLine("bob shared secret", bobSharedSecret),
-                ResultLine("alice shared secret", aliceSharedSecret),
-                ResultLine("bob derived key", bobDerivedKey),
-                ResultLine("alice derived key", aliceDerivedKey),
-                ResultLine("secrets match", (bobSharedSecret == aliceSharedSecret).toString()),
-                ResultLine("derived keys match", (bobDerivedKey == aliceDerivedKey).toString()),
+//                ResultLine("bob shared secret", bobSharedSecret),
+//                ResultLine("alice shared secret", aliceSharedSecret),
+//                ResultLine("bob derived key", bobDerivedKey),
+//                ResultLine("alice derived key", aliceDerivedKey),
+//                ResultLine("secrets match", (bobSharedSecret == aliceSharedSecret).toString()),
+//                ResultLine("derived keys match", (bobDerivedKey == aliceDerivedKey).toString()),
             ),
         )
+
+//        val bobKey = cryptoVaultEC.generateKey()
+//        val aliceKey = cryptoVaultEC.generateKey()
+//        val bobSharedSecret = cryptoVaultEC.generateSharedSecret(
+//            ourEncodedPrivateKey = bobKey.privateKey,
+//            otherEncodedPublicKey = aliceKey.publicKey,
+//        )
+//        val aliceSharedSecret = cryptoVaultEC.generateSharedSecret(
+//            ourEncodedPrivateKey = aliceKey.privateKey,
+//            otherEncodedPublicKey = bobKey.publicKey,
+//        )
+//        val bobDerivedKey = cryptoVaultEC.derivedSharedSecret(sharedSecret = bobSharedSecret)
+//        val aliceDerivedKey = cryptoVaultEC.derivedSharedSecret(sharedSecret = aliceSharedSecret)
+//        return ExampleResult(
+//            scenarioTitle = "ECDH key exchange (Alice & Bob)",
+//            lines = listOf(
+//                ResultLine("bob private key", bobKey.privateKey),
+//                ResultLine("bob public key", bobKey.publicKey),
+//                ResultLine("alice private key", aliceKey.privateKey),
+//                ResultLine("alice public key", aliceKey.publicKey),
+//                ResultLine("bob shared secret", bobSharedSecret),
+//                ResultLine("alice shared secret", aliceSharedSecret),
+//                ResultLine("bob derived key", bobDerivedKey),
+//                ResultLine("alice derived key", aliceDerivedKey),
+//                ResultLine("secrets match", (bobSharedSecret == aliceSharedSecret).toString()),
+//                ResultLine("derived keys match", (bobDerivedKey == aliceDerivedKey).toString()),
+//            ),
+//        )
     }
 
     fun runGenerateKeystoreKey(): ExampleResult {

@@ -20,7 +20,6 @@ import javax.crypto.SecretKey
 internal class AndroidKeyStoreSecretKeyManager : KeyStoreSecretKeyManager {
 
     companion object {
-        const val ALGORITHM = "AES"
         const val KEY_PROVIDER = "AndroidKeyStore"
         const val GCM_TAG_LENGTH_BITS = 128
         val SUPPORTED_KEY_SIZES = setOf(128, 256)
@@ -37,6 +36,7 @@ internal class AndroidKeyStoreSecretKeyManager : KeyStoreSecretKeyManager {
     }
 
     override fun generateKey(
+        algorithm: String,
         keyStoreAlias: String,
         keySize: Int,
         blockMode: String,
@@ -65,7 +65,7 @@ internal class AndroidKeyStoreSecretKeyManager : KeyStoreSecretKeyManager {
                     .apply(keyGenParameterSpecBuilder)
                     .build()
 
-                val keyGenerator = KeyGenerator.getInstance(ALGORITHM, KEY_PROVIDER)
+                val keyGenerator = KeyGenerator.getInstance(algorithm, KEY_PROVIDER)
                 keyGenerator.init(keyGenParameterSpec)
                 return keyGenerator.generateKey()
             } else {

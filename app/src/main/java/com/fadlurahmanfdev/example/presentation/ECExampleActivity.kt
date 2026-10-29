@@ -1,5 +1,7 @@
 package com.fadlurahmanfdev.example.presentation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
 import com.fadlurahmanfdev.example.domain.runner.EcExampleRunner
@@ -55,10 +57,11 @@ class ECExampleActivity : AlgorithmExampleActivity() {
         ),
     )
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onClicked(item: FeatureModel) {
         val result = when (item.enum) {
             "EC_FULL_FLOW" -> runner.runFullFlow()
-            "EC_KEY_EXCHANGE" -> runner.runKeyExchange()
+            "EC_KEY_EXCHANGE" -> runner.runKeyExchange(this)
             "EC_KEYSTORE_GENERATE" -> runner.runGenerateKeystoreKey()
             "EC_KEYSTORE_SIGN_VERIFY" -> runner.runKeystoreSignVerify()
             "EC_SOFTWARE_GENERATE" -> runner.runGenerateSoftwareKey()

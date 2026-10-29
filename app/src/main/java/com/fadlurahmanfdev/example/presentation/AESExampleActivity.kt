@@ -50,15 +50,15 @@ class AESExampleActivity : AlgorithmExampleActivity() {
     )
 
     override fun onClicked(item: FeatureModel) {
-        val result = when (item.enum) {
-            "ANDROID_KEYSTORE_AES_GCM_NO_PADDING_GENERATED_IV" -> runner.runKeystoreGcmNoPaddingGeneratedIv()
-            "ANDROID_KEYSTORE_AES_CBC_PKCS7_GENERATED_IV" -> runner.runKeystoreCbcPkcs7GeneratedIv()
-            "SOFTWARE_AES_GCM_GENERATED_IV" -> runner.runGcmNoPaddingWithGeneratedIv()
-            "SOFTWARE_AES_GCM_CUSTOM_IV" -> runner.runGcmNoPaddingCustomIvParameterSpec()
-            "SOFTWARE_AES_GCM_CUSTOM_GCM_IV" -> runner.runGcmNoPaddingCustomGcmParameterSpec()
-            "SOFTWARE_AES_CBC_PKCS5_CUSTOM_IV" -> runner.runCbcPkcs5CustomIv()
-            else -> return
-        }
-        showResult(result)
+//        val result = when (item.enum) {
+//            "ANDROID_KEYSTORE_AES_GCM_NO_PADDING_GENERATED_IV" -> runner.runKeystoreGcmNoPaddingGeneratedIv()
+//            "ANDROID_KEYSTORE_AES_CBC_PKCS7_GENERATED_IV" -> runner.runKeystoreCbcPkcs7GeneratedIv()
+//            "SOFTWARE_AES_GCM_GENERATED_IV" -> runner.runGcmNoPaddingWithGeneratedIv()
+//            "SOFTWARE_AES_GCM_CUSTOM_IV" -> runner.runGcmNoPaddingCustomIvParameterSpec()
+//            "SOFTWARE_AES_GCM_CUSTOM_GCM_IV" -> runner.runGcmNoPaddingCustomGcmParameterSpec()
+//            "SOFTWARE_AES_CBC_PKCS5_CUSTOM_IV" -> runner.runCbcPkcs5CustomIv()
+//            else -> return
+//        }
+//        showResult(result)
     }
 }

@@ -24,13 +24,15 @@ class CryptoVaultAndroidKeyStoreSecretKeyManager internal constructor(
     fun isSupportStrongBox(context: Context): Boolean = secretKeyManager.isSupportStrongBox(context = context)
 
     fun generateKey(
+        algorithm: String,
         keyStoreAlias: String,
         keySize: Int,
         blockMode: String,
         padding: String,
-        strongBoxBacked: Boolean,
-        keyGenParameterSpecBuilder: KeyGenParameterSpec.Builder.() -> Unit,
+        strongBoxBacked: Boolean = false,
+        keyGenParameterSpecBuilder: KeyGenParameterSpec.Builder.() -> Unit = {},
     ): SecretKey = secretKeyManager.generateKey(
+        algorithm = algorithm,
         keyStoreAlias = keyStoreAlias,
         keySize = keySize,
         blockMode = blockMode,

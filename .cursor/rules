@@ -7,25 +7,25 @@ Architecture:
 - use SOLID principle
 - Keep library is testable for unit test
 
+Library Directory Structure:
+- api (user facing class)
+- model (data class)
+- exception (exception class)
+- internal (internal contract, default implementation)
+
 Rules:
-- Keep API can use in SDK >= 21
-- Add KDoc or comment for every public API or public Model used by Consumer
+- Keep API can use in SDK >= 24
 - exception have a minimal variable for code:String, message:String, cause:Throwable
 - keep function open (e.g., lets say there is a parameter that we haven't handled it yet, user can modify it without change anything)
 
-Library Directory Structure:
-- api (user facing class)
-- domain (contracts)
-- internal (internal contract, default implementation)
-
 Documentation:
+- Add KDoc or comment for every public API or public Model used by Consumer
 - use README.md as a file to provide documentation
 - Every public Class/API/Model needs documentation
 - Include minimal examples for each algorithm
 - Keep Trakteer or Ko-fi in top of Readme
-
-Versioning:
-- do not change versioning
+- Use basic english word for explanation
+- Every exception constant, must need explanation in README.md
 
 CI/CD:
 - Use Github Workflow under .github/workflows
@@ -39,13 +39,3 @@ Example:
 - Every Algorithm have their own example and navigate to specific algorithm example activity
 - Inside nested specific algorithm example activity, there is a list example scenario that can be used for that algorithm
 - Instead just Log the result, display the result into textview
-
-Agent Instructions:
-- Ensure backward compatibility
-- Do not generate placeholder implementations
-- Do not generate fake/mock production logic
-- Ask before introducing breaking changes
-- Prefer scalable and maintainable solutions
-- Follow existing repository patterns first
-- Update README.md documentation if there is any update on public API or Model
-- Update androidTest or Test if there is any update on library implementation

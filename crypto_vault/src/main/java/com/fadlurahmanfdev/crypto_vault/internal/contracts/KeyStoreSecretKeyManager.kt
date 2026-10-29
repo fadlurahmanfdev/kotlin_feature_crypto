@@ -11,6 +11,7 @@ internal interface KeyStoreSecretKeyManager {
     @RequiresApi(Build.VERSION_CODES.P)
     fun isSupportStrongBox(context: Context): Boolean
     fun generateKey(
+        algorithm: String,
         keyStoreAlias: String,
         keySize: Int,
         blockMode: String,
