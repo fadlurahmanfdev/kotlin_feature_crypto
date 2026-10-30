@@ -3,7 +3,6 @@ package com.fadlurahmanfdev.crypto_vault.api
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.api.base.BaseKeyPairSigningCryptoVault
 import com.fadlurahmanfdev.crypto_vault.core.EcEcdhAesGcmCipher
 import com.fadlurahmanfdev.crypto_vault.api.enums.CryptoVaultAlgorithm
@@ -39,7 +38,6 @@ open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
      * @param strongBoxBacked Request StrongBox backing on API 28+.
      * @throws CryptoVaultException when key generation fails.
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     open fun generateKeyFromAndroidKeyStore(
         keystoreAlias: String,
         strongBoxBacked: Boolean,

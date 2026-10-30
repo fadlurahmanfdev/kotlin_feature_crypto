@@ -1,10 +1,8 @@
 package com.fadlurahmanfdev.crypto_vault.api
 
-import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.api.base.BaseKeyPairCryptoVault
 import com.fadlurahmanfdev.crypto_vault.api.enums.CryptoVaultAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSAEncryptionPadding
@@ -39,7 +37,6 @@ open class CryptoVaultRSA : BaseKeyPairCryptoVault() {
      * @param encryptionPaddings Supported RSA encryption paddings for this key.
      * @param signaturePaddings Supported RSA signature paddings for this key.
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     open fun generateKeyFromAndroidKeyStore(
         keystoreAlias: String,
         encryptionPaddings: Array<CryptoVaultRSAEncryptionPadding>? = null,

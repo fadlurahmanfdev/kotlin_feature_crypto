@@ -11,7 +11,7 @@ If you find my apps, libraries, or plugins helpful and would like to support the
 
 Android Kotlin cryptography SDK for AES, RSA, EC, ED25519, and custom symmetric/asymmetric algorithms. Keys can be generated in software or inside Android Keystore (TEE / StrongBox when supported).
 
-- **Min SDK:** 21
+- **Min SDK:** 24
 - **Current version:** `2.0.0`
 - **Maven coordinates:** `com.fadlurahmanfdev:crypto_vault:2.0.0`
 
@@ -30,9 +30,9 @@ Library code is organized by layer under `com.fadlurahmanfdev.crypto_vault`:
 
 | Package | Purpose |
 |---------|---------|
-| `api` | Public vault classes (`CryptoVaultAES`, `CryptoVaultRSA`, …) |
+| `api` / `api.aes` | Public vault classes (`CryptoVaultAES`, `CryptoVaultAESAndroidKeyStore`, RSA, …) |
 | `api.base` | Open base classes for extending vault behavior |
-| `core.enum` | Algorithm, block mode, padding, and transformation enums |
+| `api.enums` | Shared algorithm enums (for example custom vault algorithms) |
 | `core.exception` | `CryptoVaultException` |
 | `model` | `CryptoVaultKey`, `CryptoVaultEncryptedModel` |
 | `enum` | Backward-compatible aliases to `core.enum` |
@@ -48,19 +48,10 @@ Dependency rules:
 Recommended imports for new code:
 
 ```kotlin
-import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultAES
-import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESBlockMode
-import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESEncryptionPadding
+import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAES
+import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAESAndroidKeyStore
 import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
-import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultEncryptedModel
-```
-
-Legacy imports still work:
-
-```kotlin
-import com.fadlurahmanfdev.crypto_vault.enum.aes.CryptoVaultAESBlockMode
-import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
-import com.fadlurahmanfdev.crypto_vault.CryptoVaultAES // root typealias to api.CryptoVaultAES
+import com.fadlurahmanfdev.crypto_vault.domain.models.EncryptedData
 ```
 
 All public vault classes are `open` so you can extend and override behavior in your app.
@@ -70,18 +61,14 @@ All public vault classes are `open` so you can extend and override behavior in y
 Public APIs throw `CryptoVaultException` instead of returning `null` on failure.
 
 ```kotlin
+import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAESAndroidKeyStore
 import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
-import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESBlockMode
-import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESEncryptionPadding
-```
 
-```kotlin
+val aes = CryptoVaultAESAndroidKeyStore.create()
 try {
-    cryptoVaultAES.generateKeyFromAndroidKeyStore(
-        keystoreAlias = "example_aes",
+    aes.generateKey(
+        keyStoreAlias = "example_aes",
         strongBoxBacked = true,
-        blockMode = CryptoVaultAESBlockMode.GCM,
-        encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
     )
 } catch (e: CryptoVaultException) {
     when (e.code) {
@@ -97,202 +84,127 @@ try {
 
 ## AES
 
-Hardware-backed AES via Android Keystore, or software keys encoded as Base64.
+Two open APIs cover the two key scenarios:
+
+| Class | Key type |
+|-------|----------|
+| `CryptoVaultAES` | Software AES key (exportable, lives in app memory) |
+| `CryptoVaultAESAndroidKeyStore` | Android Keystore AES key (non-exportable, TEE / StrongBox) |
+
+Defaults for both: **AES-256-GCM** (`blockMode = "GCM"`, `padding = "NoPadding"`), Cipher-generated IV,
+`ByteArray` plaintext/ciphertext, and [`EncryptedData`](crypto_vault/src/main/java/com/fadlurahmanfdev/crypto_vault/domain/models/EncryptedData.kt)
+(`text` + `iv`).
+
+`blockMode` and `padding` are plain `String` values for the JCA form `AES/{blockMode}/{padding}`.
+Pass any Android/JCA segment (for example `"CBC"`, `"PKCS7Padding"`, `"CTR"`). Unsupported
+combinations fail with `CryptoVaultException`.
 
 ```kotlin
-import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultAES
-import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESBlockMode
-import com.fadlurahmanfdev.crypto_vault.core.enum.aes.CryptoVaultAESEncryptionPadding
-import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultEncryptedModel
-import javax.crypto.spec.GCMParameterSpec
-```
-
-### Generate key (Android Keystore)
-
-```kotlin
-val cryptoVaultAES = CryptoVaultAES()
-val secretKey = cryptoVaultAES.generateKeyFromAndroidKeyStore(
-    keystoreAlias = "example_aes",
-    strongBoxBacked = true,
-    blockMode = CryptoVaultAESBlockMode.GCM,
-    encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
-)
-```
-
-### Generate key (software)
-
-```kotlin
-val encodedSecretKey = cryptoVaultAES.generateKey()
-```
-
-### Encrypt / decrypt (generated IV)
-
-```kotlin
-val encrypted: CryptoVaultEncryptedModel = cryptoVaultAES.encrypt(
-    secretKey = secretKey,
-    blockMode = CryptoVaultAESBlockMode.GCM,
-    padding = CryptoVaultAESEncryptionPadding.NoPadding,
-    plainText = "Passw0rd!",
-)
-val decrypted = cryptoVaultAES.decrypt(
-    secretKey = secretKey,
-    blockMode = CryptoVaultAESBlockMode.GCM,
-    padding = CryptoVaultAESEncryptionPadding.NoPadding,
-    algorithmParameterSpec = GCMParameterSpec(128, cryptoVaultAES.decode(encrypted.ivKey)),
-    encryptedText = encrypted.encryptedText,
-)
-```
-
-### Encrypt with custom IV (Keystore key)
-
-Set `randomizedEncryptionRequired = false` when the key must accept a caller-provided IV.
-
-```kotlin
-val secretKey = cryptoVaultAES.generateKeyFromAndroidKeyStore(
-    keystoreAlias = "example_aes_custom_iv",
-    strongBoxBacked = false,
-    blockMode = CryptoVaultAESBlockMode.GCM,
-    encryptionPadding = CryptoVaultAESEncryptionPadding.NoPadding,
-    randomizedEncryptionRequired = false,
-)
-val ivKey = cryptoVaultAES.generateIVGCMParameterSpecKey()
-val encrypted = cryptoVaultAES.encrypt(
-    secretKey = secretKey,
-    blockMode = CryptoVaultAESBlockMode.GCM,
-    padding = CryptoVaultAESEncryptionPadding.NoPadding,
-    algorithmParameterSpec = GCMParameterSpec(128, cryptoVaultAES.decode(ivKey)),
-    plainText = "Passw0rd!",
-)
-```
-
----
-
-## AES V2 (software key)
-
-`CryptoVaultAESV2` works with AES keys generated in software. The key lives in app memory, so you
-are responsible for storing it securely. Prefer Android Keystore when the key never needs to leave
-the device.
-
-```kotlin
-import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAESV2
+import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAES
+import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAESAndroidKeyStore
+import com.fadlurahmanfdev.crypto_vault.domain.models.EncryptedData
 import javax.crypto.SecretKey
 ```
 
-### Generate key
+### Software key (`CryptoVaultAES`)
 
-`keySize` supports 128, 192, or 256 bits (default 256). An unsupported size throws
-`CryptoVaultException` with code `INVALID_KEY_SIZE`.
+Prefer Android Keystore when the key never needs to leave the device. With software keys you must
+store the key bytes securely yourself.
+
+`keySize` supports **128 or 256** bits (default 256). Unsupported sizes throw `INVALID_KEY_SIZE`.
 
 ```kotlin
-val cryptoVaultAESV2 = CryptoVaultAESV2.create()
-val secretKey: SecretKey = cryptoVaultAESV2.generateKey()
-val secretKey128: SecretKey = cryptoVaultAESV2.generateKey(keySize = 128)
+val aes = CryptoVaultAES.create()
+val secretKey: SecretKey = aes.generateKey()
+val secretKey128: SecretKey = aes.generateKey(keySize = 128)
+
+val encrypted: EncryptedData = aes.encrypt(
+    secretKey = secretKey,
+    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+)
+val decrypted: ByteArray = aes.decrypt(
+    secretKey = secretKey,
+    encrypted = encrypted.text,
+    iv = encrypted.iv,
+)
+
+// Custom IV / GCM tag via AlgorithmParameterSpec
+val gcmSpec = aes.generateGCMParameterSpec()
+val cipherOnly: ByteArray = aes.encrypt(
+    secretKey = secretKey,
+    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+    algorithmParameterSpec = gcmSpec,
+)
+val plainAgain: ByteArray = aes.decrypt(
+    secretKey = secretKey,
+    encrypted = cipherOnly,
+    algorithmParameterSpec = gcmSpec,
+)
+
+// Legacy CBC interop (explicit non-default)
+val ivSpec = aes.generateIvParameterSpec()
+val cbcCipher: ByteArray = aes.encrypt(
+    secretKey = secretKey,
+    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+    blockMode = "CBC",
+    padding = "PKCS7Padding",
+    algorithmParameterSpec = ivSpec,
+)
 ```
 
----
+Import an existing key with `parseKey(byteArray)`.
 
-## AES V2 (Android Keystore key)
+| Code | When |
+|------|------|
+| `INVALID_KEY_SIZE` | `keySize` is not 128 or 256 |
+| `INTEGRITY_CHECK_FAILED` | GCM ciphertext or IV was modified |
+| `INVALID_BLOCK_MODE` | IV-only decrypt used a block mode other than GCM/CBC |
+| `UNKNOWN` | Any other generation / encrypt / decrypt failure |
 
-`CryptoVaultAESAndroidKeyStoreV2` generates AES keys inside Android Keystore (API 23+). The key
-material never leaves the Keystore (TEE, or StrongBox on API 28+).
+### Android Keystore key (`CryptoVaultAESAndroidKeyStore`)
 
-```kotlin
-import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAESAndroidKeyStoreV2
-import javax.crypto.SecretKey
-```
-
-### Generate key
-
-Defaults: AES-256, GCM, no padding, randomized encryption required, and no StrongBox.
-`keySize` supports 128 or 256 bits. Generating a key with an alias that already exists replaces
-the old key.
+Keys are generated inside Android Keystore. Material never leaves the Keystore.
+Defaults: AES-256, GCM, no padding, randomized encryption required, StrongBox off.
+Generating again for the same alias replaces the old key.
 
 ```kotlin
-val cryptoVaultAES = CryptoVaultAESAndroidKeyStoreV2.create()
-val secretKey: SecretKey = cryptoVaultAES.generateKey(keystoreAlias = "example_aes")
-```
+val aes = CryptoVaultAESAndroidKeyStore.create()
+val secretKey: SecretKey = aes.generateKey(keyStoreAlias = "example_aes")
 
-Generate inside StrongBox and add extra Keystore options. When `strongBoxBacked = true` and the
-device has no StrongBox (or runs below API 28), `CryptoVaultException` with code
-`STRONG_BOX_NOT_SUPPORTED` is thrown.
-
-```kotlin
-val secretKey: SecretKey = cryptoVaultAES.generateKey(
-    keystoreAlias = "example_aes_strongbox",
+// StrongBox + extra KeyGenParameterSpec options
+val strongBoxKey: SecretKey = aes.generateKey(
+    keyStoreAlias = "example_aes_strongbox",
     strongBoxBacked = true,
 ) {
     setUserAuthenticationRequired(true)
 }
-```
 
-| Code | When |
-|------|------|
-| `INVALID_KEY_ALIAS` | `keystoreAlias` is blank |
-| `INVALID_KEY_SIZE` | `keySize` is not 128 or 256 |
-| `STRONG_BOX_NOT_SUPPORTED` | `strongBoxBacked = true` on a device without StrongBox |
-| `UNKNOWN` | Any other Keystore failure |
+val loaded: SecretKey = aes.getKey(keyStoreAlias = "example_aes")
+    ?: aes.generateKey(keyStoreAlias = "example_aes")
 
-### Get key
-
-Load an existing key on later app launches. Returns `null` when no key exists for the alias.
-Do not call `generateKey` again for the same alias; it replaces the key and makes previously
-encrypted data unrecoverable.
-
-```kotlin
-val secretKey: SecretKey = cryptoVaultAES.getKey(keystoreAlias = "example_aes")
-    ?: cryptoVaultAES.generateKey(keystoreAlias = "example_aes")
-```
-
-| Code | When |
-|------|------|
-| `INVALID_KEY_ALIAS` | `keystoreAlias` is blank |
-| `KEY_TYPE_MISMATCH` | The alias holds a key that is not an AES secret key (for example an RSA key pair) |
-| `UNKNOWN` | The Keystore cannot be read |
-
-### Encrypt
-
-The cipher generates a fresh random IV on every call. Store both the ciphertext and the IV; the IV
-is required for decryption and is not secret.
-
-```kotlin
-import com.fadlurahmanfdev.crypto_vault.domain.models.EncryptedData
-```
-
-```kotlin
-val encrypted: EncryptedData = cryptoVaultAES.encrypt(
+val encrypted: EncryptedData = aes.encrypt(
     secretKey = secretKey,
     plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
 )
-val cipherText: ByteArray = encrypted.text
-val iv: ByteArray = encrypted.iv
-```
-
-| Code | When |
-|------|------|
-| `KEY_PERMANENTLY_INVALIDATED` | Key was invalidated (for example biometric enrollment changed); regenerate it |
-| `USER_NOT_AUTHENTICATED` | Key requires user authentication that has not happened yet |
-| `UNKNOWN` | Any other encryption failure, such as a transformation the key is not authorized for |
-
-### Decrypt
-
-Pass the stored ciphertext and IV from `encrypt`. With GCM, modified data is rejected instead of
-returning corrupted plaintext.
-
-```kotlin
-val plainText: ByteArray = cryptoVaultAES.decrypt(
+val plainText: ByteArray = aes.decrypt(
     secretKey = secretKey,
-    encrypted = cipherText,
-    iv = iv,
+    encrypted = encrypted.text,
+    iv = encrypted.iv,
 )
-val decrypted = String(plainText, Charsets.UTF_8)
 ```
+
+Full escape hatch: `generateKey(algorithmParameterSpec)` with your own `KeyGenParameterSpec`.
 
 | Code | When |
 |------|------|
-| `INTEGRITY_CHECK_FAILED` | Ciphertext or IV was modified, or belongs to a different key |
-| `KEY_PERMANENTLY_INVALIDATED` | Key was invalidated; data encrypted with it cannot be recovered |
+| `INVALID_KEY_ALIAS` | `keyStoreAlias` is blank |
+| `INVALID_KEY_SIZE` | `keySize` is not 128 or 256 |
+| `STRONG_BOX_NOT_SUPPORTED` | `strongBoxBacked = true` but StrongBox is unavailable |
+| `KEY_PERMANENTLY_INVALIDATED` | Key was invalidated (for example biometric enrollment changed) |
 | `USER_NOT_AUTHENTICATED` | Key requires user authentication that has not happened yet |
-| `UNKNOWN` | Any other decryption failure |
+| `INTEGRITY_CHECK_FAILED` | GCM ciphertext or IV was modified, or belongs to a different key |
+| `INVALID_BLOCK_MODE` | Decrypt used a block mode other than GCM/CBC |
+| `UNKNOWN` | Any other Keystore / cipher failure |
 
 ---
 
@@ -510,7 +422,7 @@ val signature = customVault.generateSignature(
 
 | Before (v1.x) | After (v2.0 recommended) | Still supported |
 |---------------|----------------------------|-----------------|
-| `com.fadlurahmanfdev.crypto_vault.CryptoVaultAES` | `com.fadlurahmanfdev.crypto_vault.api.CryptoVaultAES` | Root typealias |
+| Legacy monolithic AES API | `com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAES` / `CryptoVaultAESAndroidKeyStore` | Removed |
 | `com.fadlurahmanfdev.crypto_vault.enums.*` | `com.fadlurahmanfdev.crypto_vault.core.enum.*` | `enum.*` and `enums.*` typealiases |
 | `com.fadlurahmanfdev.crypto_vault.enum.*` | `com.fadlurahmanfdev.crypto_vault.core.enum.*` | `enum.*` typealias |
 | `com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException` | `com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException` | `exception.*` typealias |
@@ -527,7 +439,9 @@ v2.0 uses ephemeral ECDH + SHA-256 KDF + AES-GCM. Ciphertext produced by v1.x EC
 
 ### AES Keystore custom IV
 
-When encrypting with a caller-provided IV on a Keystore-backed key, pass `randomizedEncryptionRequired = false` to `generateKeyFromAndroidKeyStore`. Without this, Android throws `InvalidAlgorithmParameterException: Caller-provided IV not permitted`.
+`CryptoVaultAESAndroidKeyStore.encrypt` always uses a Cipher-generated IV (randomized encryption).
+Do not pass a caller IV for Keystore encrypt. For custom IV software paths, use
+`CryptoVaultAES.encrypt(..., algorithmParameterSpec = ...)`.
 
 ### Signature verification
 
@@ -552,6 +466,13 @@ Common error codes:
 | Code | When |
 |------|------|
 | `STRONG_BOX_NOT_SUPPORTED` | StrongBox was requested but the device does not support it |
+| `INVALID_KEY_SIZE` | AES key size is not 128 or 256 |
+| `INVALID_KEY_ALIAS` | Keystore alias is blank |
+| `KEY_PERMANENTLY_INVALIDATED` | Android Keystore key was permanently invalidated |
+| `USER_NOT_AUTHENTICATED` | Keystore key requires user authentication first |
+| `INTEGRITY_CHECK_FAILED` | GCM authentication failed (tampered ciphertext/IV) |
+| `INVALID_BLOCK_MODE` | Decrypt could not map the given block mode to a parameter spec |
+| `KEY_TYPE_MISMATCH` | Keystore alias does not hold the expected key type |
 | `UNKNOWN` | Unexpected Keystore or crypto failure |
 | `UNSUPPORTED_EC_TRANSFORMATION` | EC encrypt/decrypt called with an unsupported transformation |
 

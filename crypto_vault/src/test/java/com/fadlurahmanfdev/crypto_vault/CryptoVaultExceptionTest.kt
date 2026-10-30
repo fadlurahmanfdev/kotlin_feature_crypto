@@ -65,10 +65,6 @@ class CryptoVaultExceptionTest {
             CryptoVaultExceptionCodes.invalidBlockMode("msg").code,
         )
         assertEquals(
-            CryptoVaultExceptionCodes.SDK_NOT_SUPPORTED,
-            CryptoVaultExceptionCodes.sdkNotSupported("msg").code,
-        )
-        assertEquals(
             CryptoVaultExceptionCodes.UNKNOWN,
             CryptoVaultExceptionCodes.unknown("msg").code,
         )

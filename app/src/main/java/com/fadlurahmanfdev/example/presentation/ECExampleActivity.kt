@@ -1,7 +1,5 @@
 package com.fadlurahmanfdev.example.presentation
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.data.FeatureModel
 import com.fadlurahmanfdev.example.domain.runner.EcExampleRunner
@@ -28,7 +26,7 @@ class ECExampleActivity : AlgorithmExampleActivity() {
         FeatureModel(
             featureIcon = R.drawable.ic_algorithm_ec,
             title = "Generate Android Keystore key",
-            desc = "Create or load an EC key pair from Android Keystore (API 23+).",
+            desc = "Create or load an EC key pair from Android Keystore.",
             enum = "EC_KEYSTORE_GENERATE",
         ),
         FeatureModel(
@@ -57,7 +55,6 @@ class ECExampleActivity : AlgorithmExampleActivity() {
         ),
     )
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onClicked(item: FeatureModel) {
         val result = when (item.enum) {
             "EC_FULL_FLOW" -> runner.runFullFlow()

@@ -107,7 +107,6 @@ class CryptoVaultECTest {
 
     @Test
     fun generate_key_via_android_keystore_and_sign_verify() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
 
         val keystoreAlias = "ec_keystore_test_${System.currentTimeMillis()}"
         cryptoVaultEC.deleteKey(keystoreAlias)
@@ -140,7 +139,6 @@ class CryptoVaultECTest {
 
     @Test
     fun get_private_key_from_android_keystore() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
 
         val keystoreAlias = "ec_private_key_test_${System.currentTimeMillis()}"
         cryptoVaultEC.deleteKey(keystoreAlias)

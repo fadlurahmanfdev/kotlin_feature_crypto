@@ -9,8 +9,6 @@ import android.security.keystore.StrongBoxUnavailableException
 import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
 import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
-import com.fadlurahmanfdev.crypto_vault.domain.contracts.AndroidKeyStoreAESOperation
-import com.fadlurahmanfdev.crypto_vault.internal.aes.DefaultAndroidKeyStoreAESOperation
 import com.fadlurahmanfdev.crypto_vault.internal.contracts.KeyStoreSecretKeyManager
 import java.security.KeyStore
 import java.security.cert.Certificate
@@ -23,11 +21,8 @@ internal class AndroidKeyStoreSecretKeyManager : KeyStoreSecretKeyManager {
         const val KEY_PROVIDER = "AndroidKeyStore"
         const val GCM_TAG_LENGTH_BITS = 128
         val SUPPORTED_KEY_SIZES = setOf(128, 256)
-
-        fun create() : AndroidKeyStoreAESOperation {
-            return DefaultAndroidKeyStoreAESOperation()
-        }
     }
+
     private fun keyStoreInstance() = KeyStore.getInstance(KEY_PROVIDER)
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -45,44 +40,36 @@ internal class AndroidKeyStoreSecretKeyManager : KeyStoreSecretKeyManager {
         keyGenParameterSpecBuilder: KeyGenParameterSpec.Builder.() -> Unit
     ): SecretKey {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requireValidKeystoreAlias(keyStoreAlias)
-                requireValidKeySize(keySize)
+            requireValidKeystoreAlias(keyStoreAlias)
+            requireValidKeySize(keySize)
 
-                val purposes = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+            val purposes = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
 
-                val keyGenParameterSpec = KeyGenParameterSpec
-                    .Builder(keyStoreAlias, purposes)
-                    .setKeySize(keySize)
-                    .setBlockModes(blockMode)
-                    .setEncryptionPaddings(padding)
-                    .setRandomizedEncryptionRequired(true)
-                    .apply {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                            setIsStrongBoxBacked(strongBoxBacked)
-                        }
+            val keyGenParameterSpec = KeyGenParameterSpec
+                .Builder(keyStoreAlias, purposes)
+                .setKeySize(keySize)
+                .setBlockModes(blockMode)
+                .setEncryptionPaddings(padding)
+                .setRandomizedEncryptionRequired(true)
+                .apply {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        setIsStrongBoxBacked(strongBoxBacked)
                     }
-                    .apply(keyGenParameterSpecBuilder)
-                    .build()
+                }
+                .apply(keyGenParameterSpecBuilder)
+                .build()
 
-                val keyGenerator = KeyGenerator.getInstance(algorithm, KEY_PROVIDER)
-                keyGenerator.init(keyGenParameterSpec)
-                return keyGenerator.generateKey()
-            } else {
-                throw CryptoVaultExceptionCodes.sdkNotSupported(
-                    message = "Unable to generate secret key caused by sdk not supported",
-                )
-            }
+            val keyGenerator = KeyGenerator.getInstance(algorithm, KEY_PROVIDER)
+            keyGenerator.init(keyGenParameterSpec)
+            return keyGenerator.generateKey()
         } catch (e: CryptoVaultException) {
             throw e
         } catch (e: Throwable) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                if (e is StrongBoxUnavailableException) {
-                    throw CryptoVaultExceptionCodes.strongBoxNotSupported(
-                        message = "StrongBox is not available on this device",
-                        cause = e,
-                    )
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && e is StrongBoxUnavailableException) {
+                throw CryptoVaultExceptionCodes.strongBoxNotSupported(
+                    message = "StrongBox is not available on this device",
+                    cause = e,
+                )
             }
 
             throw CryptoVaultExceptionCodes.unknown(
@@ -135,6 +122,7 @@ internal class AndroidKeyStoreSecretKeyManager : KeyStoreSecretKeyManager {
             )
         }
     }
+
     private fun requireValidKeySize(keySize: Int) {
         if (keySize !in SUPPORTED_KEY_SIZES) {
             throw CryptoVaultExceptionCodes.invalidKeySize(

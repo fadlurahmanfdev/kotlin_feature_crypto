@@ -20,7 +20,7 @@ class RSAExampleActivity : AlgorithmExampleActivity() {
         FeatureModel(
             featureIcon = R.drawable.ic_algorithm_rsa,
             title = "Android Keystore encrypt/decrypt",
-            desc = "Create or reuse an RSA key in Android Keystore and round-trip encrypt data (API 23+).",
+            desc = "Create or reuse an RSA key in Android Keystore and round-trip encrypt data.",
             enum = "RSA_KEYSTORE_ENCRYPT",
         ),
         FeatureModel(

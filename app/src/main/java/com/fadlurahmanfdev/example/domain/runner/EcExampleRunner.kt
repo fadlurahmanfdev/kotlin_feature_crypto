@@ -3,7 +3,6 @@ package com.fadlurahmanfdev.example.domain.runner
 import android.content.Context
 import android.os.Build
 import android.util.Base64
-import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultEC
 import com.fadlurahmanfdev.crypto_vault.api.ecdh.CryptoVaultECDHAndroidKeyStoreKeyPairManager
 import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECSignatureAlgorithm
@@ -62,7 +61,6 @@ class EcExampleRunner(
         )
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     fun runKeyExchange(context: Context): ExampleResult {
         val bobKeyStoreAlias = "ecdh_example_bob"
         val aliceKeyStoreAlias = "ecdh_example_alice"
@@ -141,7 +139,6 @@ class EcExampleRunner(
     }
 
     fun runGenerateKeystoreKey(): ExampleResult {
-        requireApiM()
         val keystoreAlias = "example_ec"
         val (privateKey, publicKey) = getOrCreateKeystoreKeyPair(keystoreAlias)
         val signature = cryptoVaultEC.generateSignature(
@@ -160,7 +157,6 @@ class EcExampleRunner(
     }
 
     fun runKeystoreSignVerify(): ExampleResult {
-        requireApiM()
         val keystoreAlias = "example_ec"
         val (privateKey, publicKey) = getOrCreateKeystoreKeyPair(keystoreAlias)
         val plainText = "Passw0rd!"
@@ -280,9 +276,4 @@ class EcExampleRunner(
         ),
     )
 
-    private fun requireApiM() {
-        check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            "Android Keystore EC examples require API 23+"
-        }
-    }
 }

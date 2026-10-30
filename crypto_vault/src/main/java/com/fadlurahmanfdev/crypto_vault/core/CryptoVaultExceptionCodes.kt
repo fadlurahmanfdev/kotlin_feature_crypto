@@ -19,7 +19,6 @@ internal object CryptoVaultExceptionCodes {
     const val INTEGRITY_CHECK_FAILED = "INTEGRITY_CHECK_FAILED"
     const val KEY_TYPE_MISMATCH = "KEY_TYPE_MISMATCH"
     const val INVALID_BLOCK_MODE = "INVALID_BLOCK_MODE"
-    const val SDK_NOT_SUPPORTED = "SDK_NOT_SUPPORTED"
 
     fun strongBoxNotSupported(message: String?, cause: Throwable? = null): CryptoVaultException =
         CryptoVaultException(
@@ -87,13 +86,6 @@ internal object CryptoVaultExceptionCodes {
     fun invalidBlockMode(message: String?, cause: Throwable? = null): CryptoVaultException =
         CryptoVaultException(
             code = INVALID_BLOCK_MODE,
-            message = message,
-            cause = cause,
-        )
-
-    fun sdkNotSupported(message: String?, cause: Throwable? = null): CryptoVaultException =
-        CryptoVaultException(
-            code = SDK_NOT_SUPPORTED,
             message = message,
             cause = cause,
         )

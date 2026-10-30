@@ -1,31 +1,49 @@
 package com.fadlurahmanfdev.crypto_vault.domain.contracts
 
+import android.content.Context
+import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
-import com.fadlurahmanfdev.crypto_vault.api.enums.aes.CryptoVaultAESTransformation
+import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.domain.models.EncryptedData
 import java.security.spec.AlgorithmParameterSpec
 import javax.crypto.SecretKey
 
+/**
+ * Internal contract for Android Keystore AES key lifecycle and cipher operations.
+ */
 interface CryptoVaultAESAndroidKeyStoreOperation {
     fun generateKey(
-        keystoreAlias: String,
-        purposes: Int,
-        transformation: CryptoVaultAESTransformation = CryptoVaultAESTransformation.GCM_NO_PADDING,
-        keyGenParameterSpecBuilder: KeyGenParameterSpec.Builder.() -> Unit = {}
+        keyStoreAlias: String,
+        keySize: Int,
+        blockMode: String,
+        padding: String,
+        strongBoxBacked: Boolean,
+        keyGenParameterSpecBuilder: KeyGenParameterSpec.Builder.() -> Unit,
     ): SecretKey
 
     fun generateKey(algorithmParameterSpec: AlgorithmParameterSpec): SecretKey
 
+    fun getKey(keyStoreAlias: String): SecretKey?
+
+    fun isKeyExist(keyStoreAlias: String): Boolean
+
+    fun deleteKey(keyStoreAlias: String)
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    fun isSupportStrongBox(context: Context): Boolean
+
     fun encrypt(
         secretKey: SecretKey,
-        transformation: CryptoVaultAESTransformation = CryptoVaultAESTransformation.GCM_NO_PADDING,
-        plainText: String,
+        plainText: ByteArray,
+        blockMode: String,
+        padding: String,
     ): EncryptedData
 
     fun decrypt(
         secretKey: SecretKey,
-        transformation: CryptoVaultAESTransformation = CryptoVaultAESTransformation.GCM_NO_PADDING,
         encrypted: ByteArray,
-        algorithmParameterSpec: AlgorithmParameterSpec,
-    ): String
+        iv: ByteArray,
+        blockMode: String,
+        padding: String,
+    ): ByteArray
 }

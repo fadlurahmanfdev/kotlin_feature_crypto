@@ -3,7 +3,6 @@ package com.fadlurahmanfdev.crypto_vault
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultCustomKeyVault
 import com.fadlurahmanfdev.crypto_vault.api.enums.CryptoVaultAlgorithm
-import com.fadlurahmanfdev.crypto_vault.api.enums.aes.CryptoVaultAESEncryptionPadding
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -30,7 +29,7 @@ class CryptoVaultCustomKeyVaultTest {
 
     @Test
     fun encrypt_and_decrypt_with_custom_transformation_and_iv() {
-        val transformation = "${CryptoVaultAlgorithm.AES}/${CryptoVaultAESBlockMode.GCM}/${CryptoVaultAESEncryptionPadding.NoPadding}"
+        val transformation = "AES/GCM/NoPadding"
         val encodedKey = customKeyVault.generateKey(CryptoVaultAlgorithm.AES)
         val ivBytes = ByteArray(12)
         java.security.SecureRandom().nextBytes(ivBytes)
@@ -57,7 +56,7 @@ class CryptoVaultCustomKeyVaultTest {
 
     @Test
     fun encrypt_with_generated_iv_and_decrypt() {
-        val transformation = "${CryptoVaultAlgorithm.AES}/${CryptoVaultAESBlockMode.GCM}/${CryptoVaultAESEncryptionPadding.NoPadding}"
+        val transformation = "AES/GCM/NoPadding"
         val encodedKey = customKeyVault.generateKey(CryptoVaultAlgorithm.AES)
 
         val encryptedModel = customKeyVault.encrypt(

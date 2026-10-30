@@ -1,6 +1,5 @@
 package com.fadlurahmanfdev.example.domain.runner
 
-import android.os.Build
 import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultRSA
 import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSAEncryptionPadding
 import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSASignatureAlgorithm
@@ -59,7 +58,6 @@ class RsaExampleRunner(
     }
 
     fun runKeystoreEncryptDecrypt(): ExampleResult {
-        requireApiM()
         val plainText = "Passw0rd!"
         val keystoreAlias = "example_rsa"
         cryptoVaultRSA.deleteKey(keystoreAlias)
@@ -91,7 +89,6 @@ class RsaExampleRunner(
     }
 
     fun runKeystoreSignVerify(): ExampleResult {
-        requireApiM()
         val plainText = "Passw0rd!"
         val keystoreAlias = "example_rsa"
         val privateKey = cryptoVaultRSA.getPrivateKeyAndroidKeyStore(keystoreAlias = keystoreAlias)
@@ -135,9 +132,4 @@ class RsaExampleRunner(
         return key.private to key.public
     }
 
-    private fun requireApiM() {
-        check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            "Android Keystore RSA examples require API 23+"
-        }
-    }
 }

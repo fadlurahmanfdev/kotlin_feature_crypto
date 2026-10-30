@@ -11,7 +11,6 @@ internal interface KeyStoreKeyPairManager {
     @RequiresApi(Build.VERSION_CODES.P)
     fun isSupportStrongBox(context: Context): Boolean
 
-    @RequiresApi(Build.VERSION_CODES.M)
     fun generateKey(
         keyStoreAlias: String,
         strongBoxBacked: Boolean,

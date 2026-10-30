@@ -14,7 +14,6 @@ package com.fadlurahmanfdev.crypto_vault.core.exception
  * - `INTEGRITY_CHECK_FAILED` — authenticated decryption failed (data modified or wrong key/IV)
  * - `KEY_TYPE_MISMATCH` — Android Keystore entry exists but is not the expected key type
  * - `INVALID_BLOCK_MODE` — AES transformation block mode is not supported
- * - `SDK_NOT_SUPPORTED` — Android SDK level does not support the requested Keystore operation
  *
  * @param code Machine-readable error identifier.
  * @param message Human-readable error description.

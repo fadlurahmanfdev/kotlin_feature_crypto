@@ -21,7 +21,6 @@ class CryptoVaultECDHAndroidKeyStoreKeyPairManager internal constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     fun generateKey(
         keyStoreAlias: String,
         strongBoxBacked: Boolean,

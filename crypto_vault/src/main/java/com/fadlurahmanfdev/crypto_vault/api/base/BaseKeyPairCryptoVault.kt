@@ -4,7 +4,6 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.StrongBoxUnavailableException
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
 import com.fadlurahmanfdev.crypto_vault.api.enums.CryptoVaultAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.enum.CryptoVaultSignatureAlgorithm
@@ -48,7 +47,6 @@ abstract class BaseKeyPairCryptoVault : BaseCryptoVault() {
         )
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     open fun generateKeyFromAndroidKeyStore(
         algorithm: CryptoVaultAlgorithm,
         keyGenParameterSpec: KeyGenParameterSpec,

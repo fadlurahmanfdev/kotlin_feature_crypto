@@ -38,7 +38,7 @@ class AESExampleActivity : AlgorithmExampleActivity() {
         FeatureModel(
             featureIcon = R.drawable.ic_scenario_encrypt,
             title = "Software AES Key, GCM, No Padding (Custom GCM Parameter Spec)",
-            desc = "Software  AES GCM, No Padding with Custom GCM parameter spec.",
+            desc = "Software AES GCM, No Padding with Custom GCM parameter spec.",
             enum = "SOFTWARE_AES_GCM_CUSTOM_GCM_IV",
         ),
         FeatureModel(
@@ -50,15 +50,21 @@ class AESExampleActivity : AlgorithmExampleActivity() {
     )
 
     override fun onClicked(item: FeatureModel) {
-//        val result = when (item.enum) {
-//            "ANDROID_KEYSTORE_AES_GCM_NO_PADDING_GENERATED_IV" -> runner.runKeystoreGcmNoPaddingGeneratedIv()
-//            "ANDROID_KEYSTORE_AES_CBC_PKCS7_GENERATED_IV" -> runner.runKeystoreCbcPkcs7GeneratedIv()
-//            "SOFTWARE_AES_GCM_GENERATED_IV" -> runner.runGcmNoPaddingWithGeneratedIv()
-//            "SOFTWARE_AES_GCM_CUSTOM_IV" -> runner.runGcmNoPaddingCustomIvParameterSpec()
-//            "SOFTWARE_AES_GCM_CUSTOM_GCM_IV" -> runner.runGcmNoPaddingCustomGcmParameterSpec()
-//            "SOFTWARE_AES_CBC_PKCS5_CUSTOM_IV" -> runner.runCbcPkcs5CustomIv()
-//            else -> return
-//        }
-//        showResult(result)
+        val result = when (item.enum) {
+            "ANDROID_KEYSTORE_AES_GCM_NO_PADDING_GENERATED_IV" ->
+                runner.runKeystoreGcmNoPaddingGeneratedIv()
+            "ANDROID_KEYSTORE_AES_CBC_PKCS7_GENERATED_IV" ->
+                runner.runKeystoreCbcPkcs7GeneratedIv()
+            "SOFTWARE_AES_GCM_GENERATED_IV" ->
+                runner.runGcmNoPaddingWithGeneratedIv()
+            "SOFTWARE_AES_GCM_CUSTOM_IV" ->
+                runner.runGcmNoPaddingCustomIvParameterSpec()
+            "SOFTWARE_AES_GCM_CUSTOM_GCM_IV" ->
+                runner.runGcmNoPaddingCustomGcmParameterSpec()
+            "SOFTWARE_AES_CBC_PKCS5_CUSTOM_IV" ->
+                runner.runCbcPkcs5CustomIv()
+            else -> return
+        }
+        showResult(result)
     }
 }
