@@ -30,7 +30,7 @@ Library code is organized by layer under `com.fadlurahmanfdev.crypto_vault`:
 
 | Package | Purpose |
 |---------|---------|
-| `api` / `api.aes` | Public vault classes (`CryptoVaultAES`, `CryptoVaultAESAndroidKeyStore`, RSA, …) |
+| `api` / `api.aes` / `api.rsa` | Public vault classes (`CryptoVaultAES`, `CryptoVaultAESAndroidKeyStore`, `CryptoVaultRSA`, `CryptoVaultRSAAndroidKeyStore`, …) |
 | `api.base` | Open base classes for extending vault behavior |
 | `api.enums` | Shared algorithm enums (for example custom vault algorithms) |
 | `core.exception` | `CryptoVaultException` |
@@ -210,67 +210,125 @@ Full escape hatch: `generateKey(algorithmParameterSpec)` with your own `KeyGenPa
 
 ## RSA
 
-RSA encryption, decryption, and signing with optional Android Keystore backing.
+RSA uses two public entry points:
+
+| Class | Use when |
+|-------|----------|
+| `CryptoVaultRSA` | Software RSA key pair (exportable, lives in app memory) |
+| `CryptoVaultRSAAndroidKeyStore` | Android Keystore RSA key pair (non-exportable, TEE / StrongBox) |
+
+Defaults: **2048-bit** keys, encrypt/decrypt with
+`RSA/ECB/OAEPWithSHA-256AndMGF1Padding`, software signatures with `SHA256withRSA`,
+Keystore signatures with `SHA256withRSA/PSS` (keys are generated with OAEP + PSS paddings).
+I/O is `ByteArray` (no Base64 inside the vault). `blockMode`, `padding`, and
+`signatureAlgorithm` are plain JCA `String` segments.
 
 ```kotlin
-import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultRSA
-import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSAEncryptionPadding
-import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSASignatureAlgorithm
-import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSASignaturePadding
-import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSATransformationMode
-import com.fadlurahmanfdev.crypto_vault.core.enum.rsa.CryptoVaultRSATransformationPadding
+import com.fadlurahmanfdev.crypto_vault.api.rsa.CryptoVaultRSA
+import com.fadlurahmanfdev.crypto_vault.api.rsa.CryptoVaultRSAAndroidKeyStore
+import java.security.KeyPair
+import java.security.PrivateKey
+import java.security.PublicKey
 ```
 
-### Generate key pair
+### Software key (`CryptoVaultRSA`)
+
+Prefer Android Keystore when the private key never needs to leave the device. With software keys
+you must store key bytes securely yourself.
+
+`keySize` supports **2048, 3072, or 4096** bits (default 2048). Unsupported sizes throw
+`INVALID_KEY_SIZE`.
 
 ```kotlin
-val cryptoVaultRSA = CryptoVaultRSA()
+val rsa = CryptoVaultRSA.create()
+val keyPair: KeyPair = rsa.generateKey()
 
-// Software key pair (Base64-encoded)
-val key = cryptoVaultRSA.generateKey()
-
-// Android Keystore
-val keyPair = cryptoVaultRSA.generateKeyFromAndroidKeyStore(
-    keystoreAlias = "example_rsa",
-    encryptionPaddings = arrayOf(CryptoVaultRSAEncryptionPadding.RSA_PKCS1),
-    signaturePaddings = arrayOf(CryptoVaultRSASignaturePadding.RSA_PKCS1),
+val encrypted: ByteArray = rsa.encrypt(
+    publicKey = keyPair.public,
+    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
 )
-```
-
-### Sign and verify
-
-```kotlin
-val signature = cryptoVaultRSA.generateSignature(
-    encodedPrivateKey = key.privateKey,
-    signatureAlgorithm = CryptoVaultRSASignatureAlgorithm.SHA256withRSA,
-    plainText = "Passw0rd!",
+val decrypted: ByteArray = rsa.decrypt(
+    privateKey = keyPair.private,
+    encrypted = encrypted,
 )
-val isValid = cryptoVaultRSA.verifySignature(
-    encodedPublicKey = key.publicKey,
-    signatureAlgorithm = CryptoVaultRSASignatureAlgorithm.SHA256withRSA,
+
+val signature: ByteArray = rsa.sign(
+    privateKey = keyPair.private,
+    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+)
+val isValid: Boolean = rsa.verify(
+    publicKey = keyPair.public,
     signature = signature,
-    plainText = "Passw0rd!",
+    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
 )
 ```
 
-### Encrypt and decrypt
+Import existing keys with `parsePublicKey(byteArray)` / `parsePrivateKey(byteArray)`.
+Escape hatch: pass `algorithmParameterSpec` on encrypt/decrypt for custom OAEP (or other) specs.
+
+| Code | When |
+|------|------|
+| `INVALID_KEY_SIZE` | `keySize` is not 2048, 3072, or 4096 |
+| `UNKNOWN` | Any other generation / encrypt / decrypt / sign / verify setup failure |
+
+`verify` returns `false` only when the signature does not match; unexpected setup errors throw
+`UNKNOWN`.
+
+### Android Keystore key (`CryptoVaultRSAAndroidKeyStore`)
+
+Keys are generated inside Android Keystore. Private material never leaves the Keystore.
+Defaults: RSA-2048, encryption padding `OAEPPadding`, signature padding `PSS`, digests
+`SHA-256` / `SHA-512`, StrongBox off. Generating again for the same alias replaces the old key.
 
 ```kotlin
-val encrypted = cryptoVaultRSA.encrypt(
-    encodedPublicKey = key.publicKey,
-    blockMode = CryptoVaultRSATransformationMode.ECB,
-    padding = CryptoVaultRSATransformationPadding.OAEPWithSHAAndMGF1Padding,
-    plainText = "Passw0rd!",
+val rsa = CryptoVaultRSAAndroidKeyStore.create()
+val keyPair: KeyPair = rsa.generateKey(keyStoreAlias = "example_rsa")
+
+// StrongBox + extra KeyGenParameterSpec options
+val strongBoxKey: KeyPair = rsa.generateKey(
+    keyStoreAlias = "example_rsa_strongbox",
+    strongBoxBacked = true,
+) {
+    setUserAuthenticationRequired(true)
+}
+
+val privateKey: PrivateKey = rsa.getPrivateKey("example_rsa")
+    ?: rsa.generateKey(keyStoreAlias = "example_rsa").private
+val publicKey: PublicKey = rsa.getPublicKey("example_rsa")!!
+
+val encrypted: ByteArray = rsa.encrypt(
+    publicKey = publicKey,
+    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
 )
-val decrypted = cryptoVaultRSA.decrypt(
-    encodedPrivateKey = key.privateKey,
-    blockMode = CryptoVaultRSATransformationMode.ECB,
-    padding = CryptoVaultRSATransformationPadding.OAEPWithSHAAndMGF1Padding,
-    encryptedText = encrypted,
+val plainText: ByteArray = rsa.decrypt(
+    privateKey = privateKey,
+    encrypted = encrypted,
+)
+
+val signature: ByteArray = rsa.sign(
+    privateKey = privateKey,
+    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+)
+val isValid: Boolean = rsa.verify(
+    publicKey = publicKey,
+    signature = signature,
+    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
 )
 ```
+
+Full escape hatch: `generateKey(algorithmParameterSpec)` with your own `KeyGenParameterSpec`.
+
+| Code | When |
+|------|------|
+| `INVALID_KEY_ALIAS` | `keyStoreAlias` is blank |
+| `INVALID_KEY_SIZE` | `keySize` is not 2048, 3072, or 4096 |
+| `STRONG_BOX_NOT_SUPPORTED` | `strongBoxBacked = true` but StrongBox is unavailable |
+| `KEY_PERMANENTLY_INVALIDATED` | Key was invalidated (for example biometric enrollment changed) |
+| `USER_NOT_AUTHENTICATED` | Key requires user authentication that has not happened yet |
+| `UNKNOWN` | Any other Keystore / cipher / signature failure |
 
 ---
+
 
 ## EC (Elliptic Curve)
 
@@ -423,6 +481,7 @@ val signature = customVault.generateSignature(
 | Before (v1.x) | After (v2.0 recommended) | Still supported |
 |---------------|----------------------------|-----------------|
 | Legacy monolithic AES API | `com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAES` / `CryptoVaultAESAndroidKeyStore` | Removed |
+| Legacy monolithic RSA API + RSA enums | `com.fadlurahmanfdev.crypto_vault.api.rsa.CryptoVaultRSA` / `CryptoVaultRSAAndroidKeyStore` | Removed |
 | `com.fadlurahmanfdev.crypto_vault.enums.*` | `com.fadlurahmanfdev.crypto_vault.core.enum.*` | `enum.*` and `enums.*` typealiases |
 | `com.fadlurahmanfdev.crypto_vault.enum.*` | `com.fadlurahmanfdev.crypto_vault.core.enum.*` | `enum.*` typealias |
 | `com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException` | `com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException` | `exception.*` typealias |
@@ -466,7 +525,7 @@ Common error codes:
 | Code | When |
 |------|------|
 | `STRONG_BOX_NOT_SUPPORTED` | StrongBox was requested but the device does not support it |
-| `INVALID_KEY_SIZE` | AES key size is not 128 or 256 |
+| `INVALID_KEY_SIZE` | AES key size is not 128/256, or RSA key size is not 2048/3072/4096 |
 | `INVALID_KEY_ALIAS` | Keystore alias is blank |
 | `KEY_PERMANENTLY_INVALIDATED` | Android Keystore key was permanently invalidated |
 | `USER_NOT_AUTHENTICATED` | Keystore key requires user authentication first |

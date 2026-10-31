@@ -5,7 +5,7 @@ package com.fadlurahmanfdev.crypto_vault
  *
  * Prefer importing from [com.fadlurahmanfdev.crypto_vault.api] in new code.
  */
-typealias CryptoVaultRSA = com.fadlurahmanfdev.crypto_vault.api.CryptoVaultRSA
+typealias CryptoVaultRSA = com.fadlurahmanfdev.crypto_vault.api.rsa.CryptoVaultRSA
 typealias CryptoVaultEC = com.fadlurahmanfdev.crypto_vault.api.CryptoVaultEC
 typealias CryptoVaultED25519 = com.fadlurahmanfdev.crypto_vault.api.CryptoVaultED25519
 typealias CryptoVaultCustomKeyVault = com.fadlurahmanfdev.crypto_vault.api.CryptoVaultCustomKeyVault
