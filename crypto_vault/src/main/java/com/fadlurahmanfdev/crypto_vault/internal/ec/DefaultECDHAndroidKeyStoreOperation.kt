@@ -1,32 +1,26 @@
-package com.fadlurahmanfdev.crypto_vault.internal
+package com.fadlurahmanfdev.crypto_vault.internal.ec
 
-import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.security.keystore.StrongBoxUnavailableException
-import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
-import com.fadlurahmanfdev.crypto_vault.internal.contracts.KeyStoreKeyPairManager
+import com.fadlurahmanfdev.crypto_vault.domain.contracts.ECDHAndroidKeyStoreOperation
 import java.security.KeyPair
 import java.security.KeyPairGenerator
+import java.security.PrivateKey
+import java.security.PublicKey
+import javax.crypto.KeyAgreement
 
-internal class DefaultECDHAndroidKeyStoreKeyPairManager : KeyStoreKeyPairManager {
+internal class DefaultECDHAndroidKeyStoreOperation : ECDHAndroidKeyStoreOperation {
     companion object {
         const val KEY_PROVIDER = "AndroidKeyStore"
 
-        fun create(): KeyStoreKeyPairManager {
-            return DefaultECDHAndroidKeyStoreKeyPairManager()
+        fun create(): ECDHAndroidKeyStoreOperation {
+            return DefaultECDHAndroidKeyStoreOperation()
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.P)
-    override fun isSupportStrongBox(context: Context): Boolean {
-        return context.packageManager.hasSystemFeature(PackageManager.FEATURE_STRONGBOX_KEYSTORE)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.S)
     override fun generateKey(
         keyStoreAlias: String,
         strongBoxBacked: Boolean,
@@ -36,7 +30,9 @@ internal class DefaultECDHAndroidKeyStoreKeyPairManager : KeyStoreKeyPairManager
             KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_SIGN or KeyProperties.PURPOSE_VERIFY or KeyProperties.PURPOSE_AGREE_KEY
         val parameterSpec = KeyGenParameterSpec.Builder(keyStoreAlias, purposes).apply {
             setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
-            setIsStrongBoxBacked(strongBoxBacked)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                setIsStrongBoxBacked(strongBoxBacked)
+            }
         }
             .apply(keyGenParameterSpecBuilder)
             .build()
@@ -47,12 +43,23 @@ internal class DefaultECDHAndroidKeyStoreKeyPairManager : KeyStoreKeyPairManager
             keyPairGenerator.initialize(parameterSpec)
             return keyPairGenerator.generateKeyPair()
         } catch (e: Throwable) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && e is StrongBoxUnavailableException) {
-                throw CryptoVaultExceptionCodes.strongBoxNotSupported(e.message, e)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                if (e is StrongBoxUnavailableException) {
+                    throw CryptoVaultExceptionCodes.strongBoxNotSupported(e.message, e)
+                }
             }
 
             throw CryptoVaultExceptionCodes.unknown(e.message, e)
         }
     }
 
+    override fun generateSharedSecret(
+        privateKey: PrivateKey,
+        otherPublicKey: PublicKey,
+    ): ByteArray {
+        val keyAgreement = KeyAgreement.getInstance("ECDH")
+        keyAgreement.init(privateKey)
+        keyAgreement.doPhase(otherPublicKey, true)
+        return keyAgreement.generateSecret()
+    }
 }

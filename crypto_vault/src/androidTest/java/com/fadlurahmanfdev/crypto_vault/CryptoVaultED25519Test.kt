@@ -20,8 +20,8 @@ class CryptoVaultED25519Test {
     @Test
     fun generate_key_success_is_not_empty() {
         val key = cryptoVaultED25519.generateKey()
-        assertEquals(true, key.publicKey.isNotEmpty())
-        assertEquals(true, key.privateKey.isNotEmpty())
+        assertEquals(true, key.encodedPublicKey.isNotEmpty())
+        assertEquals(true, key.encodedPrivateKey.isNotEmpty())
     }
 
     @Test
@@ -29,12 +29,12 @@ class CryptoVaultED25519Test {
         val plainSignatureText = "Plain Signature Text"
         val key = cryptoVaultED25519.generateKey()
         val signature = cryptoVaultED25519.generateSignature(
-            encodedPrivateKey = key.privateKey,
+            encodedPrivateKey = key.encodedPrivateKey,
             plainText = plainSignatureText,
         )
         assertEquals(true, signature.isNotEmpty())
         val isVerify = cryptoVaultED25519.verifySignature(
-            encodedPublicKey = key.publicKey,
+            encodedPublicKey = key.encodedPublicKey,
             signature = signature,
             plainText = plainSignatureText,
         )
@@ -46,9 +46,9 @@ class CryptoVaultED25519Test {
         val key = cryptoVaultED25519.generateKey()
         assertFalse(
             cryptoVaultED25519.verifySignature(
-                encodedPublicKey = key.publicKey,
+                encodedPublicKey = key.encodedPublicKey,
                 plainText = "Plain Signature Text",
-                signature = key.privateKey,
+                signature = key.encodedPrivateKey,
             )
         )
     }

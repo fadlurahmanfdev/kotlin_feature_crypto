@@ -1,7 +1,6 @@
 package com.fadlurahmanfdev.crypto_vault
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultCustomKeyVault
 import com.fadlurahmanfdev.crypto_vault.api.enums.CryptoVaultAlgorithm
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

@@ -1,15 +1,13 @@
-package com.fadlurahmanfdev.crypto_vault.api
+package com.fadlurahmanfdev.crypto_vault.api.ec
 
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import com.fadlurahmanfdev.crypto_vault.api.base.BaseKeyPairSigningCryptoVault
+import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
 import com.fadlurahmanfdev.crypto_vault.core.EcEcdhAesGcmCipher
-import com.fadlurahmanfdev.crypto_vault.api.enums.CryptoVaultAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECSignatureAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation
-import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
-import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
 import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultKey
 import java.security.KeyFactory
 import java.security.KeyPair
@@ -36,7 +34,7 @@ open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
      *
      * @param keystoreAlias Key identifier stored in Android Keystore.
      * @param strongBoxBacked Request StrongBox backing on API 28+.
-     * @throws CryptoVaultException when key generation fails.
+     * @throws com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException when key generation fails.
      */
     open fun generateKeyFromAndroidKeyStore(
         keystoreAlias: String,
@@ -117,9 +115,9 @@ open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
     /**
      * Encrypts [plainText] for the holder of the private key matching [encodedPublicKey].
      *
-     * Uses [CryptoVaultECTransformation.ECDH_AES_GCM]: ephemeral ECDH + SHA-256 KDF + AES-GCM.
+     * Uses [com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation.ECDH_AES_GCM]: ephemeral ECDH + SHA-256 KDF + AES-GCM.
      *
-     * @throws CryptoVaultException when [transformation] is not supported.
+     * @throws com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException when [transformation] is not supported.
      */
     open fun encrypt(
         encodedPublicKey: String,
@@ -139,7 +137,7 @@ open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
     /**
      * Decrypts [encryptedText] produced by [encrypt] for the same [transformation].
      *
-     * @throws CryptoVaultException when [transformation] is not supported.
+     * @throws com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException when [transformation] is not supported.
      */
     open fun decrypt(
         encodedPrivateKey: String,

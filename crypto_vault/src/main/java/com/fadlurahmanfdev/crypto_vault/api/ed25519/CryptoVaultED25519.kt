@@ -1,4 +1,4 @@
-package com.fadlurahmanfdev.crypto_vault.api
+package com.fadlurahmanfdev.crypto_vault.api.ed25519
 
 import android.util.Log
 import com.fadlurahmanfdev.crypto_vault.api.base.BaseCryptoVault
@@ -25,8 +25,8 @@ open class CryptoVaultED25519 : BaseCryptoVault() {
         val privateKey = key.private as Ed25519PrivateKeyParameters
         val publicKey = key.public as Ed25519PublicKeyParameters
         return CryptoVaultKey(
-            privateKey = encode(privateKey.encoded),
-            publicKey = encode(publicKey.encoded),
+            encodedPrivateKey = encode(privateKey.encoded),
+            encodedPublicKey = encode(publicKey.encoded),
         )
     }
 

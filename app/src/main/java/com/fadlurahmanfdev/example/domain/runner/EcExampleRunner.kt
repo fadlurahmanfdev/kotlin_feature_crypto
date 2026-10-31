@@ -3,8 +3,8 @@ package com.fadlurahmanfdev.example.domain.runner
 import android.content.Context
 import android.os.Build
 import android.util.Base64
-import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultEC
-import com.fadlurahmanfdev.crypto_vault.api.ecdh.CryptoVaultECDHAndroidKeyStoreKeyPairManager
+import com.fadlurahmanfdev.crypto_vault.api.ec.CryptoVaultEC
+import com.fadlurahmanfdev.crypto_vault.api.ec.CryptoVaultECAndroidKeyStore
 import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECSignatureAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation
 import com.fadlurahmanfdev.example.data.ExampleResult
@@ -12,7 +12,7 @@ import com.fadlurahmanfdev.example.data.ResultLine
 
 class EcExampleRunner(
     private val cryptoVaultEC: CryptoVaultEC = CryptoVaultEC(),
-    private val cryptoVaultECDHAndroidKeyStoreKeyPairManager: CryptoVaultECDHAndroidKeyStoreKeyPairManager = CryptoVaultECDHAndroidKeyStoreKeyPairManager.create(),
+    private val cryptoVaultECAndroidKeyStoreKeyPairManager: CryptoVaultECAndroidKeyStore = CryptoVaultECAndroidKeyStore.create(),
 ) {
     var encodedPrivateKey: String? = null
         private set
@@ -26,22 +26,22 @@ class EcExampleRunner(
         val key = cryptoVaultEC.generateKey()
         val transformation = CryptoVaultECTransformation.ECDH_AES_GCM
         val encryptedText = cryptoVaultEC.encrypt(
-            encodedPublicKey = key.publicKey,
+            encodedPublicKey = key.encodedPublicKey,
             transformation = transformation,
             plainText = plainText,
         )
         val decryptedText = cryptoVaultEC.decrypt(
-            encodedPrivateKey = key.privateKey,
+            encodedPrivateKey = key.encodedPrivateKey,
             transformation = transformation,
             encryptedText = encryptedText,
         )
         val signature = cryptoVaultEC.generateSignature(
-            encodedPrivateKey = key.privateKey,
+            encodedPrivateKey = key.encodedPrivateKey,
             plainText = plainText,
             signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA,
         )
         val isVerified = cryptoVaultEC.verifySignature(
-            encodedPublicKey = key.publicKey,
+            encodedPublicKey = key.encodedPublicKey,
             signature = signature,
             plainText = plainText,
             signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA,
@@ -50,8 +50,8 @@ class EcExampleRunner(
             scenarioTitle = "EC full flow (keygen, encrypt, sign)",
             lines = listOf(
                 ResultLine("plain text", plainText),
-                ResultLine("private key", key.privateKey),
-                ResultLine("public key", key.publicKey),
+                ResultLine("private key", key.encodedPrivateKey),
+                ResultLine("public key", key.encodedPublicKey),
                 ResultLine("encrypted text", encryptedText),
                 ResultLine("decrypted text", decryptedText),
                 ResultLine("signature", signature),
@@ -66,28 +66,28 @@ class EcExampleRunner(
         val aliceKeyStoreAlias = "ecdh_example_alice"
 
         val isSupportStrongBox = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            cryptoVaultECDHAndroidKeyStoreKeyPairManager.isSupportStrongBox(context)
+            cryptoVaultECAndroidKeyStoreKeyPairManager.isSupportStrongBox(context)
         } else {
             false
         }
 
-        val bobKey = cryptoVaultECDHAndroidKeyStoreKeyPairManager.generateKey(
+        val bobKey = cryptoVaultECAndroidKeyStoreKeyPairManager.generateKey(
             keyStoreAlias = bobKeyStoreAlias,
             strongBoxBacked = isSupportStrongBox,
         )
 
-        val aliceKey = cryptoVaultECDHAndroidKeyStoreKeyPairManager.generateKey(
+        val aliceKey = cryptoVaultECAndroidKeyStoreKeyPairManager.generateKey(
             keyStoreAlias = aliceKeyStoreAlias,
             strongBoxBacked = isSupportStrongBox,
         )
 
-        val bobSharedSecret = cryptoVaultECDHAndroidKeyStoreKeyPairManager.generateSharedSecret(
+        val bobSharedSecret = cryptoVaultECAndroidKeyStoreKeyPairManager.generateSharedSecret(
             privateKey = bobKey.private,
             otherPublicKey = aliceKey.public,
         )
         val encodedBobSharedSecret = Base64.encodeToString(bobSharedSecret, Base64.NO_WRAP)
 
-        val aliceSharedSecret = cryptoVaultECDHAndroidKeyStoreKeyPairManager.generateSharedSecret(
+        val aliceSharedSecret = cryptoVaultECAndroidKeyStoreKeyPairManager.generateSharedSecret(
             privateKey = aliceKey.private,
             otherPublicKey = bobKey.public,
         )
@@ -185,19 +185,19 @@ class EcExampleRunner(
 
     fun runGenerateSoftwareKey(): ExampleResult {
         val key = cryptoVaultEC.generateKey()
-        encodedPrivateKey = key.privateKey
-        encodedPublicKey = key.publicKey
+        encodedPrivateKey = key.encodedPrivateKey
+        encodedPublicKey = key.encodedPublicKey
         signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA
         signatureText = cryptoVaultEC.generateSignature(
-            encodedPrivateKey = key.privateKey,
+            encodedPrivateKey = key.encodedPrivateKey,
             signatureAlgorithm = signatureAlgorithm,
             plainText = "Passw0rd!",
         )
         return ExampleResult(
             scenarioTitle = "Generate EC software key pair",
             lines = listOf(
-                ResultLine("private key", key.privateKey),
-                ResultLine("public key", key.publicKey),
+                ResultLine("private key", key.encodedPrivateKey),
+                ResultLine("public key", key.encodedPublicKey),
                 ResultLine("sample signature", signatureText.orEmpty()),
                 ResultLine("next step", "Run Sign/Verify or Encrypt/Decrypt using this key"),
             ),

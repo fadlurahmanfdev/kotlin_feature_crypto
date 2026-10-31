@@ -5,14 +5,13 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
+import android.security.keystore.StrongBoxUnavailableException
 import android.security.keystore.UserNotAuthenticatedException
 import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
 import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
 import com.fadlurahmanfdev.crypto_vault.domain.contracts.CryptoVaultAESAndroidKeyStoreOperation
 import com.fadlurahmanfdev.crypto_vault.domain.models.EncryptedData
-import com.fadlurahmanfdev.crypto_vault.internal.AndroidKeyStoreSecretKeyManager
-import com.fadlurahmanfdev.crypto_vault.internal.contracts.KeyStoreSecretKeyManager
 import java.security.spec.AlgorithmParameterSpec
 import javax.crypto.AEADBadTagException
 import javax.crypto.Cipher
@@ -21,19 +20,19 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.IvParameterSpec
 
-internal class DefaultAndroidKeyStoreAESOperation(
-    private val secretKeyManager: KeyStoreSecretKeyManager = AndroidKeyStoreSecretKeyManager(),
-    private val cipherFactory: (transformation: String) -> Cipher = { transformation ->
-        Cipher.getInstance(transformation)
-    },
-    private val keyGeneratorFactory: () -> KeyGenerator = {
-        KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, AndroidKeyStoreSecretKeyManager.KEY_PROVIDER)
-    },
-) : CryptoVaultAESAndroidKeyStoreOperation {
+internal class DefaultAndroidKeyStoreAESOperation() : CryptoVaultAESAndroidKeyStoreOperation {
 
     companion object {
+        const val ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
+        const val KEY_PROVIDER = "AndroidKeyStore"
+
+        val SUPPORTED_KEY_SIZES = setOf(128, 256)
+
         fun create(): DefaultAndroidKeyStoreAESOperation = DefaultAndroidKeyStoreAESOperation()
     }
+
+    private fun keyGenerator() = KeyGenerator.getInstance(ALGORITHM, KEY_PROVIDER)
+    private fun cipher(transformation: String) = Cipher.getInstance(transformation)
 
     override fun generateKey(
         keyStoreAlias: String,
@@ -43,20 +42,49 @@ internal class DefaultAndroidKeyStoreAESOperation(
         strongBoxBacked: Boolean,
         keyGenParameterSpecBuilder: KeyGenParameterSpec.Builder.() -> Unit,
     ): SecretKey {
-        return secretKeyManager.generateKey(
-            algorithm = KeyProperties.KEY_ALGORITHM_AES,
-            keyStoreAlias = keyStoreAlias,
-            keySize = keySize,
-            blockMode = blockMode,
-            padding = padding,
-            strongBoxBacked = strongBoxBacked,
-            keyGenParameterSpecBuilder = keyGenParameterSpecBuilder,
-        )
+        try {
+            requireValidKeystoreAlias(keyStoreAlias)
+            requireValidKeySize(keySize)
+
+            val purposes = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+
+            val keyGenParameterSpec = KeyGenParameterSpec
+                .Builder(keyStoreAlias, purposes)
+                .setKeySize(keySize)
+                .setBlockModes(blockMode)
+                .setEncryptionPaddings(padding)
+                .setRandomizedEncryptionRequired(true)
+                .apply {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        setIsStrongBoxBacked(strongBoxBacked)
+                    }
+                }
+                .apply(keyGenParameterSpecBuilder)
+                .build()
+
+            val keyGenerator = KeyGenerator.getInstance(ALGORITHM, KEY_PROVIDER)
+            keyGenerator.init(keyGenParameterSpec)
+            return keyGenerator.generateKey()
+        } catch (e: CryptoVaultException) {
+            throw e
+        } catch (e: Throwable) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && e is StrongBoxUnavailableException) {
+                throw CryptoVaultExceptionCodes.strongBoxNotSupported(
+                    message = "StrongBox is not available on this device",
+                    cause = e,
+                )
+            }
+
+            throw CryptoVaultExceptionCodes.unknown(
+                message = "Failed to generate AES key in Android Keystore: ${e.message}",
+                cause = e,
+            )
+        }
     }
 
     override fun generateKey(algorithmParameterSpec: AlgorithmParameterSpec): SecretKey {
         return try {
-            val keyGenerator = keyGeneratorFactory()
+            val keyGenerator = keyGenerator()
             keyGenerator.init(algorithmParameterSpec)
             keyGenerator.generateKey()
         } catch (e: CryptoVaultException) {
@@ -87,7 +115,7 @@ internal class DefaultAndroidKeyStoreAESOperation(
         padding: String,
     ): EncryptedData {
         try {
-            val cipher = cipherFactory(AesTransformation.raw(blockMode, padding))
+            val cipher = cipher(AesTransformation.raw(blockMode, padding))
             cipher.init(Cipher.ENCRYPT_MODE, secretKey)
             return EncryptedData(
                 text = cipher.doFinal(plainText),
@@ -112,12 +140,13 @@ internal class DefaultAndroidKeyStoreAESOperation(
             val algorithmParameterSpec = when (blockMode) {
                 AesTransformation.DEFAULT_BLOCK_MODE ->
                     GCMParameterSpec(AesTransformation.GCM_TAG_LENGTH_BITS, iv)
+
                 AesTransformation.BLOCK_MODE_CBC -> IvParameterSpec(iv)
                 else -> throw CryptoVaultExceptionCodes.invalidBlockMode(
                     message = "Parameter with specific block mode: $blockMode is not found",
                 )
             }
-            val cipher = cipherFactory(AesTransformation.raw(blockMode, padding))
+            val cipher = cipher(AesTransformation.raw(blockMode, padding))
             cipher.init(Cipher.DECRYPT_MODE, secretKey, algorithmParameterSpec)
             return cipher.doFinal(encrypted)
         } catch (e: AEADBadTagException) {
@@ -135,19 +164,40 @@ internal class DefaultAndroidKeyStoreAESOperation(
         }
     }
 
-    private fun mapKeyStoreCryptoFailure(e: Throwable, fallbackMessage: String): CryptoVaultException {
+    private fun mapKeyStoreCryptoFailure(
+        e: Throwable,
+        fallbackMessage: String
+    ): CryptoVaultException {
         return when (e) {
             is KeyPermanentlyInvalidatedException -> CryptoVaultExceptionCodes.keyPermanentlyInvalidated(
                 message = "Android Keystore key is permanently invalidated and must be regenerated",
                 cause = e,
             )
+
             is UserNotAuthenticatedException -> CryptoVaultExceptionCodes.userNotAuthenticated(
                 message = "User must authenticate before using this Android Keystore key",
                 cause = e,
             )
+
             else -> CryptoVaultExceptionCodes.unknown(
                 message = fallbackMessage,
                 cause = e,
+            )
+        }
+    }
+
+    private fun requireValidKeystoreAlias(keystoreAlias: String) {
+        if (keystoreAlias.isBlank()) {
+            throw CryptoVaultExceptionCodes.invalidKeyAlias(
+                message = "Keystore alias must not be blank",
+            )
+        }
+    }
+
+    private fun requireValidKeySize(keySize: Int) {
+        if (keySize !in SUPPORTED_KEY_SIZES) {
+            throw CryptoVaultExceptionCodes.invalidKeySize(
+                message = "Android Keystore AES key size must be one of $SUPPORTED_KEY_SIZES, but was $keySize",
             )
         }
     }

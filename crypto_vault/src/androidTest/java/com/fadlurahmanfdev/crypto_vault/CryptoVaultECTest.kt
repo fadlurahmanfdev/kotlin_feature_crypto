@@ -1,8 +1,7 @@
 package com.fadlurahmanfdev.crypto_vault
 
-import android.os.Build
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultEC
+import com.fadlurahmanfdev.crypto_vault.api.ec.CryptoVaultEC
 import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECSignatureAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation
 import org.junit.Assert.assertEquals
@@ -27,22 +26,22 @@ class CryptoVaultECTest {
     @Test
     fun generate_key_non_android_keystore_success() {
         val key = cryptoVaultEC.generateKey()
-        assertTrue(key.publicKey.isNotEmpty())
-        assertTrue(key.privateKey.isNotEmpty())
+        assertTrue(key.encodedPublicKey.isNotEmpty())
+        assertTrue(key.encodedPrivateKey.isNotEmpty())
     }
 
     @Test
     fun generate_and_verify_signature_non_android_keystore() {
         val key = cryptoVaultEC.generateKey()
         val signature = cryptoVaultEC.generateSignature(
-            encodedPrivateKey = key.privateKey,
+            encodedPrivateKey = key.encodedPrivateKey,
             plainText = plainText,
             signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA,
         )
         assertTrue(signature.isNotEmpty())
         assertTrue(
             cryptoVaultEC.verifySignature(
-                encodedPublicKey = key.publicKey,
+                encodedPublicKey = key.encodedPublicKey,
                 signature = signature,
                 plainText = plainText,
                 signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA,
@@ -55,13 +54,13 @@ class CryptoVaultECTest {
         val key = cryptoVaultEC.generateKey()
         val transformation = CryptoVaultECTransformation.ECDH_AES_GCM
         val encrypted = cryptoVaultEC.encrypt(
-            encodedPublicKey = key.publicKey,
+            encodedPublicKey = key.encodedPublicKey,
             transformation = transformation,
             plainText = plainText,
         )
         assertTrue(encrypted.isNotEmpty())
         val decrypted = cryptoVaultEC.decrypt(
-            encodedPrivateKey = key.privateKey,
+            encodedPrivateKey = key.encodedPrivateKey,
             transformation = transformation,
             encryptedText = encrypted,
         )
@@ -74,7 +73,7 @@ class CryptoVaultECTest {
         val invalidSignature = cryptoVaultEC.encode(ByteArray(64))
         assertFalse(
             cryptoVaultEC.verifySignature(
-                encodedPublicKey = key.publicKey,
+                encodedPublicKey = key.encodedPublicKey,
                 signature = invalidSignature,
                 plainText = plainText,
                 signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA,
@@ -88,12 +87,12 @@ class CryptoVaultECTest {
         val aliceKey = cryptoVaultEC.generateKey()
 
         val bobSharedSecret = cryptoVaultEC.generateSharedSecret(
-            ourEncodedPrivateKey = bobKey.privateKey,
-            otherEncodedPublicKey = aliceKey.publicKey,
+            ourEncodedPrivateKey = bobKey.encodedPrivateKey,
+            otherEncodedPublicKey = aliceKey.encodedPublicKey,
         )
         val aliceSharedSecret = cryptoVaultEC.generateSharedSecret(
-            ourEncodedPrivateKey = aliceKey.privateKey,
-            otherEncodedPublicKey = bobKey.publicKey,
+            ourEncodedPrivateKey = aliceKey.encodedPrivateKey,
+            otherEncodedPublicKey = bobKey.encodedPublicKey,
         )
 
         assertTrue(bobSharedSecret.isNotEmpty())

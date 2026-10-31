@@ -42,8 +42,8 @@ abstract class BaseKeyPairCryptoVault : BaseCryptoVault() {
         }
         val key = keyPairGenerator.generateKeyPair()
         return CryptoVaultKey(
-            privateKey = encode(key.private.encoded),
-            publicKey = encode(key.public.encoded),
+            encodedPrivateKey = encode(key.private.encoded),
+            encodedPublicKey = encode(key.public.encoded),
         )
     }
 
