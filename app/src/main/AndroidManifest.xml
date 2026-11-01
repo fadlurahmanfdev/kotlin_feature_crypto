@@ -13,12 +13,6 @@
         android:theme="@style/Theme.Core_crypto"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.CustomAsymmetricExampleActivity"
-            android:exported="false" />
-        <activity
-            android:name=".presentation.CustomSymmetricExampleActivity"
-            android:exported="false" />
-        <activity
             android:name=".presentation.ED25519ExampleActivity"
             android:exported="false" />
         <activity

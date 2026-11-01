@@ -1,8 +1,8 @@
 package com.fadlurahmanfdev.crypto_vault.api.ed25519
 
 import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
-import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
 import com.fadlurahmanfdev.crypto_vault.domain.contracts.ED25519Operation
+import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
 import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultKeyPair
 import org.bouncycastle.crypto.generators.Ed25519KeyPairGenerator
 import org.bouncycastle.crypto.params.Ed25519KeyGenerationParameters

@@ -1,8 +1,8 @@
 package com.fadlurahmanfdev.crypto_vault.internal.rsa
 
 import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
-import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
 import com.fadlurahmanfdev.crypto_vault.domain.contracts.RSASoftwareOperation
+import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
 import java.security.KeyFactory
 import java.security.KeyPair
 import java.security.KeyPairGenerator

@@ -2,8 +2,6 @@ package com.fadlurahmanfdev.example.data
 
 import com.fadlurahmanfdev.example.R
 import com.fadlurahmanfdev.example.presentation.AESExampleActivity
-import com.fadlurahmanfdev.example.presentation.CustomAsymmetricExampleActivity
-import com.fadlurahmanfdev.example.presentation.CustomSymmetricExampleActivity
 import com.fadlurahmanfdev.example.presentation.ECExampleActivity
 import com.fadlurahmanfdev.example.presentation.ED25519ExampleActivity
 import com.fadlurahmanfdev.example.presentation.RSAExampleActivity
@@ -37,17 +35,5 @@ enum class AlgorithmCatalog(
         subtitle = "Edwards-curve digital signatures",
         iconRes = R.drawable.ic_algorithm_ed25519,
         activityClass = ED25519ExampleActivity::class.java,
-    ),
-    CUSTOM_SYMMETRIC(
-        title = "Custom Symmetric",
-        subtitle = "ChaCha20-Poly1305 via custom symmetric vault",
-        iconRes = R.drawable.ic_algorithm_custom_symmetric,
-        activityClass = CustomSymmetricExampleActivity::class.java,
-    ),
-    CUSTOM_ASYMMETRIC(
-        title = "Custom Asymmetric",
-        subtitle = "RSA encrypt/decrypt and sign/verify via custom vault",
-        iconRes = R.drawable.ic_algorithm_custom_asymmetric,
-        activityClass = CustomAsymmetricExampleActivity::class.java,
     ),
 }

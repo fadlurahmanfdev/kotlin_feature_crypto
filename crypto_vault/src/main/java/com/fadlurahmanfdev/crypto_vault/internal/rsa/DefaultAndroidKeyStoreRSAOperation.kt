@@ -10,8 +10,8 @@ import android.security.keystore.StrongBoxUnavailableException
 import android.security.keystore.UserNotAuthenticatedException
 import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
-import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
 import com.fadlurahmanfdev.crypto_vault.domain.contracts.RSAAndroidKeyStoreOperation
+import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
 import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.KeyStore

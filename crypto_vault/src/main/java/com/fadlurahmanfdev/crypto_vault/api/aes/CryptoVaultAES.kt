@@ -1,5 +1,6 @@
 package com.fadlurahmanfdev.crypto_vault.api.aes
 
+import android.security.keystore.KeyProperties
 import com.fadlurahmanfdev.crypto_vault.domain.contracts.AESSoftwareOperation
 import com.fadlurahmanfdev.crypto_vault.model.EncryptedData
 import com.fadlurahmanfdev.crypto_vault.internal.aes.AesTransformation
@@ -173,8 +174,8 @@ open class CryptoVaultAES(
     open fun decrypt(
         secretKey: SecretKey,
         encrypted: ByteArray,
-        blockMode: String = AesTransformation.DEFAULT_BLOCK_MODE,
-        padding: String = AesTransformation.DEFAULT_PADDING,
+        blockMode: String = KeyProperties.BLOCK_MODE_GCM,
+        padding: String = KeyProperties.ENCRYPTION_PADDING_NONE,
         algorithmParameterSpec: AlgorithmParameterSpec,
     ): ByteArray = operation.decrypt(
         secretKey = secretKey,
