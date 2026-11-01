@@ -96,9 +96,9 @@ class CryptoVaultECTest {
         assertTrue(bobSharedSecretBytes.contentEquals(aliceSharedSecretBytes))
 
         val bobDerivedKeyBytes =
-            cryptoVaultEC.derivedSharedSecret(sharedSecretBytes = bobSharedSecretBytes)
+            cryptoVaultEC.deriveAESKey(sharedSecretBytes = bobSharedSecretBytes)
         val aliceDerivedKeyBytes =
-            cryptoVaultEC.derivedSharedSecret(sharedSecretBytes = aliceSharedSecretBytes)
+            cryptoVaultEC.deriveAESKey(sharedSecretBytes = aliceSharedSecretBytes)
         assertTrue(bobDerivedKeyBytes.contentEquals(aliceDerivedKeyBytes))
     }
 }

@@ -1,6 +1,7 @@
 package com.fadlurahmanfdev.crypto_vault.domain.contracts
 
 import java.security.KeyPair
+import javax.crypto.SecretKey
 
 /**
  * Elliptic-curve vault for signing, hybrid ECDH encryption, and ECDH key exchange.
@@ -27,36 +28,12 @@ interface ECOperation {
         signatureAlgorithm: String = "SHA256withECDSA",
     ): Boolean
 
-    /**
-     * Encrypts [plainText] for the holder of the private key matching [publicKeyBytes].
-     *
-     * Default transformation is ephemeral ECDH + SHA-256 KDF + AES-GCM.
-     *
-     * @throws com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException when [transformation] is not supported.
-     */
-    fun encrypt(
-        publicKeyBytes: ByteArray,
-        transformation: String = "ECDH_AES_GCM",
-        plainText: String,
-    ): ByteArray
-
-    /**
-     * Decrypts [encryptedBytes] produced by [encrypt] for the same [transformation].
-     *
-     * @throws com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException when [transformation] is not supported.
-     */
-    fun decrypt(
-        privateKeyBytes: ByteArray,
-        transformation: String = "ECDH_AES_GCM",
-        encryptedBytes: ByteArray,
-    ): String
-
     /** Derives a shared secret via ECDH from local private and remote public key bytes. */
     fun generateSharedSecret(
-        ourPrivateKeyBytes: ByteArray,
-        otherPublicKeyBytes: ByteArray,
+        ephemeralPrivateKeyBytes: ByteArray,
+        recipientPublicKeyBytes: ByteArray,
     ): ByteArray
 
     /** Derives a 256-bit AES key from an ECDH shared secret using SHA-256. */
-    fun derivedSharedSecret(sharedSecretBytes: ByteArray): ByteArray
+    fun deriveAESKey(sharedSecretBytes: ByteArray): SecretKey
 }

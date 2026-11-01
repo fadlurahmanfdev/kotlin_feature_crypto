@@ -86,7 +86,7 @@ class CryptoVaultAESTest {
 
         val encryptedData = cryptoVaultAES.encrypt(
             secretKey = secretKey,
-            plainTextBytes = plainTextBytes,
+            plainText = plainTextBytes,
         )
         val decrypted = cryptoVaultAES.decrypt(
             secretKey = secretKey,
@@ -148,7 +148,7 @@ class CryptoVaultAESTest {
         val secretKey = cryptoVaultAES.generateKey()
         val encryptedData = cryptoVaultAES.encrypt(
             secretKey = secretKey,
-            plainTextBytes = "Passw0rd!".toByteArray(),
+            plainText = "Passw0rd!".toByteArray(),
         )
         val tampered = encryptedData.encryptedBytes.copyOf().also { it[0] = (it[0] + 1).toByte() }
 
@@ -169,7 +169,7 @@ class CryptoVaultAESTest {
         val parsed = cryptoVaultAES.parseKey(secretKey.encoded)
         val plainTextBytes = "hello".toByteArray()
 
-        val encryptedData = cryptoVaultAES.encrypt(secretKey = parsed, plainTextBytes = plainTextBytes)
+        val encryptedData = cryptoVaultAES.encrypt(secretKey = parsed, plainText = plainTextBytes)
         val decrypted = cryptoVaultAES.decrypt(
             secretKey = cryptoVaultAES.parseKey(secretKey.encoded),
             encryptedBytes = encryptedData.encryptedBytes,

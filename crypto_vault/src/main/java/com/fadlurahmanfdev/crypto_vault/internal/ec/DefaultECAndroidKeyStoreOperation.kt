@@ -10,19 +10,23 @@ import com.fadlurahmanfdev.crypto_vault.domain.contracts.KeyManager
 import com.fadlurahmanfdev.crypto_vault.internal.DefaultKeyManager
 import java.security.KeyPair
 import java.security.KeyPairGenerator
+import java.security.MessageDigest
 import java.security.PrivateKey
 import java.security.PublicKey
 import javax.crypto.KeyAgreement
+import javax.crypto.SecretKey
+import javax.crypto.spec.SecretKeySpec
 
-internal class DefaultECDHAndroidKeyStoreOperation internal constructor(
+internal class DefaultECAndroidKeyStoreOperation internal constructor(
     private val keyManager: KeyManager,
 ): ECDHAndroidKeyStoreOperation {
     companion object {
         const val ALGORITHM = KeyProperties.KEY_ALGORITHM_EC
+        const val KEY_AGREEMENT_ALGORITHM = "ECDH"
         const val KEY_PROVIDER = "AndroidKeyStore"
 
         fun create(): ECDHAndroidKeyStoreOperation {
-            return DefaultECDHAndroidKeyStoreOperation(
+            return DefaultECAndroidKeyStoreOperation(
                 keyManager = DefaultKeyManager.create()
             )
         }
@@ -79,12 +83,18 @@ internal class DefaultECDHAndroidKeyStoreOperation internal constructor(
     }
 
     override fun generateSharedSecret(
-        privateKey: PrivateKey,
-        otherPublicKey: PublicKey,
+        ephemeralPrivateKey: PrivateKey,
+        recipientPublicKey: PublicKey,
     ): ByteArray {
-        val keyAgreement = KeyAgreement.getInstance("ECDH")
-        keyAgreement.init(privateKey)
-        keyAgreement.doPhase(otherPublicKey, true)
+        val keyAgreement = KeyAgreement.getInstance(KEY_AGREEMENT_ALGORITHM)
+        keyAgreement.init(ephemeralPrivateKey)
+        keyAgreement.doPhase(recipientPublicKey, true)
         return keyAgreement.generateSecret()
+    }
+
+    override fun deriveAESKey(sharedSecretBytes: ByteArray): SecretKey {
+        val sha256 = MessageDigest.getInstance("SHA-256")
+        val keyBytes = sha256.digest(sharedSecretBytes)
+        return SecretKeySpec(keyBytes, KeyProperties.KEY_ALGORITHM_AES)
     }
 }

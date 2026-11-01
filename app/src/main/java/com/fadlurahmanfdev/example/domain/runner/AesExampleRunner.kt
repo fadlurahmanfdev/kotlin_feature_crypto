@@ -224,12 +224,11 @@ class AesExampleRunner(
 
     fun runGcmNoPaddingWithGeneratedIv(): ExampleResult {
         val plainText = "Passw0rd!"
-        val plainTextBytes = plainText.toByteArray()
         val secretKey = cryptoVaultAES.generateKey()
         val encodedSecretKey = Base64.encodeToString(secretKey.encoded, Base64.NO_WRAP)
         val encryptedModel = cryptoVaultAES.encrypt(
             secretKey = secretKey,
-            plainTextBytes = plainTextBytes,
+            plainText = plainText,
         )
         val encodedEncryptedText =
             Base64.encodeToString(encryptedModel.encryptedBytes, Base64.NO_WRAP)

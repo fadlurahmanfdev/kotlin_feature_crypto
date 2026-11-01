@@ -3,10 +3,11 @@ package com.fadlurahmanfdev.crypto_vault.api.ec
 import android.security.keystore.KeyGenParameterSpec
 import com.fadlurahmanfdev.crypto_vault.domain.contracts.ECDHAndroidKeyStoreOperation
 import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
-import com.fadlurahmanfdev.crypto_vault.internal.ec.DefaultECDHAndroidKeyStoreOperation
+import com.fadlurahmanfdev.crypto_vault.internal.ec.DefaultECAndroidKeyStoreOperation
 import java.security.KeyPair
 import java.security.PrivateKey
 import java.security.PublicKey
+import javax.crypto.SecretKey
 
 open class CryptoVaultECAndroidKeyStore internal constructor(
     private val operation: ECDHAndroidKeyStoreOperation,
@@ -14,7 +15,7 @@ open class CryptoVaultECAndroidKeyStore internal constructor(
     companion object {
         fun create() : CryptoVaultECAndroidKeyStore {
             return CryptoVaultECAndroidKeyStore(
-                operation = DefaultECDHAndroidKeyStoreOperation.create()
+                operation = DefaultECAndroidKeyStoreOperation.create()
             )
         }
     }
@@ -38,10 +39,13 @@ open class CryptoVaultECAndroidKeyStore internal constructor(
     )
 
     open fun generateSharedSecret(
-        privateKey: PrivateKey,
-        otherPublicKey: PublicKey,
+        ephemeralPrivateKey: PrivateKey,
+        recipientPublicKey: PublicKey,
     ): ByteArray = operation.generateSharedSecret(
-        privateKey = privateKey,
-        otherPublicKey = otherPublicKey
+        ephemeralPrivateKey = ephemeralPrivateKey,
+        recipientPublicKey = recipientPublicKey
     )
+
+    open fun deriveAESKey(sharedSecretBytes: ByteArray): SecretKey =
+        operation.deriveAESKey(sharedSecretBytes = sharedSecretBytes)
 }

@@ -19,7 +19,6 @@ class CryptoVaultKeyManager internal constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.P)
     fun isSupportStrongBox(context: Context): Boolean = keyManager.isSupportStrongBox(context)
 
     fun getKey(keyStoreAlias: String): SecretKey = keyManager.getSecretKey(keyStoreAlias)

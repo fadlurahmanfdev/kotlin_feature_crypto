@@ -38,7 +38,7 @@ class CryptoVaultAESTest {
     fun software_encrypt_decrypt_gcm_round_trip_success() {
         val key = softwareAes.generateKey()
         val plainTextBytes = "Passw0rd!".toByteArray()
-        val encryptedData = softwareAes.encrypt(secretKey = key, plainTextBytes = plainTextBytes)
+        val encryptedData = softwareAes.encrypt(secretKey = key, plainText = plainTextBytes)
         val decrypted = softwareAes.decrypt(
             secretKey = key,
             encryptedBytes = encryptedData.encryptedBytes,

@@ -4,6 +4,7 @@ import android.security.keystore.KeyGenParameterSpec
 import java.security.KeyPair
 import java.security.PrivateKey
 import java.security.PublicKey
+import javax.crypto.SecretKey
 
 interface ECDHAndroidKeyStoreOperation {
     fun getKey(keyStoreAlias: String): KeyPair
@@ -14,8 +15,9 @@ interface ECDHAndroidKeyStoreOperation {
     ): KeyPair
 
     fun generateSharedSecret(
-        privateKey: PrivateKey,
-        otherPublicKey: PublicKey,
+        ephemeralPrivateKey: PrivateKey,
+        recipientPublicKey: PublicKey,
     ): ByteArray
 
+    fun deriveAESKey(sharedSecretBytes: ByteArray): SecretKey
 }

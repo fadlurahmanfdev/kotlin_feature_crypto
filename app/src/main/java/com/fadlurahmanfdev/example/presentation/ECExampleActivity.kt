@@ -25,33 +25,9 @@ class ECExampleActivity : AlgorithmExampleActivity() {
         ),
         FeatureModel(
             featureIcon = R.drawable.ic_algorithm_ec,
-            title = "Generate Android Keystore key",
-            desc = "Create or load an EC key pair from Android Keystore.",
-            enum = "EC_KEYSTORE_GENERATE",
-        ),
-        FeatureModel(
-            featureIcon = R.drawable.ic_algorithm_ed25519,
-            title = "Android Keystore sign/verify",
-            desc = "Sign and verify using the EC key stored in Android Keystore.",
-            enum = "EC_KEYSTORE_SIGN_VERIFY",
-        ),
-        FeatureModel(
-            featureIcon = R.drawable.ic_scenario_encrypt,
-            title = "Generate software key pair",
-            desc = "Generate an in-memory EC key pair for the multi-step software examples below.",
-            enum = "EC_SOFTWARE_GENERATE",
-        ),
-        FeatureModel(
-            featureIcon = R.drawable.ic_algorithm_ed25519,
-            title = "Software sign/verify",
-            desc = "Verify the signature created after generating the software key pair.",
-            enum = "EC_SOFTWARE_SIGN_VERIFY",
-        ),
-        FeatureModel(
-            featureIcon = R.drawable.ic_scenario_encrypt,
-            title = "Software encrypt/decrypt",
-            desc = "Encrypt and decrypt using the software key pair from the generate step.",
-            enum = "EC_SOFTWARE_ENCRYPT_DECRYPT",
+            title = "ECDH key exchange",
+            desc = "Alice and Bob derive the same shared secret and derived AES key Via Android KeyStore",
+            enum = "EC_KEY_EXCHANGE_VIA_KEYSTORE",
         ),
     )
 
@@ -59,11 +35,7 @@ class ECExampleActivity : AlgorithmExampleActivity() {
         val result = when (item.enum) {
             "EC_FULL_FLOW" -> runner.runFullFlow()
             "EC_KEY_EXCHANGE" -> runner.runKeyExchange(this)
-            "EC_KEYSTORE_GENERATE" -> runner.runGenerateKeystoreKey()
-            "EC_KEYSTORE_SIGN_VERIFY" -> runner.runKeystoreSignVerify()
-            "EC_SOFTWARE_GENERATE" -> runner.runGenerateSoftwareKey()
-            "EC_SOFTWARE_SIGN_VERIFY" -> runner.runSoftwareSignVerify()
-            "EC_SOFTWARE_ENCRYPT_DECRYPT" -> runner.runSoftwareEncryptDecrypt()
+            "EC_KEY_EXCHANGE_VIA_KEYSTORE" -> runner.runKeyExchangeViaKeyStore(this)
             else -> return
         }
         showResult(result)

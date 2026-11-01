@@ -66,7 +66,7 @@ internal class DefaultSoftwareAESOperation(
 
     override fun encrypt(
         secretKey: SecretKey,
-        plainTextBytes: ByteArray,
+        plainText: String,
         blockMode: String,
         padding: String,
     ): EncryptedData {
@@ -74,7 +74,7 @@ internal class DefaultSoftwareAESOperation(
             val cipher = cipherFactory(AesTransformation.raw(blockMode, padding))
             cipher.init(Cipher.ENCRYPT_MODE, secretKey)
             EncryptedData(
-                encryptedBytes = cipher.doFinal(plainTextBytes),
+                encryptedBytes = cipher.doFinal(plainText.toByteArray()),
                 ivBytes = cipher.iv,
             )
         } catch (e: CryptoVaultException) {

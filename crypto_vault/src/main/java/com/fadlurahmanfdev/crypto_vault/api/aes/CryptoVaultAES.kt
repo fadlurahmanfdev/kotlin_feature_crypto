@@ -78,10 +78,10 @@ open class CryptoVaultAES(
     ): IvParameterSpec = operation.generateIvParameterSpec(ivSizeBytes)
 
     /**
-     * Encrypts [plainTextBytes] and returns ciphertext plus the Cipher-generated IV.
+     * Encrypts [plainText] and returns ciphertext plus the Cipher-generated IV.
      *
      * @param secretKey Software AES key from [generateKey] or [parseKey].
-     * @param plainTextBytes Data to encrypt.
+     * @param plainText Data to encrypt.
      * @param blockMode JCA block-mode segment for `AES/blockMode/padding`. Prefer `"GCM"`.
      *        Any other Android/JCA mode string is allowed (for example `"CTR"`); unsupported
      *        combinations fail with [CryptoVaultException].
@@ -92,12 +92,12 @@ open class CryptoVaultAES(
      */
     open fun encrypt(
         secretKey: SecretKey,
-        plainTextBytes: ByteArray,
+        plainText: String,
         blockMode: String = AesTransformation.DEFAULT_BLOCK_MODE,
         padding: String = AesTransformation.DEFAULT_PADDING,
     ): EncryptedData = operation.encrypt(
         secretKey = secretKey,
-        plainTextBytes = plainTextBytes,
+        plainText = plainText,
         blockMode = blockMode,
         padding = padding,
     )

@@ -20,7 +20,7 @@ interface AESSoftwareOperation {
 
     fun encrypt(
         secretKey: SecretKey,
-        plainTextBytes: ByteArray,
+        plainText: String,
         blockMode: String,
         padding: String,
     ): EncryptedData

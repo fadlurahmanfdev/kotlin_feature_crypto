@@ -21,9 +21,12 @@ internal class DefaultKeyManager: KeyManager {
     }
     private fun keyStoreInstance() = KeyStore.getInstance(KEY_PROVIDER)
 
-    @RequiresApi(Build.VERSION_CODES.P)
     override fun isSupportStrongBox(context: Context): Boolean {
-        return context.packageManager.hasSystemFeature(PackageManager.FEATURE_STRONGBOX_KEYSTORE)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            context.packageManager.hasSystemFeature(PackageManager.FEATURE_STRONGBOX_KEYSTORE)
+        } else {
+            false
+        }
     }
 
     override fun getSecretKey(keyStoreAlias: String): SecretKey {
