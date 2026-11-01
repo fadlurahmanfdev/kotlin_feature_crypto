@@ -5,7 +5,6 @@ import android.os.Build
 import android.util.Base64
 import com.fadlurahmanfdev.crypto_vault.api.ec.CryptoVaultEC
 import com.fadlurahmanfdev.crypto_vault.api.ec.CryptoVaultECAndroidKeyStore
-import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECSignatureAlgorithm
 import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation
 import com.fadlurahmanfdev.example.data.ExampleResult
 import com.fadlurahmanfdev.example.data.ResultLine

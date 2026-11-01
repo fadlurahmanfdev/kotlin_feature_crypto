@@ -1,7 +1,7 @@
 package com.fadlurahmanfdev.crypto_vault
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.junit.Assert.assertEquals
+import com.fadlurahmanfdev.crypto_vault.api.ed25519.CryptoVaultED25519
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -10,35 +10,36 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class CryptoVaultED25519Test {
-    lateinit var cryptoVaultED25519: CryptoVaultED25519
+    private lateinit var cryptoVaultED25519: CryptoVaultED25519
 
     @Before
     fun setUp() {
-        cryptoVaultED25519 = CryptoVaultED25519()
+        cryptoVaultED25519 = CryptoVaultED25519.create()
     }
 
     @Test
     fun generate_key_success_is_not_empty() {
         val key = cryptoVaultED25519.generateKey()
-        assertEquals(true, key.encodedPublicKey.isNotEmpty())
-        assertEquals(true, key.encodedPrivateKey.isNotEmpty())
+        assertTrue(key.encodedPublicKey.isNotEmpty())
+        assertTrue(key.encodedPrivateKey.isNotEmpty())
     }
 
     @Test
     fun generate_and_verify_signature() {
-        val plainSignatureText = "Plain Signature Text"
+        val plainText = "Plain Signature Text".toByteArray()
         val key = cryptoVaultED25519.generateKey()
         val signature = cryptoVaultED25519.generateSignature(
             encodedPrivateKey = key.encodedPrivateKey,
-            plainText = plainSignatureText,
+            plainText = plainText,
         )
-        assertEquals(true, signature.isNotEmpty())
-        val isVerify = cryptoVaultED25519.verifySignature(
-            encodedPublicKey = key.encodedPublicKey,
-            signature = signature,
-            plainText = plainSignatureText,
+        assertTrue(signature.isNotEmpty())
+        assertTrue(
+            cryptoVaultED25519.verifySignature(
+                encodedPublicKey = key.encodedPublicKey,
+                signature = signature,
+                plainText = plainText,
+            ),
         )
-        assertEquals(true, isVerify)
     }
 
     @Test
@@ -47,17 +48,28 @@ class CryptoVaultED25519Test {
         assertFalse(
             cryptoVaultED25519.verifySignature(
                 encodedPublicKey = key.encodedPublicKey,
-                plainText = "Plain Signature Text",
+                plainText = "Plain Signature Text".toByteArray(),
                 signature = key.encodedPrivateKey,
-            )
+            ),
         )
     }
 
     @Test
-    fun encode_and_decode_roundtrip() {
-        val payload = "ed25519-payload".toByteArray()
-        val encoded = cryptoVaultED25519.encode(payload)
-        assertTrue(encoded.isNotEmpty())
-        assertTrue(cryptoVaultED25519.decode(encoded).contentEquals(payload))
+    fun verify_tampered_signature_returns_false() {
+        val plainText = "Plain Signature Text".toByteArray()
+        val key = cryptoVaultED25519.generateKey()
+        val signature = cryptoVaultED25519.generateSignature(
+            encodedPrivateKey = key.encodedPrivateKey,
+            plainText = plainText,
+        )
+        val tampered = signature.copyOf().also { it[0] = (it[0] + 1).toByte() }
+
+        assertFalse(
+            cryptoVaultED25519.verifySignature(
+                encodedPublicKey = key.encodedPublicKey,
+                plainText = plainText,
+                signature = tampered,
+            ),
+        )
     }
 }

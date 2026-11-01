@@ -4,8 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import androidx.annotation.RequiresApi
-import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
-import com.fadlurahmanfdev.crypto_vault.domain.contracts.CryptoVaultRSAAndroidKeyStoreOperation
+import com.fadlurahmanfdev.crypto_vault.domain.contracts.RSAAndroidKeyStoreOperation
 import com.fadlurahmanfdev.crypto_vault.internal.rsa.DefaultAndroidKeyStoreRSAOperation
 import com.fadlurahmanfdev.crypto_vault.internal.rsa.RsaTransformation
 import java.security.KeyPair
@@ -27,7 +26,7 @@ import java.security.spec.AlgorithmParameterSpec
  * @param operation RSA Android Keystore operation implementation.
  */
 open class CryptoVaultRSAAndroidKeyStore(
-    protected val operation: CryptoVaultRSAAndroidKeyStoreOperation,
+    protected val operation: RSAAndroidKeyStoreOperation,
 ) {
     companion object {
         /**

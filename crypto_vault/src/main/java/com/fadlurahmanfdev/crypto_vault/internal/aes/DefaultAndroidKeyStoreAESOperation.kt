@@ -10,8 +10,9 @@ import android.security.keystore.UserNotAuthenticatedException
 import androidx.annotation.RequiresApi
 import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
 import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
-import com.fadlurahmanfdev.crypto_vault.domain.contracts.CryptoVaultAESAndroidKeyStoreOperation
-import com.fadlurahmanfdev.crypto_vault.domain.models.EncryptedData
+import com.fadlurahmanfdev.crypto_vault.domain.contracts.AESAndroidKeyStoreOperation
+import com.fadlurahmanfdev.crypto_vault.model.EncryptedData
+import java.security.KeyStore
 import java.security.spec.AlgorithmParameterSpec
 import javax.crypto.AEADBadTagException
 import javax.crypto.Cipher
@@ -20,7 +21,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.IvParameterSpec
 
-internal class DefaultAndroidKeyStoreAESOperation() : CryptoVaultAESAndroidKeyStoreOperation {
+internal class DefaultAndroidKeyStoreAESOperation() : AESAndroidKeyStoreOperation {
 
     companion object {
         const val ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
@@ -31,6 +32,7 @@ internal class DefaultAndroidKeyStoreAESOperation() : CryptoVaultAESAndroidKeySt
         fun create(): DefaultAndroidKeyStoreAESOperation = DefaultAndroidKeyStoreAESOperation()
     }
 
+    private fun keyStoreInstance() = KeyStore.getInstance(KEY_PROVIDER)
     private fun keyGenerator() = KeyGenerator.getInstance(ALGORITHM, KEY_PROVIDER)
     private fun cipher(transformation: String) = Cipher.getInstance(transformation)
 
@@ -97,16 +99,30 @@ internal class DefaultAndroidKeyStoreAESOperation() : CryptoVaultAESAndroidKeySt
         }
     }
 
-    override fun getKey(keyStoreAlias: String): SecretKey? = secretKeyManager.getKey(keyStoreAlias)
+    override fun getKey(keyStoreAlias: String): SecretKey? {
+        val keyStore = keyStoreInstance()
+        keyStore.load(null)
+        return keyStore.getKey(keyStoreAlias, null) as SecretKey?
+    }
 
-    override fun isKeyExist(keyStoreAlias: String): Boolean =
-        secretKeyManager.isKeyExist(keyStoreAlias)
+    override fun isKeyExist(keyStoreAlias: String): Boolean {
+        val keyStore = keyStoreInstance()
+        keyStore.load(null)
+        return keyStore.containsAlias(keyStoreAlias)
+    }
 
-    override fun deleteKey(keyStoreAlias: String) = secretKeyManager.deleteKey(keyStoreAlias)
+    override fun deleteKey(keyStoreAlias: String) {
+        val keyStore = keyStoreInstance()
+        keyStore.load(null)
+        keyStore.deleteEntry(keyStoreAlias)
+    }
 
     @RequiresApi(Build.VERSION_CODES.P)
-    override fun isSupportStrongBox(context: Context): Boolean =
-        secretKeyManager.isSupportStrongBox(context)
+    override fun isSupportStrongBox(context: Context): Boolean {
+        return context.packageManager.hasSystemFeature(
+            android.content.pm.PackageManager.FEATURE_STRONGBOX_KEYSTORE,
+        )
+    }
 
     override fun encrypt(
         secretKey: SecretKey,

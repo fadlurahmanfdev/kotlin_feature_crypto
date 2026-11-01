@@ -2,7 +2,7 @@ package com.fadlurahmanfdev.crypto_vault.internal.rsa
 
 import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
 import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
-import com.fadlurahmanfdev.crypto_vault.domain.contracts.CryptoVaultRSASoftwareOperation
+import com.fadlurahmanfdev.crypto_vault.domain.contracts.RSASoftwareOperation
 import java.security.KeyFactory
 import java.security.KeyPair
 import java.security.KeyPairGenerator
@@ -28,7 +28,7 @@ internal class DefaultSoftwareRSAOperation(
     private val keyFactoryFactory: () -> KeyFactory = {
         KeyFactory.getInstance(RsaTransformation.ALGORITHM)
     },
-) : CryptoVaultRSASoftwareOperation {
+) : RSASoftwareOperation {
 
     companion object {
         fun create(): DefaultSoftwareRSAOperation = DefaultSoftwareRSAOperation()

@@ -1,6 +1,6 @@
 package com.fadlurahmanfdev.crypto_vault.core
 
-import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
+import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
 
 /**
  * Centralized machine-readable [CryptoVaultException.code] values and factory helpers.

@@ -1,7 +1,6 @@
 package com.fadlurahmanfdev.crypto_vault.api.rsa
 
-import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
-import com.fadlurahmanfdev.crypto_vault.domain.contracts.CryptoVaultRSASoftwareOperation
+import com.fadlurahmanfdev.crypto_vault.domain.contracts.RSASoftwareOperation
 import com.fadlurahmanfdev.crypto_vault.internal.rsa.DefaultSoftwareRSAOperation
 import com.fadlurahmanfdev.crypto_vault.internal.rsa.RsaTransformation
 import java.security.KeyPair
@@ -21,7 +20,7 @@ import java.security.spec.AlgorithmParameterSpec
  * @param operation Software RSA operation implementation.
  */
 open class CryptoVaultRSA(
-    protected val operation: CryptoVaultRSASoftwareOperation,
+    protected val operation: RSASoftwareOperation,
 ) {
     companion object {
         /**

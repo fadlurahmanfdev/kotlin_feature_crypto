@@ -52,8 +52,8 @@ interface ECOperation {
 
     /** Derives a shared secret via ECDH from local private and remote public keys. */
     fun generateSharedSecret(
-        encodedPrivateKey: ByteArray,
-        encodedPublicKey: ByteArray,
+        ourEncodedPrivateKey: ByteArray,
+        otherEncodedPublicKey: ByteArray,
     ): ByteArray
 
     /** Derives a 256-bit AES key from an ECDH shared secret using SHA-256. */

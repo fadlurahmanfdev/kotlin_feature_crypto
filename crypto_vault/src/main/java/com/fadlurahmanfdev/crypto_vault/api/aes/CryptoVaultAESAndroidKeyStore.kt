@@ -4,9 +4,8 @@ import android.content.Context
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import androidx.annotation.RequiresApi
-import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
-import com.fadlurahmanfdev.crypto_vault.domain.contracts.CryptoVaultAESAndroidKeyStoreOperation
-import com.fadlurahmanfdev.crypto_vault.domain.models.EncryptedData
+import com.fadlurahmanfdev.crypto_vault.domain.contracts.AESAndroidKeyStoreOperation
+import com.fadlurahmanfdev.crypto_vault.model.EncryptedData
 import com.fadlurahmanfdev.crypto_vault.internal.aes.AesTransformation
 import com.fadlurahmanfdev.crypto_vault.internal.aes.DefaultAndroidKeyStoreAESOperation
 import java.security.spec.AlgorithmParameterSpec
@@ -24,7 +23,7 @@ import javax.crypto.SecretKey
  * @param operation AES Android Keystore operation implementation.
  */
 open class CryptoVaultAESAndroidKeyStore(
-    protected val operation: CryptoVaultAESAndroidKeyStoreOperation,
+    protected val operation: AESAndroidKeyStoreOperation,
 ) {
     companion object {
         /**

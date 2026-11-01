@@ -1,4 +1,4 @@
-package com.fadlurahmanfdev.crypto_vault.domain.models
+package com.fadlurahmanfdev.crypto_vault.model
 
 /**
  * Result of an AES encryption.

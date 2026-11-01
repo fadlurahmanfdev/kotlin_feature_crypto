@@ -1,12 +1,12 @@
 package com.fadlurahmanfdev.crypto_vault.model
 
 /**
- * Base64-encoded asymmetric key pair.
+ * Asymmetric key pair as raw encoded bytes.
  *
- * @param encodedPrivateKey Base64-encoded private key material.
- * @param encodedPublicKey Base64-encoded public key material.
+ * @param encodedPrivateKey Private key material (algorithm-specific encoding).
+ * @param encodedPublicKey Public key material (algorithm-specific encoding).
  */
-data class CryptoVaultKey(
+data class CryptoVaultKeyPair(
     val encodedPrivateKey: ByteArray,
     val encodedPublicKey: ByteArray,
 ) {
@@ -14,7 +14,7 @@ data class CryptoVaultKey(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as CryptoVaultKey
+        other as CryptoVaultKeyPair
 
         if (!encodedPrivateKey.contentEquals(other.encodedPrivateKey)) return false
         if (!encodedPublicKey.contentEquals(other.encodedPublicKey)) return false

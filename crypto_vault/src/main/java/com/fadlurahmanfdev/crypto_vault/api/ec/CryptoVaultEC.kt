@@ -1,115 +1,50 @@
 package com.fadlurahmanfdev.crypto_vault.api.ec
 
-import android.os.Build
-import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyProperties
-import com.fadlurahmanfdev.crypto_vault.api.base.BaseKeyPairSigningCryptoVault
-import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
-import com.fadlurahmanfdev.crypto_vault.core.EcEcdhAesGcmCipher
-import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECSignatureAlgorithm
-import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation
-import com.fadlurahmanfdev.crypto_vault.model.CryptoVaultKey
-import java.security.KeyFactory
+import com.fadlurahmanfdev.crypto_vault.domain.contracts.ECOperation
+import com.fadlurahmanfdev.crypto_vault.internal.ec.DefaultECOperation
 import java.security.KeyPair
-import java.security.MessageDigest
-import java.security.PrivateKey
-import java.security.PublicKey
-import java.security.spec.PKCS8EncodedKeySpec
-import java.security.spec.X509EncodedKeySpec
-import javax.crypto.KeyAgreement
-import javax.crypto.spec.SecretKeySpec
 
 /**
  * Elliptic-curve vault for signing, hybrid ECDH encryption, and ECDH key exchange.
  *
  * Keystore-backed keys are stored in TEE / StrongBox when the device supports it.
  */
-open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
-    private val algorithm = CryptoVaultAlgorithm.EC
+open class CryptoVaultEC internal constructor(
+    private val operation: ECOperation
+) {
 
-    /**
-     * Generates an EC key pair inside Android Keystore.
-     *
-     * Keys stored in Keystore cannot be exported as encoded material.
-     *
-     * @param keystoreAlias Key identifier stored in Android Keystore.
-     * @param strongBoxBacked Request StrongBox backing on API 28+.
-     * @throws com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException when key generation fails.
-     */
-    open fun generateKeyFromAndroidKeyStore(
-        keystoreAlias: String,
-        strongBoxBacked: Boolean,
-    ): KeyPair {
-        val parameterSpec = KeyGenParameterSpec.Builder(
-            keystoreAlias,
-            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT or
-                KeyProperties.PURPOSE_SIGN or KeyProperties.PURPOSE_VERIFY,
-        ).setDigests(
-            KeyProperties.DIGEST_SHA256,
-            KeyProperties.DIGEST_SHA512,
-        ).apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                setIsStrongBoxBacked(strongBoxBacked)
-            }
-        }.build()
-
-        return generateKeyFromAndroidKeyStore(
-            algorithm = algorithm,
-            keyGenParameterSpec = parameterSpec,
-        )
+    companion object {
+        fun create(): CryptoVaultEC {
+            return CryptoVaultEC(
+                operation = DefaultECOperation.create()
+            )
+        }
     }
 
-    /** Generates a software EC key pair encoded as Base64. */
-    open fun generateKey(): CryptoVaultKey = generateKey(algorithm = algorithm, keySize = null)
+    open fun generateKey(): KeyPair = operation.generateKey()
 
     /** Signs [plainText] with a Base64-encoded private key. */
     open fun generateSignature(
-        encodedPrivateKey: String,
+        encodedPrivateKey: ByteArray,
         plainText: String,
-        signatureAlgorithm: CryptoVaultECSignatureAlgorithm,
-    ): String = generateSignature(
+        signatureAlgorithm: String = "SHA256withECDSA"
+    ): ByteArray = operation.generateSignature(
         encodedPrivateKey = encodedPrivateKey,
         plainText = plainText,
-        algorithm = algorithm,
-        signatureAlgorithm = signatureAlgorithm.value,
-    )
-
-    /** Signs [plainText] with an in-memory [privateKey]. */
-    open fun generateSignature(
-        privateKey: PrivateKey,
-        plainText: String,
-        signatureAlgorithm: CryptoVaultECSignatureAlgorithm,
-    ): String = generateSignature(
-        privateKey = privateKey,
-        plainText = plainText,
-        signatureAlgorithm = signatureAlgorithm.value,
+        signatureAlgorithm = signatureAlgorithm
     )
 
     /** Verifies [signature] for [plainText] using a Base64-encoded public key. */
     open fun verifySignature(
-        encodedPublicKey: String,
-        signature: String,
+        encodedPublicKey: ByteArray,
+        signature: ByteArray,
         plainText: String,
-        signatureAlgorithm: CryptoVaultECSignatureAlgorithm,
-    ): Boolean = verifySignature(
+        signatureAlgorithm: String = "SHA256withECDSA"
+    ): Boolean = operation.verifySignature(
         encodedPublicKey = encodedPublicKey,
         signature = signature,
         plainText = plainText,
-        algorithm = algorithm,
-        signatureAlgorithm = signatureAlgorithm.value,
-    )
-
-    /** Verifies [signature] for [plainText] using an in-memory [publicKey]. */
-    open fun verifySignature(
-        publicKey: PublicKey,
-        signature: String,
-        plainText: String,
-        signatureAlgorithm: CryptoVaultECSignatureAlgorithm,
-    ): Boolean = verifySignature(
-        publicKey = publicKey,
-        signature = signature,
-        plainText = plainText,
-        signatureAlgorithm = signatureAlgorithm.value,
+        signatureAlgorithm = signatureAlgorithm
     )
 
     /**
@@ -120,19 +55,14 @@ open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
      * @throws com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException when [transformation] is not supported.
      */
     open fun encrypt(
-        encodedPublicKey: String,
-        transformation: CryptoVaultECTransformation,
+        encodedPublicKey: ByteArray,
+        transformation: String = "ECDH_AES_GCM",
         plainText: String,
-    ): String {
-        requireSupportedTransformation(transformation)
-        val publicKeySpec = X509EncodedKeySpec(decode(encodedPublicKey))
-        val publicKey = KeyFactory.getInstance(CryptoVaultAlgorithm.EC.name).generatePublic(publicKeySpec)
-        val encrypted = EcEcdhAesGcmCipher.encrypt(
-            recipientPublicKey = publicKey,
-            plainText = plainText.toByteArray(),
-        )
-        return encode(encrypted)
-    }
+    ): ByteArray = operation.encrypt(
+        encodedPublicKey = encodedPublicKey,
+        transformation = transformation,
+        plainText = plainText
+    )
 
     /**
      * Decrypts [encryptedText] produced by [encrypt] for the same [transformation].
@@ -140,49 +70,26 @@ open class CryptoVaultEC : BaseKeyPairSigningCryptoVault() {
      * @throws com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException when [transformation] is not supported.
      */
     open fun decrypt(
-        encodedPrivateKey: String,
-        transformation: CryptoVaultECTransformation,
-        encryptedText: String,
-    ): String {
-        requireSupportedTransformation(transformation)
-        val privateKeySpec = PKCS8EncodedKeySpec(decode(encodedPrivateKey))
-        val privateKey = KeyFactory.getInstance(algorithm.name).generatePrivate(privateKeySpec)
-        val decrypted = EcEcdhAesGcmCipher.decrypt(
-            recipientPrivateKey = privateKey,
-            encryptedPayload = decode(encryptedText),
-        )
-        return String(decrypted)
-    }
+        encodedPrivateKey: ByteArray,
+        transformation: String = "ECDH_AES_GCM",
+        encrypted: ByteArray,
+    ): String = operation.decrypt(
+        encodedPrivateKey = encodedPrivateKey,
+        transformation = transformation,
+        encrypted = encrypted,
+    )
 
     /** Derives a shared secret via ECDH from local private and remote public keys. */
     open fun generateSharedSecret(
-        ourEncodedPrivateKey: String,
-        otherEncodedPublicKey: String,
-    ): String {
-        val keyAgreement = KeyAgreement.getInstance("ECDH")
-        val privateKeySpec = PKCS8EncodedKeySpec(decode(ourEncodedPrivateKey))
-        val privateKey =
-            KeyFactory.getInstance(CryptoVaultAlgorithm.EC.name).generatePrivate(privateKeySpec)
-        val otherPublicKeySpec = X509EncodedKeySpec(decode(otherEncodedPublicKey))
-        val otherPublicKey =
-            KeyFactory.getInstance(CryptoVaultAlgorithm.EC.name).generatePublic(otherPublicKeySpec)
-        keyAgreement.init(privateKey)
-        keyAgreement.doPhase(otherPublicKey, true)
-        return encode(keyAgreement.generateSecret())
-    }
+        ourEncodedPrivateKey: ByteArray,
+        otherEncodedPublicKey: ByteArray,
+    ): ByteArray = operation.generateSharedSecret(
+        ourEncodedPrivateKey = ourEncodedPrivateKey,
+        otherEncodedPublicKey = otherEncodedPublicKey,
+    )
 
     /** Derives a 256-bit AES key from an ECDH shared secret using SHA-256. */
-    open fun derivedSharedSecret(sharedSecret: String): String {
-        val sha256 = MessageDigest.getInstance("SHA-256")
-        val keyBytes = sha256.digest(decode(sharedSecret))
-        return encode(SecretKeySpec(keyBytes, "AES").encoded)
-    }
-
-    private fun requireSupportedTransformation(transformation: CryptoVaultECTransformation) {
-        if (transformation != CryptoVaultECTransformation.ECDH_AES_GCM) {
-            throw CryptoVaultExceptionCodes.unsupportedEcTransformation(
-                message = "Unsupported EC transformation: $transformation",
-            )
-        }
-    }
+    open fun derivedSharedSecret(sharedSecret: ByteArray): ByteArray = operation.derivedSharedSecret(
+        sharedSecret = sharedSecret
+    )
 }

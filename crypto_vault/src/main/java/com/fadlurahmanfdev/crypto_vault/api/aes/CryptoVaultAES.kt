@@ -1,8 +1,7 @@
 package com.fadlurahmanfdev.crypto_vault.api.aes
 
-import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
-import com.fadlurahmanfdev.crypto_vault.domain.contracts.CryptoVaultAESSoftwareOperation
-import com.fadlurahmanfdev.crypto_vault.domain.models.EncryptedData
+import com.fadlurahmanfdev.crypto_vault.domain.contracts.AESSoftwareOperation
+import com.fadlurahmanfdev.crypto_vault.model.EncryptedData
 import com.fadlurahmanfdev.crypto_vault.internal.aes.AesTransformation
 import com.fadlurahmanfdev.crypto_vault.internal.aes.DefaultSoftwareAESOperation
 import java.security.spec.AlgorithmParameterSpec
@@ -21,7 +20,7 @@ import javax.crypto.spec.IvParameterSpec
  * @param operation Software AES operation implementation.
  */
 open class CryptoVaultAES(
-    protected val operation: CryptoVaultAESSoftwareOperation,
+    protected val operation: AESSoftwareOperation,
 ) {
     companion object {
         /**
