@@ -6,6 +6,7 @@ import java.security.PrivateKey
 import java.security.PublicKey
 
 interface ECDHAndroidKeyStoreOperation {
+    fun getKey(keyStoreAlias: String): KeyPair
     fun generateKey(
         keyStoreAlias: String,
         strongBoxBacked: Boolean,

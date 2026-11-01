@@ -531,7 +531,8 @@ Common error codes:
 | `USER_NOT_AUTHENTICATED` | Keystore key requires user authentication first |
 | `INTEGRITY_CHECK_FAILED` | GCM authentication failed (tampered ciphertext/IV) |
 | `INVALID_BLOCK_MODE` | Decrypt could not map the given block mode to a parameter spec |
-| `KEY_TYPE_MISMATCH` | Keystore alias does not hold the expected key type |
+| `KEY_TYPE_MISMATCH` | Keystore alias exists but is not the expected key algorithm/type |
+| `KEY_NOT_FOUND` | Keystore alias does not exist or key material is missing |
 | `UNKNOWN` | Unexpected Keystore or crypto failure |
 | `UNSUPPORTED_EC_TRANSFORMATION` | EC encrypt/decrypt called with an unsupported transformation |
 

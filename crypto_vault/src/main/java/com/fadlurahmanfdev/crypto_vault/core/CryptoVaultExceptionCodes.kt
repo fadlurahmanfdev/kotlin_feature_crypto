@@ -18,6 +18,7 @@ internal object CryptoVaultExceptionCodes {
     const val USER_NOT_AUTHENTICATED = "USER_NOT_AUTHENTICATED"
     const val INTEGRITY_CHECK_FAILED = "INTEGRITY_CHECK_FAILED"
     const val KEY_TYPE_MISMATCH = "KEY_TYPE_MISMATCH"
+    const val KEY_NOT_FOUND = "KEY_NOT_FOUND"
     const val INVALID_BLOCK_MODE = "INVALID_BLOCK_MODE"
 
     fun strongBoxNotSupported(message: String?, cause: Throwable? = null): CryptoVaultException =
@@ -27,7 +28,7 @@ internal object CryptoVaultExceptionCodes {
             cause = cause,
         )
 
-    fun unknown(message: String?, cause: Throwable? = null): CryptoVaultException =
+    fun unknown(message: String? = null, cause: Throwable? = null): CryptoVaultException =
         CryptoVaultException(
             code = UNKNOWN,
             message = message,
@@ -79,6 +80,13 @@ internal object CryptoVaultExceptionCodes {
     fun keyTypeMismatch(message: String?, cause: Throwable? = null): CryptoVaultException =
         CryptoVaultException(
             code = KEY_TYPE_MISMATCH,
+            message = message,
+            cause = cause,
+        )
+
+    fun keyNotFound(message: String?, cause: Throwable? = null): CryptoVaultException =
+        CryptoVaultException(
+            code = KEY_NOT_FOUND,
             message = message,
             cause = cause,
         )

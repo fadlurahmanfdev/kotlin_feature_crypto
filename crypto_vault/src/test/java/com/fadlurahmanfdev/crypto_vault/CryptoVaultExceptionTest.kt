@@ -61,6 +61,10 @@ class CryptoVaultExceptionTest {
             CryptoVaultExceptionCodes.keyTypeMismatch("msg").code,
         )
         assertEquals(
+            CryptoVaultExceptionCodes.KEY_NOT_FOUND,
+            CryptoVaultExceptionCodes.keyNotFound("msg").code,
+        )
+        assertEquals(
             CryptoVaultExceptionCodes.INVALID_BLOCK_MODE,
             CryptoVaultExceptionCodes.invalidBlockMode("msg").code,
         )

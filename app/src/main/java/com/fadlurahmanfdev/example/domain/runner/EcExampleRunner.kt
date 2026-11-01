@@ -3,7 +3,7 @@ package com.fadlurahmanfdev.example.domain.runner
 import android.content.Context
 import android.os.Build
 import android.util.Base64
-import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultSecretKeyManager
+import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultKeyManager
 import com.fadlurahmanfdev.crypto_vault.api.ec.CryptoVaultEC
 import com.fadlurahmanfdev.crypto_vault.api.ec.CryptoVaultECAndroidKeyStore
 import com.fadlurahmanfdev.example.data.ExampleResult
@@ -13,7 +13,7 @@ class EcExampleRunner(
     private val cryptoVaultEC: CryptoVaultEC = CryptoVaultEC.create(),
     private val cryptoVaultECAndroidKeyStore: CryptoVaultECAndroidKeyStore =
         CryptoVaultECAndroidKeyStore.create(),
-    private val secretKeyManager: CryptoVaultSecretKeyManager = CryptoVaultSecretKeyManager.create(),
+    private val secretKeyManager: CryptoVaultKeyManager = CryptoVaultKeyManager.create(),
 ) {
     private var privateKeyBytes: ByteArray? = null
     private var publicKeyBytes: ByteArray? = null

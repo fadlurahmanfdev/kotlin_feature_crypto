@@ -12,7 +12,8 @@ package com.fadlurahmanfdev.crypto_vault.exception
  * - `KEY_PERMANENTLY_INVALIDATED` — Android Keystore key was invalidated and must be regenerated
  * - `USER_NOT_AUTHENTICATED` — Android Keystore key requires user authentication first
  * - `INTEGRITY_CHECK_FAILED` — authenticated decryption failed (data modified or wrong key/IV)
- * - `KEY_TYPE_MISMATCH` — Android Keystore entry exists but is not the expected key type
+ * - `KEY_TYPE_MISMATCH` — Android Keystore entry exists but is not the expected key algorithm/type
+ * - `KEY_NOT_FOUND` — Android Keystore alias does not exist or key material is missing
  * - `INVALID_BLOCK_MODE` — AES transformation block mode is not supported
  *
  * @param code Machine-readable error identifier.
