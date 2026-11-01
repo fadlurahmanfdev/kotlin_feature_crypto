@@ -2,6 +2,7 @@ package com.fadlurahmanfdev.crypto_vault
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fadlurahmanfdev.crypto_vault.api.ec.CryptoVaultEC
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -13,7 +14,7 @@ import org.junit.runner.RunWith
 class CryptoVaultECTest {
 
     private lateinit var cryptoVaultEC: CryptoVaultEC
-    private val plainText = "Passw0rd!"
+    private val plainTextBytes = "Passw0rd!".toByteArray()
 
     @Before
     fun setUp() {
@@ -34,14 +35,14 @@ class CryptoVaultECTest {
         val publicKeyBytes = key.public.encoded
         val signatureBytes = cryptoVaultEC.generateSignature(
             privateKeyBytes = privateKeyBytes,
-            plainText = plainText,
+            plainTextBytes = plainTextBytes,
         )
         assertTrue(signatureBytes.isNotEmpty())
         assertTrue(
             cryptoVaultEC.verifySignature(
                 publicKeyBytes = publicKeyBytes,
                 signatureBytes = signatureBytes,
-                plainText = plainText,
+                plainTextBytes = plainTextBytes,
             ),
         )
     }
@@ -52,15 +53,35 @@ class CryptoVaultECTest {
         val privateKeyBytes = key.private.encoded
         val publicKeyBytes = key.public.encoded
         val encryptedBytes = cryptoVaultEC.encrypt(
-            publicKeyBytes = publicKeyBytes,
-            plainText = plainText,
+            recipientPublicKeyBytes = publicKeyBytes,
+            plainTextBytes = plainTextBytes,
         )
         assertTrue(encryptedBytes.isNotEmpty())
         val decrypted = cryptoVaultEC.decrypt(
-            privateKeyBytes = privateKeyBytes,
+            recipientPrivateKeyBytes = privateKeyBytes,
             encryptedBytes = encryptedBytes,
         )
-        assertEquals(plainText, decrypted)
+        assertArrayEquals(plainTextBytes, decrypted)
+    }
+
+    @Test
+    fun encrypt_tampered_ciphertext_fails() {
+        val key = cryptoVaultEC.generateKey()
+        val encryptedBytes = cryptoVaultEC.encrypt(
+            recipientPublicKeyBytes = key.public.encoded,
+            plainTextBytes = plainTextBytes,
+        ).copyOf()
+        encryptedBytes[encryptedBytes.lastIndex] =
+            (encryptedBytes[encryptedBytes.lastIndex].toInt() xor 0x01).toByte()
+        try {
+            cryptoVaultEC.decrypt(
+                recipientPrivateKeyBytes = key.private.encoded,
+                encryptedBytes = encryptedBytes,
+            )
+            org.junit.Assert.fail("Expected decrypt to fail for tampered ciphertext")
+        } catch (_: Throwable) {
+            // GCM auth failure or wrapped CryptoVaultException
+        }
     }
 
     @Test
@@ -72,7 +93,7 @@ class CryptoVaultECTest {
             cryptoVaultEC.verifySignature(
                 publicKeyBytes = publicKeyBytes,
                 signatureBytes = invalidSignatureBytes,
-                plainText = plainText,
+                plainTextBytes = plainTextBytes,
             ),
         )
     }
@@ -83,22 +104,49 @@ class CryptoVaultECTest {
         val aliceKey = cryptoVaultEC.generateKey()
 
         val bobSharedSecretBytes = cryptoVaultEC.generateSharedSecret(
-            ourPrivateKeyBytes = bobKey.private.encoded,
-            otherPublicKeyBytes = aliceKey.public.encoded,
+            ephemeralPrivateKeyBytes = bobKey.private.encoded,
+            recipientPublicKeyBytes = aliceKey.public.encoded,
         )
         val aliceSharedSecretBytes = cryptoVaultEC.generateSharedSecret(
-            ourPrivateKeyBytes = aliceKey.private.encoded,
-            otherPublicKeyBytes = bobKey.public.encoded,
+            ephemeralPrivateKeyBytes = aliceKey.private.encoded,
+            recipientPublicKeyBytes = bobKey.public.encoded,
         )
 
         assertTrue(bobSharedSecretBytes.isNotEmpty())
         assertTrue(aliceSharedSecretBytes.isNotEmpty())
         assertTrue(bobSharedSecretBytes.contentEquals(aliceSharedSecretBytes))
 
-        val bobDerivedKeyBytes =
-            cryptoVaultEC.deriveAESKey(sharedSecretBytes = bobSharedSecretBytes)
-        val aliceDerivedKeyBytes =
-            cryptoVaultEC.deriveAESKey(sharedSecretBytes = aliceSharedSecretBytes)
-        assertTrue(bobDerivedKeyBytes.contentEquals(aliceDerivedKeyBytes))
+        val saltBytes = "salt".toByteArray()
+        val infoBytes = "CryptoVaultEC-AES-256-GCM".toByteArray()
+        val bobDerivedKeyBytes = cryptoVaultEC.deriveAESKey(
+            sharedSecretBytes = bobSharedSecretBytes,
+            saltBytes = saltBytes,
+            infoBytes = infoBytes,
+        ).encoded
+        val aliceDerivedKeyBytes = cryptoVaultEC.deriveAESKey(
+            sharedSecretBytes = aliceSharedSecretBytes,
+            saltBytes = saltBytes,
+            infoBytes = infoBytes,
+        ).encoded
+        assertArrayEquals(bobDerivedKeyBytes, aliceDerivedKeyBytes)
+        assertEquals(32, bobDerivedKeyBytes.size)
+    }
+
+    @Test
+    fun hkdf_is_stable_for_fixed_inputs() {
+        val sharedSecretBytes = ByteArray(32) { it.toByte() }
+        val saltBytes = "fixed-salt".toByteArray()
+        val infoBytes = "CryptoVaultEC-AES-256-GCM".toByteArray()
+        val first = cryptoVaultEC.deriveAESKey(
+            sharedSecretBytes = sharedSecretBytes,
+            saltBytes = saltBytes,
+            infoBytes = infoBytes,
+        ).encoded
+        val second = cryptoVaultEC.deriveAESKey(
+            sharedSecretBytes = sharedSecretBytes,
+            saltBytes = saltBytes,
+            infoBytes = infoBytes,
+        ).encoded
+        assertArrayEquals(first, second)
     }
 }

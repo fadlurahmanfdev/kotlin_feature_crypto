@@ -20,13 +20,13 @@ class ECExampleActivity : AlgorithmExampleActivity() {
         FeatureModel(
             featureIcon = R.drawable.ic_algorithm_ec,
             title = "ECDH key exchange",
-            desc = "Alice and Bob derive the same shared secret and derived AES key.",
+            desc = "Alice and Bob derive the same shared secret via ECDH, HKDF, then AES-GCM.",
             enum = "EC_KEY_EXCHANGE",
         ),
         FeatureModel(
             featureIcon = R.drawable.ic_algorithm_ec,
-            title = "ECDH key exchange",
-            desc = "Alice and Bob derive the same shared secret and derived AES key Via Android KeyStore",
+            title = "ECDH key exchange (Keystore)",
+            desc = "Alice and Bob ECDH via Android Keystore, then HKDF + AES-GCM.",
             enum = "EC_KEY_EXCHANGE_VIA_KEYSTORE",
         ),
     )

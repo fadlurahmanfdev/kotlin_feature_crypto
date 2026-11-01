@@ -18,30 +18,44 @@ class EcExampleRunner(
 ) {
     fun runFullFlow(): ExampleResult {
         val plainText = "Passw0rd!"
+        val plainTextBytes = plainText.toByteArray()
         val key = cryptoVaultEC.generateKey()
         val privateKeyBytes = key.private.encoded
         val publicKeyBytes = key.public.encoded
 
+        val encryptedBytes = cryptoVaultEC.encrypt(
+            recipientPublicKeyBytes = publicKeyBytes,
+            plainTextBytes = plainTextBytes,
+        )
+        val decryptedBytes = cryptoVaultEC.decrypt(
+            recipientPrivateKeyBytes = privateKeyBytes,
+            encryptedBytes = encryptedBytes,
+        )
+
         val signatureBytes = cryptoVaultEC.generateSignature(
             privateKeyBytes = privateKeyBytes,
-            plainText = plainText,
+            plainTextBytes = plainTextBytes,
         )
         val isVerified = cryptoVaultEC.verifySignature(
             publicKeyBytes = publicKeyBytes,
             signatureBytes = signatureBytes,
-            plainText = plainText,
+            plainTextBytes = plainTextBytes,
         )
 
         val encodedPrivateKey = Base64.encodeToString(privateKeyBytes, Base64.NO_WRAP)
         val encodedPublicKey = Base64.encodeToString(publicKeyBytes, Base64.NO_WRAP)
+        val encodedEncrypted = Base64.encodeToString(encryptedBytes, Base64.NO_WRAP)
         val encodedSignature = Base64.encodeToString(signatureBytes, Base64.NO_WRAP)
 
         return ExampleResult(
-            scenarioTitle = "EC full flow (keygen, encrypt, sign)",
+            scenarioTitle = "EC full flow (keygen, ECIES, sign)",
             lines = listOf(
                 ResultLine("plain text", plainText),
                 ResultLine("private key", encodedPrivateKey),
                 ResultLine("public key", encodedPublicKey),
+                ResultLine("encrypted", encodedEncrypted),
+                ResultLine("decrypted", String(decryptedBytes)),
+                ResultLine("round-trip success", (plainText == String(decryptedBytes)).toString()),
                 ResultLine("signature", encodedSignature),
                 ResultLine("signature verified", isVerified.toString()),
             ),
@@ -64,8 +78,10 @@ class EcExampleRunner(
             recipientPublicKeyBytes = bobKey.public.encoded,
         )
 
-        val bobDerivedAESKeyBytes = cryptoVaultEC.deriveAESKey(sharedSecretBytes = bobSharedSecretBytes).encoded
-        val aliceDerivedAESKeyBytes = cryptoVaultEC.deriveAESKey(sharedSecretBytes = aliceSharedSecretBytes).encoded
+        val bobDerivedAESKeyBytes =
+            cryptoVaultEC.deriveAESKey(sharedSecretBytes = bobSharedSecretBytes).encoded
+        val aliceDerivedAESKeyBytes =
+            cryptoVaultEC.deriveAESKey(sharedSecretBytes = aliceSharedSecretBytes).encoded
 
         val encodedBobSharedSecret =
             Base64.encodeToString(bobSharedSecretBytes, Base64.NO_WRAP)
@@ -78,10 +94,14 @@ class EcExampleRunner(
         val aliceAESKey = cryptoVaultAES.parseKey(aliceDerivedAESKeyBytes)
 
         val bobEncrypted = cryptoVaultAES.encrypt(secretKey = bobAESKey, plainText = plainText)
-        val aliceDecrypted = cryptoVaultAES.decrypt(secretKey = aliceAESKey, encryptedBytes = bobEncrypted.encryptedBytes, ivBytes = bobEncrypted.ivBytes)
+        val aliceDecrypted = cryptoVaultAES.decrypt(
+            secretKey = aliceAESKey,
+            encryptedBytes = bobEncrypted.encryptedBytes,
+            ivBytes = bobEncrypted.ivBytes,
+        )
 
         return ExampleResult(
-            scenarioTitle = "ECDH key exchange (Alice & Bob)",
+            scenarioTitle = "ECDH key exchange (Alice & Bob, HKDF + AES-GCM)",
             lines = listOf(
                 ResultLine("plain text", plainText),
                 ResultLine("bob shared secret", encodedBobSharedSecret),
@@ -100,10 +120,7 @@ class EcExampleRunner(
                     "bob encrypted text",
                     Base64.encodeToString(bobEncrypted.encryptedBytes, Base64.NO_WRAP),
                 ),
-                ResultLine(
-                    "alice decrypted text",
-                    String(aliceDecrypted),
-                ),
+                ResultLine("alice decrypted text", String(aliceDecrypted)),
             ),
         )
     }
@@ -118,11 +135,11 @@ class EcExampleRunner(
 
         val bobKey = cryptoVaultECAndroidKeyStore.generateKey(
             keyStoreAlias = bobKeyStoreAlias,
-            strongBoxBacked = supportStrongBox
+            strongBoxBacked = supportStrongBox,
         )
         val aliceKey = cryptoVaultECAndroidKeyStore.generateKey(
             keyStoreAlias = aliceKeyStoreAlias,
-            strongBoxBacked = supportStrongBox
+            strongBoxBacked = supportStrongBox,
         )
 
         val bobSharedSecretBytes = cryptoVaultECAndroidKeyStore.generateSharedSecret(
@@ -135,8 +152,10 @@ class EcExampleRunner(
             recipientPublicKey = bobKey.public,
         )
 
-        val bobDerivedAESKeyBytes = cryptoVaultECAndroidKeyStore.deriveAESKey(sharedSecretBytes = bobSharedSecretBytes).encoded
-        val aliceDerivedAESKeyBytes = cryptoVaultECAndroidKeyStore.deriveAESKey(sharedSecretBytes = aliceSharedSecretBytes).encoded
+        val bobDerivedAESKeyBytes = cryptoVaultECAndroidKeyStore
+            .deriveAESKey(sharedSecretBytes = bobSharedSecretBytes).encoded
+        val aliceDerivedAESKeyBytes = cryptoVaultECAndroidKeyStore
+            .deriveAESKey(sharedSecretBytes = aliceSharedSecretBytes).encoded
 
         val encodedBobSharedSecret =
             Base64.encodeToString(bobSharedSecretBytes, Base64.NO_WRAP)
@@ -149,10 +168,14 @@ class EcExampleRunner(
         val aliceAESKey = cryptoVaultAES.parseKey(aliceDerivedAESKeyBytes)
 
         val bobEncrypted = cryptoVaultAES.encrypt(secretKey = bobAESKey, plainText = plainText)
-        val aliceDecrypted = cryptoVaultAES.decrypt(secretKey = aliceAESKey, encryptedBytes = bobEncrypted.encryptedBytes, ivBytes = bobEncrypted.ivBytes)
+        val aliceDecrypted = cryptoVaultAES.decrypt(
+            secretKey = aliceAESKey,
+            encryptedBytes = bobEncrypted.encryptedBytes,
+            ivBytes = bobEncrypted.ivBytes,
+        )
 
         return ExampleResult(
-            scenarioTitle = "ECDH key exchange (Alice & Bob)",
+            scenarioTitle = "ECDH Keystore exchange (Alice & Bob, HKDF + AES-GCM)",
             lines = listOf(
                 ResultLine("plain text", plainText),
                 ResultLine("bob shared secret", encodedBobSharedSecret),
@@ -171,10 +194,7 @@ class EcExampleRunner(
                     "bob encrypted text",
                     Base64.encodeToString(bobEncrypted.encryptedBytes, Base64.NO_WRAP),
                 ),
-                ResultLine(
-                    "alice decrypted text",
-                    String(aliceDecrypted),
-                ),
+                ResultLine("alice decrypted text", String(aliceDecrypted)),
             ),
         )
     }

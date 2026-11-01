@@ -5,28 +5,45 @@ import javax.crypto.SecretKey
 
 /**
  * Elliptic-curve vault for signing, hybrid ECDH encryption, and ECDH key exchange.
- *
- * Keystore-backed keys are stored in TEE / StrongBox when the device supports it.
  */
 interface ECOperation {
 
-    /** Generates a software EC key pair. */
+    /** Generates a software EC P-256 key pair. */
     fun generateKey(): KeyPair
 
-    /** Signs [plainText] with raw private key bytes. */
+    /** Signs [plainTextBytes] with raw private key bytes. */
     fun generateSignature(
         privateKeyBytes: ByteArray,
-        plainText: String,
-        signatureAlgorithm: String = "SHA256withECDSA",
+        plainTextBytes: ByteArray,
+        signatureAlgorithm: String,
     ): ByteArray
 
-    /** Verifies [signatureBytes] for [plainText] using raw public key bytes. */
+    /** Verifies [signatureBytes] for [plainTextBytes] using raw public key bytes. */
     fun verifySignature(
         publicKeyBytes: ByteArray,
         signatureBytes: ByteArray,
-        plainText: String,
-        signatureAlgorithm: String = "SHA256withECDSA",
+        plainTextBytes: ByteArray,
+        signatureAlgorithm: String,
     ): Boolean
+
+    /**
+     * ECIES-style encrypt: ephemeral ECDH + HKDF + AES-GCM.
+     *
+     * @return Envelope bytes:
+     * `[4-byte eph pub length][eph pub][12-byte IV][ciphertext+tag]`.
+     */
+    fun encrypt(
+        recipientPublicKeyBytes: ByteArray,
+        plainTextBytes: ByteArray,
+    ): ByteArray
+
+    /**
+     * Decrypts a payload produced by [encrypt].
+     */
+    fun decrypt(
+        recipientPrivateKeyBytes: ByteArray,
+        encryptedBytes: ByteArray,
+    ): ByteArray
 
     /** Derives a shared secret via ECDH from local private and remote public key bytes. */
     fun generateSharedSecret(
@@ -34,6 +51,10 @@ interface ECOperation {
         recipientPublicKeyBytes: ByteArray,
     ): ByteArray
 
-    /** Derives a 256-bit AES key from an ECDH shared secret using SHA-256. */
-    fun deriveAESKey(sharedSecretBytes: ByteArray): SecretKey
+    /** Derives a 256-bit AES key from an ECDH shared secret using HKDF-SHA256. */
+    fun deriveAESKey(
+        sharedSecretBytes: ByteArray,
+        saltBytes: ByteArray,
+        infoBytes: ByteArray,
+    ): SecretKey
 }

@@ -19,5 +19,9 @@ interface ECDHAndroidKeyStoreOperation {
         recipientPublicKey: PublicKey,
     ): ByteArray
 
-    fun deriveAESKey(sharedSecretBytes: ByteArray): SecretKey
+    fun deriveAESKey(
+        sharedSecretBytes: ByteArray,
+        saltBytes: ByteArray,
+        infoBytes: ByteArray,
+    ): SecretKey
 }

@@ -332,65 +332,64 @@ Full escape hatch: `generateKey(algorithmParameterSpec)` with your own `KeyGenPa
 
 ## EC (Elliptic Curve)
 
-ECDSA signing, ECDH key exchange, and hybrid encryption (`ECDH + AES-GCM`).
+ECDSA (`SHA256withECDSA`), ECDH key exchange, and ECIES-style hybrid encryption
+(ephemeral ECDH → HKDF-SHA256 → AES-256-GCM via `CryptoVaultAES`). Keys default to NIST P-256.
 
 ```kotlin
-import com.fadlurahmanfdev.crypto_vault.api.CryptoVaultEC
-import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECSignatureAlgorithm
-import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation
+import com.fadlurahmanfdev.crypto_vault.api.ec.CryptoVaultEC
 ```
 
 ### Generate key pair
 
 ```kotlin
-val cryptoVaultEC = CryptoVaultEC()
+val cryptoVaultEC = CryptoVaultEC.create()
 val key = cryptoVaultEC.generateKey()
 ```
 
 ### Sign and verify
 
 ```kotlin
-val signature = cryptoVaultEC.generateSignature(
+val plainTextBytes = "Passw0rd!".toByteArray()
+val signatureBytes = cryptoVaultEC.generateSignature(
     privateKeyBytes = key.private.encoded,
-    plainText = "Passw0rd!",
-    signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA,
+    plainTextBytes = plainTextBytes,
 )
 val isValid = cryptoVaultEC.verifySignature(
     publicKeyBytes = key.public.encoded,
-    signature = signature,
-    plainText = "Passw0rd!",
-    signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA,
+    signatureBytes = signatureBytes,
+    plainTextBytes = plainTextBytes,
 )
 ```
 
-### Encrypt and decrypt (ECDH + AES-GCM)
+### Encrypt and decrypt (ECIES)
 
-Uses an ephemeral EC key per encryption. Widely supported on Android without third-party JCE cipher aliases.
+Uses an ephemeral P-256 key per encryption. Envelope layout:
+`[4-byte eph pub length][eph pub][12-byte IV][ciphertext+tag]`.
+AES-GCM is performed by `CryptoVaultAES`.
 
 ```kotlin
 val encryptedBytes = cryptoVaultEC.encrypt(
-    publicKeyBytes = key.public.encoded,
-    transformation = CryptoVaultECTransformation.ECDH_AES_GCM,
-    plainText = "Passw0rd!",
+    recipientPublicKeyBytes = key.public.encoded,
+    plainTextBytes = plainTextBytes,
 )
-val decrypted = cryptoVaultEC.decrypt(
-    privateKeyBytes = key.private.encoded,
-    transformation = CryptoVaultECTransformation.ECDH_AES_GCM,
-    encryptedText = encrypted,
+val decryptedBytes = cryptoVaultEC.decrypt(
+    recipientPrivateKeyBytes = key.private.encoded,
+    encryptedBytes = encryptedBytes,
 )
 ```
 
-### Key exchange (ECDH)
+### Key exchange (ECDH + HKDF)
 
 ```kotlin
 val aliceKey = cryptoVaultEC.generateKey()
 val bobKey = cryptoVaultEC.generateKey()
 
 val aliceSharedSecret = cryptoVaultEC.generateSharedSecret(
-    ourPrivateKeyBytes = aliceKey.private.encoded,
-    otherPublicKeyBytes = bobKey.public.encoded,
+    ephemeralPrivateKeyBytes = aliceKey.private.encoded,
+    recipientPublicKeyBytes = bobKey.public.encoded,
 )
-val aesKey = cryptoVaultEC.derivedSharedSecret(aliceSharedSecret)
+val aesKey = cryptoVaultEC.deriveAESKey(sharedSecretBytes = aliceSharedSecret)
+// Then encrypt with CryptoVaultAES.create().encrypt(secretKey = aesKey, ...)
 ```
 
 ---
