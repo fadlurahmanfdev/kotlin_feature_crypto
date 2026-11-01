@@ -1,7 +1,7 @@
 package com.fadlurahmanfdev.crypto_vault
 
 import com.fadlurahmanfdev.crypto_vault.api.rsa.CryptoVaultRSA
-import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
+import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
 import com.fadlurahmanfdev.crypto_vault.internal.rsa.DefaultSoftwareRSAOperation
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -60,54 +60,54 @@ class CryptoVaultRSATest {
     @Test
     fun encrypt_decrypt_oaep_sha256_round_trip() {
         val keyPair = cryptoVaultRSA.generateKey()
-        val plainText = "Passw0rd!".toByteArray()
+        val plainTextBytes = "Passw0rd!".toByteArray()
 
-        val encrypted = cryptoVaultRSA.encrypt(
+        val encryptedBytes = cryptoVaultRSA.encrypt(
             publicKey = keyPair.public,
-            plainText = plainText,
+            plainTextBytes = plainTextBytes,
         )
         val decrypted = cryptoVaultRSA.decrypt(
             privateKey = keyPair.private,
-            encrypted = encrypted,
+            encryptedBytes = encryptedBytes,
         )
 
-        assertTrue(encrypted.isNotEmpty())
-        assertArrayEquals(plainText, decrypted)
+        assertTrue(encryptedBytes.isNotEmpty())
+        assertArrayEquals(plainTextBytes, decrypted)
     }
 
     @Test
     fun sign_verify_sha256_with_rsa_round_trip() {
         val keyPair = cryptoVaultRSA.generateKey()
-        val plainText = "Passw0rd!".toByteArray()
+        val plainTextBytes = "Passw0rd!".toByteArray()
 
-        val signature = cryptoVaultRSA.sign(
+        val signatureBytes = cryptoVaultRSA.sign(
             privateKey = keyPair.private,
-            plainText = plainText,
+            plainTextBytes = plainTextBytes,
         )
         val verified = cryptoVaultRSA.verify(
             publicKey = keyPair.public,
-            signature = signature,
-            plainText = plainText,
+            signatureBytes = signatureBytes,
+            plainTextBytes = plainTextBytes,
         )
 
-        assertTrue(signature.isNotEmpty())
+        assertTrue(signatureBytes.isNotEmpty())
         assertTrue(verified)
     }
 
     @Test
     fun verify_tampered_signature_returns_false() {
         val keyPair = cryptoVaultRSA.generateKey()
-        val plainText = "Passw0rd!".toByteArray()
-        val signature = cryptoVaultRSA.sign(
+        val plainTextBytes = "Passw0rd!".toByteArray()
+        val signatureBytes = cryptoVaultRSA.sign(
             privateKey = keyPair.private,
-            plainText = plainText,
+            plainTextBytes = plainTextBytes,
         )
-        val tampered = signature.copyOf().also { it[0] = (it[0] + 1).toByte() }
+        val tampered = signatureBytes.copyOf().also { it[0] = (it[0] + 1).toByte() }
 
         val verified = cryptoVaultRSA.verify(
             publicKey = keyPair.public,
-            signature = tampered,
-            plainText = plainText,
+            signatureBytes = tampered,
+            plainTextBytes = plainTextBytes,
         )
 
         assertFalse(verified)
@@ -118,12 +118,12 @@ class CryptoVaultRSATest {
         val keyPair = cryptoVaultRSA.generateKey()
         val publicKey = cryptoVaultRSA.parsePublicKey(keyPair.public.encoded)
         val privateKey = cryptoVaultRSA.parsePrivateKey(keyPair.private.encoded)
-        val plainText = "hello".toByteArray()
+        val plainTextBytes = "hello".toByteArray()
 
-        val encrypted = cryptoVaultRSA.encrypt(publicKey = publicKey, plainText = plainText)
-        val decrypted = cryptoVaultRSA.decrypt(privateKey = privateKey, encrypted = encrypted)
+        val encryptedBytes = cryptoVaultRSA.encrypt(publicKey = publicKey, plainTextBytes = plainTextBytes)
+        val decrypted = cryptoVaultRSA.decrypt(privateKey = privateKey, encryptedBytes = encryptedBytes)
 
-        assertArrayEquals(plainText, decrypted)
+        assertArrayEquals(plainTextBytes, decrypted)
     }
 
     @Test

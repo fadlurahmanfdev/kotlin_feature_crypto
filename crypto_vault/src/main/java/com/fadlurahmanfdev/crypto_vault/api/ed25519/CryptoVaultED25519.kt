@@ -38,8 +38,8 @@ open class CryptoVaultED25519 : ED25519Operation {
             val privateKey = key.private as Ed25519PrivateKeyParameters
             val publicKey = key.public as Ed25519PublicKeyParameters
             CryptoVaultKeyPair(
-                encodedPrivateKey = privateKey.encoded,
-                encodedPublicKey = publicKey.encoded,
+                privateKeyBytes = privateKey.encoded,
+                publicKeyBytes = publicKey.encoded,
             )
         } catch (e: CryptoVaultException) {
             throw e
@@ -52,22 +52,22 @@ open class CryptoVaultED25519 : ED25519Operation {
     }
 
     /**
-     * Signs [plainText] with the given private key bytes.
+     * Signs [plainTextBytes] with the given private key bytes.
      *
-     * @param encodedPrivateKey Raw ED25519 private key from [generateKey].
-     * @param plainText Data to sign.
+     * @param privateKeyBytes Raw ED25519 private key from [generateKey].
+     * @param plainTextBytes Data to sign.
      * @return Signature bytes.
      * @throws CryptoVaultException with code `UNKNOWN` when signing fails.
      */
     override fun generateSignature(
-        encodedPrivateKey: ByteArray,
-        plainText: ByteArray,
+        privateKeyBytes: ByteArray,
+        plainTextBytes: ByteArray,
     ): ByteArray {
         return try {
-            val nativeKey = Ed25519PrivateKeyParameters(encodedPrivateKey, 0)
+            val nativeKey = Ed25519PrivateKeyParameters(privateKeyBytes, 0)
             val signer = Ed25519Signer()
             signer.init(true, nativeKey)
-            signer.update(plainText, 0, plainText.size)
+            signer.update(plainTextBytes, 0, plainTextBytes.size)
             signer.generateSignature()
         } catch (e: CryptoVaultException) {
             throw e
@@ -80,28 +80,28 @@ open class CryptoVaultED25519 : ED25519Operation {
     }
 
     /**
-     * Verifies [signature] for [plainText] with the given public key bytes.
+     * Verifies [signatureBytes] for [plainTextBytes] with the given public key bytes.
      *
      * Returns `false` when the signature does not match. Unexpected setup failures throw
      * [CryptoVaultException].
      *
-     * @param encodedPublicKey Matching ED25519 public key.
-     * @param plainText Original data that was signed.
-     * @param signature Signature bytes from [generateSignature].
+     * @param publicKeyBytes Matching ED25519 public key.
+     * @param plainTextBytes Original data that was signed.
+     * @param signatureBytes Signature bytes from [generateSignature].
      * @return `true` when the signature is valid.
      * @throws CryptoVaultException with code `UNKNOWN` when verification cannot be set up.
      */
     override fun verifySignature(
-        encodedPublicKey: ByteArray,
-        plainText: ByteArray,
-        signature: ByteArray,
+        publicKeyBytes: ByteArray,
+        plainTextBytes: ByteArray,
+        signatureBytes: ByteArray,
     ): Boolean {
         return try {
-            val nativeKey = Ed25519PublicKeyParameters(encodedPublicKey, 0)
+            val nativeKey = Ed25519PublicKeyParameters(publicKeyBytes, 0)
             val verifier = Ed25519Signer()
             verifier.init(false, nativeKey)
-            verifier.update(plainText, 0, plainText.size)
-            verifier.verifySignature(signature)
+            verifier.update(plainTextBytes, 0, plainTextBytes.size)
+            verifier.verifySignature(signatureBytes)
         } catch (e: CryptoVaultException) {
             throw e
         } catch (e: IllegalArgumentException) {

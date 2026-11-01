@@ -38,14 +38,14 @@ interface RSAAndroidKeyStoreOperation {
 
     fun encrypt(
         publicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray
 
     fun encrypt(
         publicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
         algorithmParameterSpec: AlgorithmParameterSpec,
@@ -53,14 +53,14 @@ interface RSAAndroidKeyStoreOperation {
 
     fun decrypt(
         privateKey: PrivateKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray
 
     fun decrypt(
         privateKey: PrivateKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String,
         padding: String,
         algorithmParameterSpec: AlgorithmParameterSpec,
@@ -68,14 +68,14 @@ interface RSAAndroidKeyStoreOperation {
 
     fun sign(
         privateKey: PrivateKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         signatureAlgorithm: String,
     ): ByteArray
 
     fun verify(
         publicKey: PublicKey,
-        signature: ByteArray,
-        plainText: ByteArray,
+        signatureBytes: ByteArray,
+        plainTextBytes: ByteArray,
         signatureAlgorithm: String,
     ): Boolean
 }

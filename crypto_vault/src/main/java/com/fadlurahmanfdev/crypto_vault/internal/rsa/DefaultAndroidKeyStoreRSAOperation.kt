@@ -138,21 +138,21 @@ internal class DefaultAndroidKeyStoreRSAOperation(
 
     override fun encrypt(
         publicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray {
         val oaepSpec = RsaCipherHelper.oaepParameterSpecForPadding(padding)
         return if (oaepSpec != null) {
-            encrypt(publicKey, plainText, blockMode, padding, oaepSpec)
+            encrypt(publicKey, plainTextBytes, blockMode, padding, oaepSpec)
         } else {
-            encryptWithoutSpec(publicKey, plainText, blockMode, padding)
+            encryptWithoutSpec(publicKey, plainTextBytes, blockMode, padding)
         }
     }
 
     override fun encrypt(
         publicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
         algorithmParameterSpec: AlgorithmParameterSpec,
@@ -160,7 +160,7 @@ internal class DefaultAndroidKeyStoreRSAOperation(
         return try {
             val cipher = cipherFactory(RsaTransformation.raw(blockMode, padding))
             cipher.init(Cipher.ENCRYPT_MODE, publicKey, algorithmParameterSpec)
-            cipher.doFinal(plainText)
+            cipher.doFinal(plainTextBytes)
         } catch (e: CryptoVaultException) {
             throw e
         } catch (e: Throwable) {
@@ -173,21 +173,21 @@ internal class DefaultAndroidKeyStoreRSAOperation(
 
     override fun decrypt(
         privateKey: PrivateKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray {
         val oaepSpec = RsaCipherHelper.oaepParameterSpecForPadding(padding)
         return if (oaepSpec != null) {
-            decrypt(privateKey, encrypted, blockMode, padding, oaepSpec)
+            decrypt(privateKey, encryptedBytes, blockMode, padding, oaepSpec)
         } else {
-            decryptWithoutSpec(privateKey, encrypted, blockMode, padding)
+            decryptWithoutSpec(privateKey, encryptedBytes, blockMode, padding)
         }
     }
 
     override fun decrypt(
         privateKey: PrivateKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String,
         padding: String,
         algorithmParameterSpec: AlgorithmParameterSpec,
@@ -195,7 +195,7 @@ internal class DefaultAndroidKeyStoreRSAOperation(
         return try {
             val cipher = cipherFactory(RsaTransformation.raw(blockMode, padding))
             cipher.init(Cipher.DECRYPT_MODE, privateKey, algorithmParameterSpec)
-            cipher.doFinal(encrypted)
+            cipher.doFinal(encryptedBytes)
         } catch (e: CryptoVaultException) {
             throw e
         } catch (e: Throwable) {
@@ -208,13 +208,13 @@ internal class DefaultAndroidKeyStoreRSAOperation(
 
     override fun sign(
         privateKey: PrivateKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         signatureAlgorithm: String,
     ): ByteArray {
         return try {
             val signer = signatureFactory(signatureAlgorithm)
             signer.initSign(privateKey)
-            signer.update(plainText)
+            signer.update(plainTextBytes)
             signer.sign()
         } catch (e: CryptoVaultException) {
             throw e
@@ -228,15 +228,15 @@ internal class DefaultAndroidKeyStoreRSAOperation(
 
     override fun verify(
         publicKey: PublicKey,
-        signature: ByteArray,
-        plainText: ByteArray,
+        signatureBytes: ByteArray,
+        plainTextBytes: ByteArray,
         signatureAlgorithm: String,
     ): Boolean {
         return try {
             val verifier = signatureFactory(signatureAlgorithm)
             verifier.initVerify(publicKey)
-            verifier.update(plainText)
-            verifier.verify(signature)
+            verifier.update(plainTextBytes)
+            verifier.verify(signatureBytes)
         } catch (e: SignatureException) {
             false
         } catch (e: CryptoVaultException) {
@@ -251,14 +251,14 @@ internal class DefaultAndroidKeyStoreRSAOperation(
 
     private fun encryptWithoutSpec(
         publicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray {
         return try {
             val cipher = cipherFactory(RsaTransformation.raw(blockMode, padding))
             cipher.init(Cipher.ENCRYPT_MODE, publicKey)
-            cipher.doFinal(plainText)
+            cipher.doFinal(plainTextBytes)
         } catch (e: CryptoVaultException) {
             throw e
         } catch (e: Throwable) {
@@ -271,14 +271,14 @@ internal class DefaultAndroidKeyStoreRSAOperation(
 
     private fun decryptWithoutSpec(
         privateKey: PrivateKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray {
         return try {
             val cipher = cipherFactory(RsaTransformation.raw(blockMode, padding))
             cipher.init(Cipher.DECRYPT_MODE, privateKey)
-            cipher.doFinal(encrypted)
+            cipher.doFinal(encryptedBytes)
         } catch (e: CryptoVaultException) {
             throw e
         } catch (e: Throwable) {

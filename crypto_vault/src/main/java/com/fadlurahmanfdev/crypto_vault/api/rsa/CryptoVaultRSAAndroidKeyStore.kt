@@ -17,7 +17,7 @@ import java.security.spec.AlgorithmParameterSpec
  * API 28+).
  *
  * The private key material never leaves the Keystore. Defaults: 2048-bit key, OAEP encryption
- * padding, PSS signature padding, SHA-256/SHA-512 digests. Use [create] for the default
+ * padding, PSS signatureBytes padding, SHA-256/SHA-512 digests. Use [create] for the default
  * implementation.
  *
  * Advanced Keystore options go through [keyGenParameterSpecBuilder] on [generateKey], or the full
@@ -118,10 +118,10 @@ open class CryptoVaultRSAAndroidKeyStore(
         operation.isSupportStrongBox(context)
 
     /**
-     * Encrypts [plainText] with an Android Keystore RSA public key.
+     * Encrypts [plainTextBytes] with an Android Keystore RSA public key.
      *
      * @param publicKey Keystore public key from [generateKey] or [getPublicKey].
-     * @param plainText Data to encrypt.
+     * @param plainTextBytes Data to encrypt.
      * @param blockMode JCA block-mode segment for `RSA/blockMode/padding`. Prefer `"ECB"`.
      * @param padding JCA cipher padding. Prefer `"OAEPWithSHA-256AndMGF1Padding"` when the key
      *        was generated with `"OAEPPadding"`.
@@ -131,72 +131,72 @@ open class CryptoVaultRSAAndroidKeyStore(
      */
     open fun encrypt(
         publicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String = RsaTransformation.DEFAULT_BLOCK_MODE,
         padding: String = RsaTransformation.DEFAULT_PADDING,
     ): ByteArray = operation.encrypt(
         publicKey = publicKey,
-        plainText = plainText,
+        plainTextBytes = plainTextBytes,
         blockMode = blockMode,
         padding = padding,
     )
 
     /**
-     * Encrypts [plainText] with a caller-supplied [algorithmParameterSpec].
+     * Encrypts [plainTextBytes] with a caller-supplied [algorithmParameterSpec].
      */
     open fun encrypt(
         publicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String = RsaTransformation.DEFAULT_BLOCK_MODE,
         padding: String = RsaTransformation.DEFAULT_PADDING,
         algorithmParameterSpec: AlgorithmParameterSpec,
     ): ByteArray = operation.encrypt(
         publicKey = publicKey,
-        plainText = plainText,
+        plainTextBytes = plainTextBytes,
         blockMode = blockMode,
         padding = padding,
         algorithmParameterSpec = algorithmParameterSpec,
     )
 
     /**
-     * Decrypts [encrypted] with an Android Keystore RSA private key.
+     * Decrypts [encryptedBytes] with an Android Keystore RSA private key.
      *
      * @throws CryptoVaultException with code `KEY_PERMANENTLY_INVALIDATED`,
      *         `USER_NOT_AUTHENTICATED`, or `UNKNOWN`.
      */
     open fun decrypt(
         privateKey: PrivateKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String = RsaTransformation.DEFAULT_BLOCK_MODE,
         padding: String = RsaTransformation.DEFAULT_PADDING,
     ): ByteArray = operation.decrypt(
         privateKey = privateKey,
-        encrypted = encrypted,
+        encryptedBytes = encryptedBytes,
         blockMode = blockMode,
         padding = padding,
     )
 
     /**
-     * Decrypts [encrypted] with a caller-supplied [algorithmParameterSpec].
+     * Decrypts [encryptedBytes] with a caller-supplied [algorithmParameterSpec].
      */
     open fun decrypt(
         privateKey: PrivateKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String = RsaTransformation.DEFAULT_BLOCK_MODE,
         padding: String = RsaTransformation.DEFAULT_PADDING,
         algorithmParameterSpec: AlgorithmParameterSpec,
     ): ByteArray = operation.decrypt(
         privateKey = privateKey,
-        encrypted = encrypted,
+        encryptedBytes = encryptedBytes,
         blockMode = blockMode,
         padding = padding,
         algorithmParameterSpec = algorithmParameterSpec,
     )
 
     /**
-     * Signs [plainText] with an Android Keystore RSA private key.
+     * Signs [plainTextBytes] with an Android Keystore RSA private key.
      *
-     * Prefer `"SHA256withRSA"` or `"SHA256withRSA/PSS"` depending on the signature padding used
+     * Prefer `"SHA256withRSA"` or `"SHA256withRSA/PSS"` depending on the signatureBytes padding used
      * when the key was generated.
      *
      * @throws CryptoVaultException with code `KEY_PERMANENTLY_INVALIDATED`,
@@ -204,29 +204,29 @@ open class CryptoVaultRSAAndroidKeyStore(
      */
     open fun sign(
         privateKey: PrivateKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         signatureAlgorithm: String = RsaTransformation.DEFAULT_KEYSTORE_SIGNATURE_ALGORITHM,
     ): ByteArray = operation.sign(
         privateKey = privateKey,
-        plainText = plainText,
+        plainTextBytes = plainTextBytes,
         signatureAlgorithm = signatureAlgorithm,
     )
 
     /**
-     * Verifies [signature] for [plainText] with an Android Keystore RSA public key.
+     * Verifies [signatureBytes] for [plainTextBytes] with an Android Keystore RSA public key.
      *
-     * Returns `false` when the signature does not match. Unexpected setup failures throw
+     * Returns `false` when the signatureBytes does not match. Unexpected setup failures throw
      * [CryptoVaultException].
      */
     open fun verify(
         publicKey: PublicKey,
-        signature: ByteArray,
-        plainText: ByteArray,
+        signatureBytes: ByteArray,
+        plainTextBytes: ByteArray,
         signatureAlgorithm: String = RsaTransformation.DEFAULT_KEYSTORE_SIGNATURE_ALGORITHM,
     ): Boolean = operation.verify(
         publicKey = publicKey,
-        signature = signature,
-        plainText = plainText,
+        signatureBytes = signatureBytes,
+        plainTextBytes = plainTextBytes,
         signatureAlgorithm = signatureAlgorithm,
     )
 }

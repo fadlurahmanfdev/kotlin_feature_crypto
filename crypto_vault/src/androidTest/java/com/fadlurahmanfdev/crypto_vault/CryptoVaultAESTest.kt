@@ -5,7 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAESAndroidKeyStore
 import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAES
-import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
+import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -37,36 +37,36 @@ class CryptoVaultAESTest {
     @Test
     fun software_encrypt_decrypt_gcm_round_trip_success() {
         val key = softwareAes.generateKey()
-        val plainText = "Passw0rd!".toByteArray()
-        val encrypted = softwareAes.encrypt(secretKey = key, plainText = plainText)
+        val plainTextBytes = "Passw0rd!".toByteArray()
+        val encryptedData = softwareAes.encrypt(secretKey = key, plainTextBytes = plainTextBytes)
         val decrypted = softwareAes.decrypt(
             secretKey = key,
-            encrypted = encrypted.text,
-            iv = encrypted.iv,
+            encryptedBytes = encryptedData.encryptedBytes,
+            ivBytes = encryptedData.ivBytes,
         )
-        assertArrayEquals(plainText, decrypted)
+        assertArrayEquals(plainTextBytes, decrypted)
     }
 
     @Test
     fun software_encrypt_decrypt_cbc_pkcs7_with_custom_iv_success() {
         val key = softwareAes.generateKey()
-        val plainText = "Passw0rd!".toByteArray()
+        val plainTextBytes = "Passw0rd!".toByteArray()
         val ivParameterSpec = softwareAes.generateIvParameterSpec()
-        val encrypted = softwareAes.encrypt(
+        val encryptedBytes = softwareAes.encrypt(
             secretKey = key,
-            plainText = plainText,
+            plainTextBytes = plainTextBytes,
             blockMode = "CBC",
             padding = "PKCS7Padding",
             algorithmParameterSpec = ivParameterSpec,
         )
         val decrypted = softwareAes.decrypt(
             secretKey = key,
-            encrypted = encrypted,
+            encryptedBytes = encryptedBytes,
             blockMode = "CBC",
             padding = "PKCS7Padding",
             algorithmParameterSpec = ivParameterSpec,
         )
-        assertArrayEquals(plainText, decrypted)
+        assertArrayEquals(plainTextBytes, decrypted)
     }
 
     @Test
@@ -84,19 +84,19 @@ class CryptoVaultAESTest {
         val alias = "aes_alias_for_test_${System.currentTimeMillis()}"
         keyStoreAes.deleteKey(alias)
         val key = keyStoreAes.generateKey(keyStoreAlias = alias)
-        val plainText = "Passw0rd!".toByteArray()
-        val encrypted = keyStoreAes.encrypt(secretKey = key, plainText = plainText)
-        assertTrue(encrypted.text.isNotEmpty())
-        assertTrue(encrypted.iv.isNotEmpty())
+        val plainTextBytes = "Passw0rd!".toByteArray()
+        val encryptedData = keyStoreAes.encrypt(secretKey = key, plainTextBytes = plainTextBytes)
+        assertTrue(encryptedData.encryptedBytes.isNotEmpty())
+        assertTrue(encryptedData.ivBytes.isNotEmpty())
 
         val loadedKey = keyStoreAes.getKey(alias)
         assertNotNull(loadedKey)
         val decrypted = keyStoreAes.decrypt(
             secretKey = loadedKey!!,
-            encrypted = encrypted.text,
-            iv = encrypted.iv,
+            encryptedBytes = encryptedData.encryptedBytes,
+            ivBytes = encryptedData.ivBytes,
         )
-        assertArrayEquals(plainText, decrypted)
+        assertArrayEquals(plainTextBytes, decrypted)
     }
 
     @Test
@@ -109,21 +109,21 @@ class CryptoVaultAESTest {
             blockMode = "CBC",
             padding = "PKCS7Padding",
         )
-        val plainText = "Passw0rd!".toByteArray()
-        val encrypted = keyStoreAes.encrypt(
+        val plainTextBytes = "Passw0rd!".toByteArray()
+        val encryptedData = keyStoreAes.encrypt(
             secretKey = key,
-            plainText = plainText,
+            plainTextBytes = plainTextBytes,
             blockMode = "CBC",
             padding = "PKCS7Padding",
         )
         val decrypted = keyStoreAes.decrypt(
             secretKey = key,
-            encrypted = encrypted.text,
-            iv = encrypted.iv,
+            encryptedBytes = encryptedData.encryptedBytes,
+            ivBytes = encryptedData.ivBytes,
             blockMode = "CBC",
             padding = "PKCS7Padding",
         )
-        assertArrayEquals(plainText, decrypted)
+        assertArrayEquals(plainTextBytes, decrypted)
     }
 
     @Test
@@ -132,17 +132,17 @@ class CryptoVaultAESTest {
         val alias = "aes_integrity_${System.currentTimeMillis()}"
         keyStoreAes.deleteKey(alias)
         val key = keyStoreAes.generateKey(keyStoreAlias = alias)
-        val encrypted = keyStoreAes.encrypt(
+        val encryptedData = keyStoreAes.encrypt(
             secretKey = key,
-            plainText = "Passw0rd!".toByteArray(),
+            plainTextBytes = "Passw0rd!".toByteArray(),
         )
-        val tampered = encrypted.text.copyOf().also { it[0] = (it[0] + 1).toByte() }
+        val tampered = encryptedData.encryptedBytes.copyOf().also { it[0] = (it[0] + 1).toByte() }
 
         try {
             keyStoreAes.decrypt(
                 secretKey = key,
-                encrypted = tampered,
-                iv = encrypted.iv,
+                encryptedBytes = tampered,
+                ivBytes = encryptedData.ivBytes,
             )
             fail("Expected CryptoVaultException")
         } catch (e: CryptoVaultException) {

@@ -5,7 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.fadlurahmanfdev.crypto_vault.api.rsa.CryptoVaultRSA
 import com.fadlurahmanfdev.crypto_vault.api.rsa.CryptoVaultRSAAndroidKeyStore
-import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
+import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -38,22 +38,22 @@ class CryptoVaultRSATest {
     @Test
     fun software_encrypt_decrypt_oaep_round_trip() {
         val keyPair = softwareRsa.generateKey()
-        val plainText = "Passw0rd!".toByteArray()
-        val encrypted = softwareRsa.encrypt(publicKey = keyPair.public, plainText = plainText)
-        val decrypted = softwareRsa.decrypt(privateKey = keyPair.private, encrypted = encrypted)
-        assertArrayEquals(plainText, decrypted)
+        val plainTextBytes = "Passw0rd!".toByteArray()
+        val encryptedBytes = softwareRsa.encrypt(publicKey = keyPair.public, plainTextBytes = plainTextBytes)
+        val decrypted = softwareRsa.decrypt(privateKey = keyPair.private, encryptedBytes = encryptedBytes)
+        assertArrayEquals(plainTextBytes, decrypted)
     }
 
     @Test
     fun software_sign_verify_sha256_round_trip() {
         val keyPair = softwareRsa.generateKey()
-        val plainText = "Passw0rd!".toByteArray()
-        val signature = softwareRsa.sign(privateKey = keyPair.private, plainText = plainText)
+        val plainTextBytes = "Passw0rd!".toByteArray()
+        val signatureBytes = softwareRsa.sign(privateKey = keyPair.private, plainTextBytes = plainTextBytes)
         assertTrue(
             softwareRsa.verify(
                 publicKey = keyPair.public,
-                signature = signature,
-                plainText = plainText,
+                signatureBytes = signatureBytes,
+                plainTextBytes = plainTextBytes,
             ),
         )
     }
@@ -74,17 +74,17 @@ class CryptoVaultRSATest {
         val alias = "keystore_alias_rsa_encrypt_${System.currentTimeMillis()}"
         keyStoreRsa.deleteKey(alias)
         val keyPair = keyStoreRsa.generateKey(keyStoreAlias = alias)
-        val plainText = "Passw0rd!".toByteArray()
+        val plainTextBytes = "Passw0rd!".toByteArray()
 
-        val encrypted = keyStoreRsa.encrypt(
+        val encryptedBytes = keyStoreRsa.encrypt(
             publicKey = keyPair.public,
-            plainText = plainText,
+            plainTextBytes = plainTextBytes,
         )
         val decrypted = keyStoreRsa.decrypt(
             privateKey = keyPair.private,
-            encrypted = encrypted,
+            encryptedBytes = encryptedBytes,
         )
-        assertArrayEquals(plainText, decrypted)
+        assertArrayEquals(plainTextBytes, decrypted)
     }
 
     @Test
@@ -92,17 +92,17 @@ class CryptoVaultRSATest {
         val alias = "keystore_alias_rsa_sign_${System.currentTimeMillis()}"
         keyStoreRsa.deleteKey(alias)
         val keyPair = keyStoreRsa.generateKey(keyStoreAlias = alias)
-        val plainText = "Passw0rd!".toByteArray()
+        val plainTextBytes = "Passw0rd!".toByteArray()
 
-        val signature = keyStoreRsa.sign(
+        val signatureBytes = keyStoreRsa.sign(
             privateKey = keyPair.private,
-            plainText = plainText,
+            plainTextBytes = plainTextBytes,
         )
         assertTrue(
             keyStoreRsa.verify(
                 publicKey = keyPair.public,
-                signature = signature,
-                plainText = plainText,
+                signatureBytes = signatureBytes,
+                plainTextBytes = plainTextBytes,
             ),
         )
     }
@@ -112,15 +112,15 @@ class CryptoVaultRSATest {
         val alias = "keystore_alias_rsa_tamper_${System.currentTimeMillis()}"
         keyStoreRsa.deleteKey(alias)
         val keyPair = keyStoreRsa.generateKey(keyStoreAlias = alias)
-        val plainText = "Passw0rd!".toByteArray()
-        val signature = keyStoreRsa.sign(privateKey = keyPair.private, plainText = plainText)
-        val tampered = signature.copyOf().also { it[0] = (it[0] + 1).toByte() }
+        val plainTextBytes = "Passw0rd!".toByteArray()
+        val signatureBytes = keyStoreRsa.sign(privateKey = keyPair.private, plainTextBytes = plainTextBytes)
+        val tampered = signatureBytes.copyOf().also { it[0] = (it[0] + 1).toByte() }
 
         assertFalse(
             keyStoreRsa.verify(
                 publicKey = keyPair.public,
-                signature = tampered,
-                plainText = plainText,
+                signatureBytes = tampered,
+                plainTextBytes = plainTextBytes,
             ),
         )
     }

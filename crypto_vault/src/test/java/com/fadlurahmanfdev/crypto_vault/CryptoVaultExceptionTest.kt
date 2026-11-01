@@ -1,7 +1,7 @@
 package com.fadlurahmanfdev.crypto_vault
 
 import com.fadlurahmanfdev.crypto_vault.core.CryptoVaultExceptionCodes
-import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
+import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
 import org.junit.Test

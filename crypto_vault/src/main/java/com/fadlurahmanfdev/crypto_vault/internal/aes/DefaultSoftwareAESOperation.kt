@@ -48,8 +48,8 @@ internal class DefaultSoftwareAESOperation(
         }
     }
 
-    override fun parseKey(key: ByteArray): SecretKey {
-        return SecretKeySpec(key, AesTransformation.ALGORITHM)
+    override fun parseKey(keyBytes: ByteArray): SecretKey {
+        return SecretKeySpec(keyBytes, AesTransformation.ALGORITHM)
     }
 
     override fun generateGCMParameterSpec(ivSizeBytes: Int, tagLengthBits: Int): GCMParameterSpec {
@@ -66,7 +66,7 @@ internal class DefaultSoftwareAESOperation(
 
     override fun encrypt(
         secretKey: SecretKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): EncryptedData {
@@ -74,8 +74,8 @@ internal class DefaultSoftwareAESOperation(
             val cipher = cipherFactory(AesTransformation.raw(blockMode, padding))
             cipher.init(Cipher.ENCRYPT_MODE, secretKey)
             EncryptedData(
-                text = cipher.doFinal(plainText),
-                iv = cipher.iv,
+                encryptedBytes = cipher.doFinal(plainTextBytes),
+                ivBytes = cipher.iv,
             )
         } catch (e: CryptoVaultException) {
             throw e
@@ -89,7 +89,7 @@ internal class DefaultSoftwareAESOperation(
 
     override fun encrypt(
         secretKey: SecretKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
         algorithmParameterSpec: AlgorithmParameterSpec,
@@ -97,7 +97,7 @@ internal class DefaultSoftwareAESOperation(
         return try {
             val cipher = cipherFactory(AesTransformation.raw(blockMode, padding))
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, algorithmParameterSpec)
-            cipher.doFinal(plainText)
+            cipher.doFinal(plainTextBytes)
         } catch (e: CryptoVaultException) {
             throw e
         } catch (e: Throwable) {
@@ -110,22 +110,22 @@ internal class DefaultSoftwareAESOperation(
 
     override fun decrypt(
         secretKey: SecretKey,
-        encrypted: ByteArray,
-        iv: ByteArray,
+        encryptedBytes: ByteArray,
+        ivBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray {
         val algorithmParameterSpec = when (blockMode) {
             AesTransformation.DEFAULT_BLOCK_MODE ->
-                GCMParameterSpec(AesTransformation.GCM_TAG_LENGTH_BITS, iv)
-            AesTransformation.BLOCK_MODE_CBC -> IvParameterSpec(iv)
+                GCMParameterSpec(AesTransformation.GCM_TAG_LENGTH_BITS, ivBytes)
+            AesTransformation.BLOCK_MODE_CBC -> IvParameterSpec(ivBytes)
             else -> throw CryptoVaultExceptionCodes.invalidBlockMode(
                 message = "Block mode \"$blockMode\" needs AlgorithmParameterSpec overload for decrypt",
             )
         }
         return decrypt(
             secretKey = secretKey,
-            encrypted = encrypted,
+            encryptedBytes = encryptedBytes,
             blockMode = blockMode,
             padding = padding,
             algorithmParameterSpec = algorithmParameterSpec,
@@ -134,7 +134,7 @@ internal class DefaultSoftwareAESOperation(
 
     override fun decrypt(
         secretKey: SecretKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String,
         padding: String,
         algorithmParameterSpec: AlgorithmParameterSpec,
@@ -142,7 +142,7 @@ internal class DefaultSoftwareAESOperation(
         return try {
             val cipher = cipherFactory(AesTransformation.raw(blockMode, padding))
             cipher.init(Cipher.DECRYPT_MODE, secretKey, algorithmParameterSpec)
-            cipher.doFinal(encrypted)
+            cipher.doFinal(encryptedBytes)
         } catch (e: AEADBadTagException) {
             throw CryptoVaultExceptionCodes.integrityCheckFailed(
                 message = "Ciphertext or IV was modified, or does not belong to this key",

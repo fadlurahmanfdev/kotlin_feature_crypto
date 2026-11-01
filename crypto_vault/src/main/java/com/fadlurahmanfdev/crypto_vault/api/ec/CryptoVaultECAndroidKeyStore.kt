@@ -20,8 +20,8 @@ open class CryptoVaultECAndroidKeyStore internal constructor(
 
     open fun generateKey(
         keyStoreAlias: String,
-        strongBoxBacked: Boolean,
-        keyGenParameterSpecBuilder: KeyGenParameterSpec.Builder.() -> Unit
+        strongBoxBacked: Boolean = false,
+        keyGenParameterSpecBuilder: KeyGenParameterSpec.Builder.() -> Unit = {},
     ): KeyPair = operation.generateKey(
         keyStoreAlias = keyStoreAlias,
         strongBoxBacked = strongBoxBacked,

@@ -9,53 +9,54 @@ import java.security.KeyPair
  */
 interface ECOperation {
 
-    /** Generates a software EC key pair encoded as Base64. */
+    /** Generates a software EC key pair. */
     fun generateKey(): KeyPair
 
-    /** Signs [plainText] with a Base64-encoded private key. */
+    /** Signs [plainText] with raw private key bytes. */
     fun generateSignature(
-        encodedPrivateKey: ByteArray,
+        privateKeyBytes: ByteArray,
         plainText: String,
         signatureAlgorithm: String = "SHA256withECDSA",
     ): ByteArray
 
-    /** Verifies [signature] for [plainText] using a Base64-encoded public key. */
+    /** Verifies [signatureBytes] for [plainText] using raw public key bytes. */
     fun verifySignature(
-        encodedPublicKey: ByteArray,
-        signature: ByteArray,
+        publicKeyBytes: ByteArray,
+        signatureBytes: ByteArray,
         plainText: String,
         signatureAlgorithm: String = "SHA256withECDSA",
     ): Boolean
 
     /**
-     * Encrypts [plainText] for the holder of the private key matching [encodedPublicKey].
+     * Encrypts [plainText] for the holder of the private key matching [publicKeyBytes].
      *
-     * Uses [com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation.ECDH_AES_GCM]: ephemeral ECDH + SHA-256 KDF + AES-GCM.
+     * Default transformation is ephemeral ECDH + SHA-256 KDF + AES-GCM.
      *
-     * @throws com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException when [transformation] is not supported.
+     * @throws com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException when [transformation] is not supported.
      */
     fun encrypt(
-        encodedPublicKey: ByteArray,
+        publicKeyBytes: ByteArray,
         transformation: String = "ECDH_AES_GCM",
         plainText: String,
     ): ByteArray
+
     /**
-     * Decrypts [encryptedText] produced by [encrypt] for the same [transformation].
+     * Decrypts [encryptedBytes] produced by [encrypt] for the same [transformation].
      *
-     * @throws com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException when [transformation] is not supported.
+     * @throws com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException when [transformation] is not supported.
      */
-     fun decrypt(
-        encodedPrivateKey: ByteArray,
+    fun decrypt(
+        privateKeyBytes: ByteArray,
         transformation: String = "ECDH_AES_GCM",
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
     ): String
 
-    /** Derives a shared secret via ECDH from local private and remote public keys. */
+    /** Derives a shared secret via ECDH from local private and remote public key bytes. */
     fun generateSharedSecret(
-        ourEncodedPrivateKey: ByteArray,
-        otherEncodedPublicKey: ByteArray,
+        ourPrivateKeyBytes: ByteArray,
+        otherPublicKeyBytes: ByteArray,
     ): ByteArray
 
     /** Derives a 256-bit AES key from an ECDH shared secret using SHA-256. */
-    fun derivedSharedSecret(sharedSecret: ByteArray): ByteArray
+    fun derivedSharedSecret(sharedSecretBytes: ByteArray): ByteArray
 }

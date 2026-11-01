@@ -1,8 +1,8 @@
 package com.fadlurahmanfdev.example.domain.runner
 
 import android.util.Base64
-import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAESAndroidKeyStore
 import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAES
+import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAESAndroidKeyStore
 import com.fadlurahmanfdev.example.data.ExampleResult
 import com.fadlurahmanfdev.example.data.ResultLine
 
@@ -13,6 +13,7 @@ class AesExampleRunner(
 ) {
     fun runKeystoreGcmNoPaddingGeneratedIv(): ExampleResult {
         val plainText = "Passw0rd!"
+        val plainTextBytes = plainText.toByteArray()
         val keystoreAlias = "example_aes"
 
         val existingKey = cryptoVaultAESAndroidKeyStore.getKey(keystoreAlias)
@@ -26,19 +27,20 @@ class AesExampleRunner(
 
         val encryptedData = cryptoVaultAESAndroidKeyStore.encrypt(
             secretKey = secretKey,
-            plainText = plainText.toByteArray(),
+            plainTextBytes = plainTextBytes,
         )
 
-        val encodedEncryptedText = Base64.encodeToString(encryptedData.text, Base64.NO_WRAP)
-        val encodedIVKey = Base64.encodeToString(encryptedData.iv, Base64.NO_WRAP)
+        val encodedEncryptedText =
+            Base64.encodeToString(encryptedData.encryptedBytes, Base64.NO_WRAP)
+        val encodedIVKey = Base64.encodeToString(encryptedData.ivBytes, Base64.NO_WRAP)
 
         val loadedKey = cryptoVaultAESAndroidKeyStore.getKey(keystoreAlias)
         val decryptedText = String(
             cryptoVaultAESAndroidKeyStore.decrypt(
                 secretKey = loadedKey!!,
-                encrypted = encryptedData.text,
-                iv = encryptedData.iv,
-            )
+                encryptedBytes = encryptedData.encryptedBytes,
+                ivBytes = encryptedData.ivBytes,
+            ),
         )
 
         return ExampleResult(
@@ -65,6 +67,7 @@ class AesExampleRunner(
 
     fun runKeystoreCbcPkcs7GeneratedIv(): ExampleResult {
         val plainText = "Passw0rd!"
+        val plainTextBytes = plainText.toByteArray()
         val keystoreAlias = "example_aes_cbc"
 
         if (cryptoVaultAESAndroidKeyStore.isKeyExist(keystoreAlias)) {
@@ -79,7 +82,7 @@ class AesExampleRunner(
 
         val encryptedData = cryptoVaultAESAndroidKeyStore.encrypt(
             secretKey = secretKey,
-            plainText = plainText.toByteArray(),
+            plainTextBytes = plainTextBytes,
             blockMode = "CBC",
             padding = "PKCS7Padding",
         )
@@ -87,14 +90,15 @@ class AesExampleRunner(
         val decryptedText = String(
             cryptoVaultAESAndroidKeyStore.decrypt(
                 secretKey = secretKey,
-                encrypted = encryptedData.text,
-                iv = encryptedData.iv,
+                encryptedBytes = encryptedData.encryptedBytes,
+                ivBytes = encryptedData.ivBytes,
                 blockMode = "CBC",
                 padding = "PKCS7Padding",
-            )
+            ),
         )
-        val encodedIVKey = Base64.encodeToString(encryptedData.iv, Base64.NO_WRAP)
-        val encodedEncryptedText = Base64.encodeToString(encryptedData.text, Base64.NO_WRAP)
+        val encodedIVKey = Base64.encodeToString(encryptedData.ivBytes, Base64.NO_WRAP)
+        val encodedEncryptedText =
+            Base64.encodeToString(encryptedData.encryptedBytes, Base64.NO_WRAP)
 
         return ExampleResult(
             scenarioTitle = "AES via Android Keystore, CBC, PKCS7, Generated IV",
@@ -112,23 +116,28 @@ class AesExampleRunner(
 
     fun runGcmNoPaddingCustomIvParameterSpec(): ExampleResult {
         val plainText = "Passw0rd!"
+        val plainTextBytes = plainText.toByteArray()
         val secretKey = cryptoVaultAES.generateKey()
         val encodedSecretKey = Base64.encodeToString(secretKey.encoded, Base64.NO_WRAP)
         val gcmParameterSpec = cryptoVaultAES.generateGCMParameterSpec()
         val encodedIVKey = Base64.encodeToString(gcmParameterSpec.iv, Base64.NO_WRAP)
 
-        val encrypted = cryptoVaultAES.encrypt(
-            secretKey = cryptoVaultAES.parseKey(Base64.decode(encodedSecretKey, Base64.NO_WRAP)),
-            plainText = plainText.toByteArray(),
+        val encryptedBytes = cryptoVaultAES.encrypt(
+            secretKey = cryptoVaultAES.parseKey(
+                keyBytes = Base64.decode(encodedSecretKey, Base64.NO_WRAP),
+            ),
+            plainTextBytes = plainTextBytes,
             algorithmParameterSpec = gcmParameterSpec,
         )
-        val encodedEncryptedText = Base64.encodeToString(encrypted, Base64.NO_WRAP)
+        val encodedEncryptedText = Base64.encodeToString(encryptedBytes, Base64.NO_WRAP)
         val decryptedText = String(
             cryptoVaultAES.decrypt(
-                secretKey = cryptoVaultAES.parseKey(Base64.decode(encodedSecretKey, Base64.NO_WRAP)),
-                encrypted = encrypted,
+                secretKey = cryptoVaultAES.parseKey(
+                    keyBytes = Base64.decode(encodedSecretKey, Base64.NO_WRAP),
+                ),
+                encryptedBytes = encryptedBytes,
                 algorithmParameterSpec = gcmParameterSpec,
-            )
+            ),
         )
         return ExampleResult(
             scenarioTitle = "Software AES, GCM, No Padding, Custom GCM Parameter Spec",
@@ -145,22 +154,23 @@ class AesExampleRunner(
 
     fun runGcmNoPaddingCustomGcmParameterSpec(): ExampleResult {
         val plainText = "Passw0rd!"
+        val plainTextBytes = plainText.toByteArray()
         val secretKey = cryptoVaultAES.generateKey()
         val encodedSecretKey = Base64.encodeToString(secretKey.encoded, Base64.NO_WRAP)
         val gcmParameterSpec = cryptoVaultAES.generateGCMParameterSpec()
         val encodedIVKey = Base64.encodeToString(gcmParameterSpec.iv, Base64.NO_WRAP)
-        val encrypted = cryptoVaultAES.encrypt(
+        val encryptedBytes = cryptoVaultAES.encrypt(
             secretKey = secretKey,
-            plainText = plainText.toByteArray(),
+            plainTextBytes = plainTextBytes,
             algorithmParameterSpec = gcmParameterSpec,
         )
-        val encodedEncryptedText = Base64.encodeToString(encrypted, Base64.NO_WRAP)
+        val encodedEncryptedText = Base64.encodeToString(encryptedBytes, Base64.NO_WRAP)
         val decryptedText = String(
             cryptoVaultAES.decrypt(
                 secretKey = secretKey,
-                encrypted = encrypted,
+                encryptedBytes = encryptedBytes,
                 algorithmParameterSpec = gcmParameterSpec,
-            )
+            ),
         )
         return ExampleResult(
             scenarioTitle = "Software AES, GCM, No Padding, Custom GCM Parameter Spec (direct key)",
@@ -177,26 +187,27 @@ class AesExampleRunner(
 
     fun runCbcPkcs5CustomIv(): ExampleResult {
         val plainText = "Passw0rd!"
+        val plainTextBytes = plainText.toByteArray()
         val secretKey = cryptoVaultAES.generateKey()
         val encodedSecretKey = Base64.encodeToString(secretKey.encoded, Base64.NO_WRAP)
         val ivParameterSpec = cryptoVaultAES.generateIvParameterSpec()
         val encodedIVKey = Base64.encodeToString(ivParameterSpec.iv, Base64.NO_WRAP)
-        val encrypted = cryptoVaultAES.encrypt(
+        val encryptedBytes = cryptoVaultAES.encrypt(
             secretKey = secretKey,
-            plainText = plainText.toByteArray(),
+            plainTextBytes = plainTextBytes,
             blockMode = "CBC",
             padding = "PKCS5Padding",
             algorithmParameterSpec = ivParameterSpec,
         )
-        val encodedEncryptedText = Base64.encodeToString(encrypted, Base64.NO_WRAP)
+        val encodedEncryptedText = Base64.encodeToString(encryptedBytes, Base64.NO_WRAP)
         val decryptedText = String(
             cryptoVaultAES.decrypt(
                 secretKey = secretKey,
-                encrypted = encrypted,
+                encryptedBytes = encryptedBytes,
                 blockMode = "CBC",
                 padding = "PKCS5Padding",
                 algorithmParameterSpec = ivParameterSpec,
-            )
+            ),
         )
         return ExampleResult(
             scenarioTitle = "Software AES, CBC, PKCS5, Custom IV Parameter Spec",
@@ -213,20 +224,22 @@ class AesExampleRunner(
 
     fun runGcmNoPaddingWithGeneratedIv(): ExampleResult {
         val plainText = "Passw0rd!"
+        val plainTextBytes = plainText.toByteArray()
         val secretKey = cryptoVaultAES.generateKey()
         val encodedSecretKey = Base64.encodeToString(secretKey.encoded, Base64.NO_WRAP)
         val encryptedModel = cryptoVaultAES.encrypt(
             secretKey = secretKey,
-            plainText = plainText.toByteArray(),
+            plainTextBytes = plainTextBytes,
         )
-        val encodedEncryptedText = Base64.encodeToString(encryptedModel.text, Base64.NO_WRAP)
-        val encodedIVKey = Base64.encodeToString(encryptedModel.iv, Base64.NO_WRAP)
+        val encodedEncryptedText =
+            Base64.encodeToString(encryptedModel.encryptedBytes, Base64.NO_WRAP)
+        val encodedIVKey = Base64.encodeToString(encryptedModel.ivBytes, Base64.NO_WRAP)
         val decryptedText = String(
             cryptoVaultAES.decrypt(
                 secretKey = secretKey,
-                encrypted = encryptedModel.text,
-                iv = encryptedModel.iv,
-            )
+                encryptedBytes = encryptedModel.encryptedBytes,
+                ivBytes = encryptedModel.ivBytes,
+            ),
         )
         return ExampleResult(
             scenarioTitle = "Software AES, GCM, No Padding, Generated IV",

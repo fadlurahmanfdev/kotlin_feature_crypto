@@ -6,20 +6,20 @@ interface ED25519Operation {
     /** Generates an ED25519 key pair as raw key bytes. */
     fun generateKey(): CryptoVaultKeyPair
 
-    /** Signs [plainText] with the given raw private key bytes. */
+    /** Signs [plainTextBytes] with the given raw private key bytes. */
     fun generateSignature(
-        encodedPrivateKey: ByteArray,
-        plainText: ByteArray,
+        privateKeyBytes: ByteArray,
+        plainTextBytes: ByteArray,
     ): ByteArray
 
     /**
-     * Verifies an ED25519 signature for [plainText].
+     * Verifies an ED25519 signature for [plainTextBytes].
      *
      * Returns `false` when verification fails cryptographically.
      */
     fun verifySignature(
-        encodedPublicKey: ByteArray,
-        plainText: ByteArray,
-        signature: ByteArray,
+        publicKeyBytes: ByteArray,
+        plainTextBytes: ByteArray,
+        signatureBytes: ByteArray,
     ): Boolean
 }

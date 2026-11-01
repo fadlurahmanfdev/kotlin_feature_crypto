@@ -1,7 +1,7 @@
 package com.fadlurahmanfdev.crypto_vault
 
 import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAES
-import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
+import com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException
 import com.fadlurahmanfdev.crypto_vault.internal.aes.DefaultSoftwareAESOperation
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -82,81 +82,81 @@ class CryptoVaultAESTest {
     @Test
     fun encrypt_decrypt_gcm_with_generated_iv_round_trip() {
         val secretKey = cryptoVaultAES.generateKey()
-        val plainText = "Passw0rd!".toByteArray()
+        val plainTextBytes = "Passw0rd!".toByteArray()
 
-        val encrypted = cryptoVaultAES.encrypt(
+        val encryptedData = cryptoVaultAES.encrypt(
             secretKey = secretKey,
-            plainText = plainText,
+            plainTextBytes = plainTextBytes,
         )
         val decrypted = cryptoVaultAES.decrypt(
             secretKey = secretKey,
-            encrypted = encrypted.text,
-            iv = encrypted.iv,
+            encryptedBytes = encryptedData.encryptedBytes,
+            ivBytes = encryptedData.ivBytes,
         )
 
-        assertTrue(encrypted.text.isNotEmpty())
-        assertTrue(encrypted.iv.isNotEmpty())
-        assertArrayEquals(plainText, decrypted)
+        assertTrue(encryptedData.encryptedBytes.isNotEmpty())
+        assertTrue(encryptedData.ivBytes.isNotEmpty())
+        assertArrayEquals(plainTextBytes, decrypted)
     }
 
     @Test
     fun encrypt_decrypt_gcm_with_custom_gcm_parameter_spec_round_trip() {
         val secretKey = cryptoVaultAES.generateKey()
-        val plainText = "Passw0rd!".toByteArray()
+        val plainTextBytes = "Passw0rd!".toByteArray()
         val gcmParameterSpec = cryptoVaultAES.generateGCMParameterSpec()
 
-        val encrypted = cryptoVaultAES.encrypt(
+        val encryptedBytes = cryptoVaultAES.encrypt(
             secretKey = secretKey,
-            plainText = plainText,
+            plainTextBytes = plainTextBytes,
             algorithmParameterSpec = gcmParameterSpec,
         )
         val decrypted = cryptoVaultAES.decrypt(
             secretKey = secretKey,
-            encrypted = encrypted,
+            encryptedBytes = encryptedBytes,
             algorithmParameterSpec = gcmParameterSpec,
         )
 
-        assertArrayEquals(plainText, decrypted)
+        assertArrayEquals(plainTextBytes, decrypted)
     }
 
     @Test
     fun encrypt_decrypt_cbc_pkcs5_with_custom_iv_round_trip() {
         val secretKey = cryptoVaultAES.generateKey()
-        val plainText = "Passw0rd!".toByteArray()
+        val plainTextBytes = "Passw0rd!".toByteArray()
         val ivParameterSpec = cryptoVaultAES.generateIvParameterSpec()
 
-        val encrypted = cryptoVaultAES.encrypt(
+        val encryptedBytes = cryptoVaultAES.encrypt(
             secretKey = secretKey,
-            plainText = plainText,
+            plainTextBytes = plainTextBytes,
             blockMode = "CBC",
             padding = "PKCS5Padding",
             algorithmParameterSpec = ivParameterSpec,
         )
         val decrypted = cryptoVaultAES.decrypt(
             secretKey = secretKey,
-            encrypted = encrypted,
+            encryptedBytes = encryptedBytes,
             blockMode = "CBC",
             padding = "PKCS5Padding",
             algorithmParameterSpec = ivParameterSpec,
         )
 
-        assertArrayEquals(plainText, decrypted)
+        assertArrayEquals(plainTextBytes, decrypted)
     }
 
     @Test
     fun decrypt_gcm_with_tampered_ciphertext_throws_integrity_check_failed() {
         val secretKey = cryptoVaultAES.generateKey()
-        val encrypted = cryptoVaultAES.encrypt(
+        val encryptedData = cryptoVaultAES.encrypt(
             secretKey = secretKey,
-            plainText = "Passw0rd!".toByteArray(),
+            plainTextBytes = "Passw0rd!".toByteArray(),
         )
-        val tampered = encrypted.text.copyOf().also { it[0] = (it[0] + 1).toByte() }
+        val tampered = encryptedData.encryptedBytes.copyOf().also { it[0] = (it[0] + 1).toByte() }
 
         val exception = assertThrows(CryptoVaultException::class.java) {
             cryptoVaultAES.decrypt(
                 secretKey = secretKey,
-                encrypted = tampered,
-                iv = encrypted.iv,
+                encryptedBytes = tampered,
+                ivBytes = encryptedData.ivBytes,
             )
         }
 
@@ -167,16 +167,16 @@ class CryptoVaultAESTest {
     fun parseKey_round_trip_with_exported_key_bytes() {
         val secretKey = cryptoVaultAES.generateKey()
         val parsed = cryptoVaultAES.parseKey(secretKey.encoded)
-        val plainText = "hello".toByteArray()
+        val plainTextBytes = "hello".toByteArray()
 
-        val encrypted = cryptoVaultAES.encrypt(secretKey = parsed, plainText = plainText)
+        val encryptedData = cryptoVaultAES.encrypt(secretKey = parsed, plainTextBytes = plainTextBytes)
         val decrypted = cryptoVaultAES.decrypt(
             secretKey = cryptoVaultAES.parseKey(secretKey.encoded),
-            encrypted = encrypted.text,
-            iv = encrypted.iv,
+            encryptedBytes = encryptedData.encryptedBytes,
+            ivBytes = encryptedData.ivBytes,
         )
 
-        assertArrayEquals(plainText, decrypted)
+        assertArrayEquals(plainTextBytes, decrypted)
     }
 
     @Test

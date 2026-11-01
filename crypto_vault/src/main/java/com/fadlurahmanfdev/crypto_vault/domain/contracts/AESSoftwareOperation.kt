@@ -12,7 +12,7 @@ import javax.crypto.spec.IvParameterSpec
 interface AESSoftwareOperation {
     fun generateKey(keySize: Int): SecretKey
 
-    fun parseKey(key: ByteArray): SecretKey
+    fun parseKey(keyBytes: ByteArray): SecretKey
 
     fun generateGCMParameterSpec(ivSizeBytes: Int, tagLengthBits: Int): GCMParameterSpec
 
@@ -20,14 +20,14 @@ interface AESSoftwareOperation {
 
     fun encrypt(
         secretKey: SecretKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): EncryptedData
 
     fun encrypt(
         secretKey: SecretKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
         algorithmParameterSpec: AlgorithmParameterSpec,
@@ -35,15 +35,15 @@ interface AESSoftwareOperation {
 
     fun decrypt(
         secretKey: SecretKey,
-        encrypted: ByteArray,
-        iv: ByteArray,
+        encryptedBytes: ByteArray,
+        ivBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray
 
     fun decrypt(
         secretKey: SecretKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String,
         padding: String,
         algorithmParameterSpec: AlgorithmParameterSpec,

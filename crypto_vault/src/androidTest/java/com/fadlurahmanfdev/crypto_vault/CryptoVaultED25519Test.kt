@@ -20,24 +20,24 @@ class CryptoVaultED25519Test {
     @Test
     fun generate_key_success_is_not_empty() {
         val key = cryptoVaultED25519.generateKey()
-        assertTrue(key.encodedPublicKey.isNotEmpty())
-        assertTrue(key.encodedPrivateKey.isNotEmpty())
+        assertTrue(key.publicKeyBytes.isNotEmpty())
+        assertTrue(key.privateKeyBytes.isNotEmpty())
     }
 
     @Test
     fun generate_and_verify_signature() {
-        val plainText = "Plain Signature Text".toByteArray()
+        val plainTextBytes = "Plain Signature Text".toByteArray()
         val key = cryptoVaultED25519.generateKey()
-        val signature = cryptoVaultED25519.generateSignature(
-            encodedPrivateKey = key.encodedPrivateKey,
-            plainText = plainText,
+        val signatureBytes = cryptoVaultED25519.generateSignature(
+            privateKeyBytes = key.privateKeyBytes,
+            plainTextBytes = plainTextBytes,
         )
-        assertTrue(signature.isNotEmpty())
+        assertTrue(signatureBytes.isNotEmpty())
         assertTrue(
             cryptoVaultED25519.verifySignature(
-                encodedPublicKey = key.encodedPublicKey,
-                signature = signature,
-                plainText = plainText,
+                publicKeyBytes = key.publicKeyBytes,
+                signatureBytes = signatureBytes,
+                plainTextBytes = plainTextBytes,
             ),
         )
     }
@@ -47,28 +47,28 @@ class CryptoVaultED25519Test {
         val key = cryptoVaultED25519.generateKey()
         assertFalse(
             cryptoVaultED25519.verifySignature(
-                encodedPublicKey = key.encodedPublicKey,
-                plainText = "Plain Signature Text".toByteArray(),
-                signature = key.encodedPrivateKey,
+                publicKeyBytes = key.publicKeyBytes,
+                plainTextBytes = "Plain Signature Text".toByteArray(),
+                signatureBytes = key.privateKeyBytes,
             ),
         )
     }
 
     @Test
     fun verify_tampered_signature_returns_false() {
-        val plainText = "Plain Signature Text".toByteArray()
+        val plainTextBytes = "Plain Signature Text".toByteArray()
         val key = cryptoVaultED25519.generateKey()
-        val signature = cryptoVaultED25519.generateSignature(
-            encodedPrivateKey = key.encodedPrivateKey,
-            plainText = plainText,
+        val signatureBytes = cryptoVaultED25519.generateSignature(
+            privateKeyBytes = key.privateKeyBytes,
+            plainTextBytes = plainTextBytes,
         )
-        val tampered = signature.copyOf().also { it[0] = (it[0] + 1).toByte() }
+        val tamperedBytes = signatureBytes.copyOf().also { it[0] = (it[0] + 1).toByte() }
 
         assertFalse(
             cryptoVaultED25519.verifySignature(
-                encodedPublicKey = key.encodedPublicKey,
-                plainText = plainText,
-                signature = tampered,
+                publicKeyBytes = key.publicKeyBytes,
+                plainTextBytes = plainTextBytes,
+                signatureBytes = tamperedBytes,
             ),
         )
     }

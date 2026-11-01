@@ -12,7 +12,7 @@ import java.security.spec.AlgorithmParameterSpec
  * RSA vault for software key pairs (key material lives in app memory).
  *
  * Default path uses 2048-bit keys, `RSA/ECB/OAEPWithSHA-256AndMGF1Padding` for encrypt/decrypt,
- * and `SHA256withRSA` for signatures. Prefer [CryptoVaultRSAAndroidKeyStore] when the private key
+ * and `SHA256withRSA` for signatureBytess. Prefer [CryptoVaultRSAAndroidKeyStore] when the private key
  * should never leave the device.
  *
  * Use [create] for the default implementation. Subclass or inject [operation] to customize behavior.
@@ -52,7 +52,7 @@ open class CryptoVaultRSA(
      * @return Parsed public key.
      * @throws CryptoVaultException with code `UNKNOWN` when parsing fails.
      */
-    open fun parsePublicKey(key: ByteArray): PublicKey = operation.parsePublicKey(key)
+    open fun parsePublicKey(publicKeyBytes: ByteArray): PublicKey = operation.parsePublicKey(publicKeyBytes)
 
     /**
      * Rebuilds an RSA [PrivateKey] from PKCS#8 encoded bytes.
@@ -61,13 +61,13 @@ open class CryptoVaultRSA(
      * @return Parsed private key.
      * @throws CryptoVaultException with code `UNKNOWN` when parsing fails.
      */
-    open fun parsePrivateKey(key: ByteArray): PrivateKey = operation.parsePrivateKey(key)
+    open fun parsePrivateKey(privateKeyBytes: ByteArray): PrivateKey = operation.parsePrivateKey(privateKeyBytes)
 
     /**
-     * Encrypts [plainText] with [publicKey].
+     * Encrypts [plainTextBytes] with [publicKey].
      *
      * @param publicKey RSA public key from [generateKey] or [parsePublicKey].
-     * @param plainText Data to encrypt. Must fit RSA size limits for the chosen padding.
+     * @param plainTextBytes Data to encrypt. Must fit RSA size limits for the chosen padding.
      * @param blockMode JCA block-mode segment for `RSA/blockMode/padding`. Prefer `"ECB"`.
      * @param padding JCA padding segment. Prefer `"OAEPWithSHA-256AndMGF1Padding"`.
      * @return Ciphertext bytes.
@@ -75,21 +75,21 @@ open class CryptoVaultRSA(
      */
     open fun encrypt(
         publicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String = RsaTransformation.DEFAULT_BLOCK_MODE,
         padding: String = RsaTransformation.DEFAULT_PADDING,
     ): ByteArray = operation.encrypt(
         publicKey = publicKey,
-        plainText = plainText,
+        plainTextBytes = plainTextBytes,
         blockMode = blockMode,
         padding = padding,
     )
 
     /**
-     * Encrypts [plainText] with a caller-supplied [algorithmParameterSpec] (for example OAEP).
+     * Encrypts [plainTextBytes] with a caller-supplied [algorithmParameterSpec] (for example OAEP).
      *
      * @param publicKey RSA public key from [generateKey] or [parsePublicKey].
-     * @param plainText Data to encrypt.
+     * @param plainTextBytes Data to encrypt.
      * @param blockMode JCA block-mode segment for `RSA/blockMode/padding`. Prefer `"ECB"`.
      * @param padding JCA padding segment. Prefer `"OAEPWithSHA-256AndMGF1Padding"`.
      * @param algorithmParameterSpec Spec such as `OAEPParameterSpec`.
@@ -98,23 +98,23 @@ open class CryptoVaultRSA(
      */
     open fun encrypt(
         publicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String = RsaTransformation.DEFAULT_BLOCK_MODE,
         padding: String = RsaTransformation.DEFAULT_PADDING,
         algorithmParameterSpec: AlgorithmParameterSpec,
     ): ByteArray = operation.encrypt(
         publicKey = publicKey,
-        plainText = plainText,
+        plainTextBytes = plainTextBytes,
         blockMode = blockMode,
         padding = padding,
         algorithmParameterSpec = algorithmParameterSpec,
     )
 
     /**
-     * Decrypts [encrypted] with [privateKey].
+     * Decrypts [encryptedBytes] with [privateKey].
      *
      * @param privateKey Same software RSA private key used for encryption.
-     * @param encrypted Ciphertext.
+     * @param encryptedBytes Ciphertext.
      * @param blockMode JCA block-mode segment used for encryption. Prefer `"ECB"`.
      * @param padding JCA padding segment used for encryption. Prefer
      *        `"OAEPWithSHA-256AndMGF1Padding"`.
@@ -123,21 +123,21 @@ open class CryptoVaultRSA(
      */
     open fun decrypt(
         privateKey: PrivateKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String = RsaTransformation.DEFAULT_BLOCK_MODE,
         padding: String = RsaTransformation.DEFAULT_PADDING,
     ): ByteArray = operation.decrypt(
         privateKey = privateKey,
-        encrypted = encrypted,
+        encryptedBytes = encryptedBytes,
         blockMode = blockMode,
         padding = padding,
     )
 
     /**
-     * Decrypts [encrypted] with a caller-supplied [algorithmParameterSpec].
+     * Decrypts [encryptedBytes] with a caller-supplied [algorithmParameterSpec].
      *
      * @param privateKey Same software RSA private key used for encryption.
-     * @param encrypted Ciphertext.
+     * @param encryptedBytes Ciphertext.
      * @param blockMode JCA block-mode segment used for encryption. Prefer `"ECB"`.
      * @param padding JCA padding segment used for encryption.
      * @param algorithmParameterSpec Spec used (or compatible with) encryption.
@@ -146,59 +146,59 @@ open class CryptoVaultRSA(
      */
     open fun decrypt(
         privateKey: PrivateKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String = RsaTransformation.DEFAULT_BLOCK_MODE,
         padding: String = RsaTransformation.DEFAULT_PADDING,
         algorithmParameterSpec: AlgorithmParameterSpec,
     ): ByteArray = operation.decrypt(
         privateKey = privateKey,
-        encrypted = encrypted,
+        encryptedBytes = encryptedBytes,
         blockMode = blockMode,
         padding = padding,
         algorithmParameterSpec = algorithmParameterSpec,
     )
 
     /**
-     * Signs [plainText] with [privateKey].
+     * Signs [plainTextBytes] with [privateKey].
      *
      * @param privateKey RSA private key from [generateKey] or [parsePrivateKey].
-     * @param plainText Data to sign.
+     * @param plainTextBytes Data to sign.
      * @param signatureAlgorithm JCA signature algorithm. Prefer `"SHA256withRSA"`.
      * @return Signature bytes.
      * @throws CryptoVaultException with code `UNKNOWN` when signing fails.
      */
     open fun sign(
         privateKey: PrivateKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         signatureAlgorithm: String = RsaTransformation.DEFAULT_SIGNATURE_ALGORITHM,
     ): ByteArray = operation.sign(
         privateKey = privateKey,
-        plainText = plainText,
+        plainTextBytes = plainTextBytes,
         signatureAlgorithm = signatureAlgorithm,
     )
 
     /**
-     * Verifies [signature] for [plainText] with [publicKey].
+     * Verifies [signatureBytes] for [plainTextBytes] with [publicKey].
      *
-     * Returns `false` when the signature does not match. Unexpected setup failures throw
+     * Returns `false` when the signatureBytes does not match. Unexpected setup failures throw
      * [CryptoVaultException].
      *
      * @param publicKey Matching RSA public key.
-     * @param signature Signature bytes from [sign].
-     * @param plainText Original data that was signed.
+     * @param signatureBytes Signature bytes from [sign].
+     * @param plainTextBytes Original data that was signed.
      * @param signatureAlgorithm JCA signature algorithm used for signing. Prefer `"SHA256withRSA"`.
-     * @return `true` when the signature is valid.
+     * @return `true` when the signatureBytes is valid.
      * @throws CryptoVaultException with code `UNKNOWN` when verification cannot be set up.
      */
     open fun verify(
         publicKey: PublicKey,
-        signature: ByteArray,
-        plainText: ByteArray,
+        signatureBytes: ByteArray,
+        plainTextBytes: ByteArray,
         signatureAlgorithm: String = RsaTransformation.DEFAULT_SIGNATURE_ALGORITHM,
     ): Boolean = operation.verify(
         publicKey = publicKey,
-        signature = signature,
-        plainText = plainText,
+        signatureBytes = signatureBytes,
+        plainTextBytes = plainTextBytes,
         signatureAlgorithm = signatureAlgorithm,
     )
 }

@@ -51,7 +51,7 @@ Recommended imports for new code:
 import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAES
 import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAESAndroidKeyStore
 import com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException
-import com.fadlurahmanfdev.crypto_vault.domain.models.EncryptedData
+import com.fadlurahmanfdev.crypto_vault.model.EncryptedData
 ```
 
 All public vault classes are `open` so you can extend and override behavior in your app.
@@ -102,7 +102,7 @@ combinations fail with `CryptoVaultException`.
 ```kotlin
 import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAES
 import com.fadlurahmanfdev.crypto_vault.api.aes.CryptoVaultAESAndroidKeyStore
-import com.fadlurahmanfdev.crypto_vault.domain.models.EncryptedData
+import com.fadlurahmanfdev.crypto_vault.model.EncryptedData
 import javax.crypto.SecretKey
 ```
 
@@ -120,24 +120,24 @@ val secretKey128: SecretKey = aes.generateKey(keySize = 128)
 
 val encrypted: EncryptedData = aes.encrypt(
     secretKey = secretKey,
-    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+    plainTextBytes = "Passw0rd!".toByteArray(Charsets.UTF_8),
 )
 val decrypted: ByteArray = aes.decrypt(
     secretKey = secretKey,
-    encrypted = encrypted.text,
-    iv = encrypted.iv,
+    encryptedBytes = encrypted.encryptedBytes,
+    ivBytes = encrypted.ivBytes,
 )
 
 // Custom IV / GCM tag via AlgorithmParameterSpec
 val gcmSpec = aes.generateGCMParameterSpec()
 val cipherOnly: ByteArray = aes.encrypt(
     secretKey = secretKey,
-    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+    plainTextBytes = "Passw0rd!".toByteArray(Charsets.UTF_8),
     algorithmParameterSpec = gcmSpec,
 )
 val plainAgain: ByteArray = aes.decrypt(
     secretKey = secretKey,
-    encrypted = cipherOnly,
+    encryptedBytes = cipherOnly,
     algorithmParameterSpec = gcmSpec,
 )
 
@@ -145,14 +145,14 @@ val plainAgain: ByteArray = aes.decrypt(
 val ivSpec = aes.generateIvParameterSpec()
 val cbcCipher: ByteArray = aes.encrypt(
     secretKey = secretKey,
-    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+    plainTextBytes = "Passw0rd!".toByteArray(Charsets.UTF_8),
     blockMode = "CBC",
     padding = "PKCS7Padding",
     algorithmParameterSpec = ivSpec,
 )
 ```
 
-Import an existing key with `parseKey(byteArray)`.
+Import an existing key with `parseKey(keyBytes)`.
 
 | Code | When |
 |------|------|
@@ -184,12 +184,12 @@ val loaded: SecretKey = aes.getKey(keyStoreAlias = "example_aes")
 
 val encrypted: EncryptedData = aes.encrypt(
     secretKey = secretKey,
-    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+    plainTextBytes = "Passw0rd!".toByteArray(Charsets.UTF_8),
 )
-val plainText: ByteArray = aes.decrypt(
+val plainTextBytes: ByteArray = aes.decrypt(
     secretKey = secretKey,
-    encrypted = encrypted.text,
-    iv = encrypted.iv,
+    encryptedBytes = encrypted.encryptedBytes,
+    ivBytes = encrypted.ivBytes,
 )
 ```
 
@@ -243,23 +243,23 @@ you must store key bytes securely yourself.
 val rsa = CryptoVaultRSA.create()
 val keyPair: KeyPair = rsa.generateKey()
 
-val encrypted: ByteArray = rsa.encrypt(
+val encryptedBytes: ByteArray = rsa.encrypt(
     publicKey = keyPair.public,
-    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+    plainTextBytes = "Passw0rd!".toByteArray(Charsets.UTF_8),
 )
 val decrypted: ByteArray = rsa.decrypt(
     privateKey = keyPair.private,
-    encrypted = encrypted,
+    encryptedBytes = encrypted,
 )
 
 val signature: ByteArray = rsa.sign(
     privateKey = keyPair.private,
-    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+    plainTextBytes = "Passw0rd!".toByteArray(Charsets.UTF_8),
 )
 val isValid: Boolean = rsa.verify(
     publicKey = keyPair.public,
     signature = signature,
-    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+    plainTextBytes = "Passw0rd!".toByteArray(Charsets.UTF_8),
 )
 ```
 
@@ -296,23 +296,23 @@ val privateKey: PrivateKey = rsa.getPrivateKey("example_rsa")
     ?: rsa.generateKey(keyStoreAlias = "example_rsa").private
 val publicKey: PublicKey = rsa.getPublicKey("example_rsa")!!
 
-val encrypted: ByteArray = rsa.encrypt(
+val encryptedBytes: ByteArray = rsa.encrypt(
     publicKey = publicKey,
-    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+    plainTextBytes = "Passw0rd!".toByteArray(Charsets.UTF_8),
 )
-val plainText: ByteArray = rsa.decrypt(
+val plainTextBytes: ByteArray = rsa.decrypt(
     privateKey = privateKey,
-    encrypted = encrypted,
+    encryptedBytes = encrypted,
 )
 
 val signature: ByteArray = rsa.sign(
     privateKey = privateKey,
-    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+    plainTextBytes = "Passw0rd!".toByteArray(Charsets.UTF_8),
 )
 val isValid: Boolean = rsa.verify(
     publicKey = publicKey,
     signature = signature,
-    plainText = "Passw0rd!".toByteArray(Charsets.UTF_8),
+    plainTextBytes = "Passw0rd!".toByteArray(Charsets.UTF_8),
 )
 ```
 
@@ -351,12 +351,12 @@ val key = cryptoVaultEC.generateKey()
 
 ```kotlin
 val signature = cryptoVaultEC.generateSignature(
-    encodedPrivateKey = key.privateKey,
+    privateKeyBytes = key.private.encoded,
     plainText = "Passw0rd!",
     signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA,
 )
 val isValid = cryptoVaultEC.verifySignature(
-    encodedPublicKey = key.publicKey,
+    publicKeyBytes = key.public.encoded,
     signature = signature,
     plainText = "Passw0rd!",
     signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA,
@@ -368,13 +368,13 @@ val isValid = cryptoVaultEC.verifySignature(
 Uses an ephemeral EC key per encryption. Widely supported on Android without third-party JCE cipher aliases.
 
 ```kotlin
-val encrypted = cryptoVaultEC.encrypt(
-    encodedPublicKey = key.publicKey,
+val encryptedBytes = cryptoVaultEC.encrypt(
+    publicKeyBytes = key.public.encoded,
     transformation = CryptoVaultECTransformation.ECDH_AES_GCM,
     plainText = "Passw0rd!",
 )
 val decrypted = cryptoVaultEC.decrypt(
-    encodedPrivateKey = key.privateKey,
+    privateKeyBytes = key.private.encoded,
     transformation = CryptoVaultECTransformation.ECDH_AES_GCM,
     encryptedText = encrypted,
 )
@@ -387,8 +387,8 @@ val aliceKey = cryptoVaultEC.generateKey()
 val bobKey = cryptoVaultEC.generateKey()
 
 val aliceSharedSecret = cryptoVaultEC.generateSharedSecret(
-    ourEncodedPrivateKey = aliceKey.privateKey,
-    otherEncodedPublicKey = bobKey.publicKey,
+    ourPrivateKeyBytes = aliceKey.private.encoded,
+    otherPublicKeyBytes = bobKey.public.encoded,
 )
 val aesKey = cryptoVaultEC.derivedSharedSecret(aliceSharedSecret)
 ```
@@ -408,11 +408,11 @@ val cryptoVaultED25519 = CryptoVaultED25519()
 val key = cryptoVaultED25519.generateKey()
 
 val signature = cryptoVaultED25519.generateSignature(
-    encodedPrivateKey = key.privateKey,
+    privateKeyBytes = key.private.encoded,
     plainText = "Passw0rd!",
 )
 val isValid = cryptoVaultED25519.verifySignature(
-    encodedPublicKey = key.publicKey,
+    publicKeyBytes = key.public.encoded,
     plainText = "Passw0rd!",
     signature = signature,
 )
@@ -438,7 +438,7 @@ val transformation = "${CryptoVaultAlgorithm.ChaCha20}/${CryptoVaultBlockMode.Po
 if (customVault.isSupported(transformation)) {
     val key = customVault.generateKey(CryptoVaultAlgorithm.ChaCha20)
     val nonce = ByteArray(12).also { java.security.SecureRandom().nextBytes(it) }
-    val encrypted = customVault.encrypt(
+    val encryptedBytes = customVault.encrypt(
         algorithm = CryptoVaultAlgorithm.ChaCha20,
         encodedSecretKey = key,
         transformation = transformation,
@@ -465,7 +465,7 @@ val customVault = CryptoVaultCustomAsymmetricVault()
 val key = customVault.generateKey(CryptoVaultAlgorithm.RSA, 2048)
 
 val signature = customVault.generateSignature(
-    encodedPrivateKey = key.privateKey,
+    privateKeyBytes = key.private.encoded,
     plainText = "Passw0rd!",
     algorithm = CryptoVaultAlgorithm.RSA,
     signatureAlgorithm = CryptoVaultSignatureAlgorithm.SHA256withRSA,

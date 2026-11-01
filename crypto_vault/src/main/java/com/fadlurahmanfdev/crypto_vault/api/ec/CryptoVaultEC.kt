@@ -10,86 +10,85 @@ import java.security.KeyPair
  * Keystore-backed keys are stored in TEE / StrongBox when the device supports it.
  */
 open class CryptoVaultEC internal constructor(
-    private val operation: ECOperation
+    private val operation: ECOperation,
 ) {
 
     companion object {
         fun create(): CryptoVaultEC {
             return CryptoVaultEC(
-                operation = DefaultECOperation.create()
+                operation = DefaultECOperation.create(),
             )
         }
     }
 
     open fun generateKey(): KeyPair = operation.generateKey()
 
-    /** Signs [plainText] with a Base64-encoded private key. */
+    /** Signs [plainText] with raw private key bytes. */
     open fun generateSignature(
-        encodedPrivateKey: ByteArray,
+        privateKeyBytes: ByteArray,
         plainText: String,
-        signatureAlgorithm: String = "SHA256withECDSA"
+        signatureAlgorithm: String = "SHA256withECDSA",
     ): ByteArray = operation.generateSignature(
-        encodedPrivateKey = encodedPrivateKey,
+        privateKeyBytes = privateKeyBytes,
         plainText = plainText,
-        signatureAlgorithm = signatureAlgorithm
+        signatureAlgorithm = signatureAlgorithm,
     )
 
-    /** Verifies [signature] for [plainText] using a Base64-encoded public key. */
+    /** Verifies [signatureBytes] for [plainText] using raw public key bytes. */
     open fun verifySignature(
-        encodedPublicKey: ByteArray,
-        signature: ByteArray,
+        publicKeyBytes: ByteArray,
+        signatureBytes: ByteArray,
         plainText: String,
-        signatureAlgorithm: String = "SHA256withECDSA"
+        signatureAlgorithm: String = "SHA256withECDSA",
     ): Boolean = operation.verifySignature(
-        encodedPublicKey = encodedPublicKey,
-        signature = signature,
+        publicKeyBytes = publicKeyBytes,
+        signatureBytes = signatureBytes,
         plainText = plainText,
-        signatureAlgorithm = signatureAlgorithm
+        signatureAlgorithm = signatureAlgorithm,
     )
 
     /**
-     * Encrypts [plainText] for the holder of the private key matching [encodedPublicKey].
+     * Encrypts [plainText] for the holder of the private key matching [publicKeyBytes].
      *
-     * Uses [com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation.ECDH_AES_GCM]: ephemeral ECDH + SHA-256 KDF + AES-GCM.
+     * Default transformation is ephemeral ECDH + SHA-256 KDF + AES-GCM.
      *
-     * @throws com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException when [transformation] is not supported.
+     * @throws com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException when [transformation] is not supported.
      */
     open fun encrypt(
-        encodedPublicKey: ByteArray,
+        publicKeyBytes: ByteArray,
         transformation: String = "ECDH_AES_GCM",
         plainText: String,
     ): ByteArray = operation.encrypt(
-        encodedPublicKey = encodedPublicKey,
+        publicKeyBytes = publicKeyBytes,
         transformation = transformation,
-        plainText = plainText
+        plainText = plainText,
     )
 
     /**
-     * Decrypts [encryptedText] produced by [encrypt] for the same [transformation].
+     * Decrypts [encryptedBytes] produced by [encrypt] for the same [transformation].
      *
-     * @throws com.fadlurahmanfdev.crypto_vault.core.exception.CryptoVaultException when [transformation] is not supported.
+     * @throws com.fadlurahmanfdev.crypto_vault.exception.CryptoVaultException when [transformation] is not supported.
      */
     open fun decrypt(
-        encodedPrivateKey: ByteArray,
+        privateKeyBytes: ByteArray,
         transformation: String = "ECDH_AES_GCM",
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
     ): String = operation.decrypt(
-        encodedPrivateKey = encodedPrivateKey,
+        privateKeyBytes = privateKeyBytes,
         transformation = transformation,
-        encrypted = encrypted,
+        encryptedBytes = encryptedBytes,
     )
 
-    /** Derives a shared secret via ECDH from local private and remote public keys. */
+    /** Derives a shared secret via ECDH from local private and remote public key bytes. */
     open fun generateSharedSecret(
-        ourEncodedPrivateKey: ByteArray,
-        otherEncodedPublicKey: ByteArray,
+        ourPrivateKeyBytes: ByteArray,
+        otherPublicKeyBytes: ByteArray,
     ): ByteArray = operation.generateSharedSecret(
-        ourEncodedPrivateKey = ourEncodedPrivateKey,
-        otherEncodedPublicKey = otherEncodedPublicKey,
+        ourPrivateKeyBytes = ourPrivateKeyBytes,
+        otherPublicKeyBytes = otherPublicKeyBytes,
     )
 
     /** Derives a 256-bit AES key from an ECDH shared secret using SHA-256. */
-    open fun derivedSharedSecret(sharedSecret: ByteArray): ByteArray = operation.derivedSharedSecret(
-        sharedSecret = sharedSecret
-    )
+    open fun derivedSharedSecret(sharedSecretBytes: ByteArray): ByteArray =
+        operation.derivedSharedSecret(sharedSecretBytes = sharedSecretBytes)
 }

@@ -11,20 +11,20 @@ import java.security.spec.AlgorithmParameterSpec
 interface RSASoftwareOperation {
     fun generateKey(keySize: Int): KeyPair
 
-    fun parsePublicKey(key: ByteArray): PublicKey
+    fun parsePublicKey(publicKeyBytes: ByteArray): PublicKey
 
-    fun parsePrivateKey(key: ByteArray): PrivateKey
+    fun parsePrivateKey(privateKeyBytes: ByteArray): PrivateKey
 
     fun encrypt(
         publicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray
 
     fun encrypt(
         publicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
         algorithmParameterSpec: AlgorithmParameterSpec,
@@ -32,14 +32,14 @@ interface RSASoftwareOperation {
 
     fun decrypt(
         privateKey: PrivateKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray
 
     fun decrypt(
         privateKey: PrivateKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String,
         padding: String,
         algorithmParameterSpec: AlgorithmParameterSpec,
@@ -47,14 +47,14 @@ interface RSASoftwareOperation {
 
     fun sign(
         privateKey: PrivateKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         signatureAlgorithm: String,
     ): ByteArray
 
     fun verify(
         publicKey: PublicKey,
-        signature: ByteArray,
-        plainText: ByteArray,
+        signatureBytes: ByteArray,
+        plainTextBytes: ByteArray,
         signatureAlgorithm: String,
     ): Boolean
 }

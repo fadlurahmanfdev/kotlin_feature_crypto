@@ -54,9 +54,9 @@ internal class DefaultSoftwareRSAOperation(
         }
     }
 
-    override fun parsePublicKey(key: ByteArray): PublicKey {
+    override fun parsePublicKey(publicKeyBytes: ByteArray): PublicKey {
         return try {
-            keyFactoryFactory().generatePublic(X509EncodedKeySpec(key))
+            keyFactoryFactory().generatePublic(X509EncodedKeySpec(publicKeyBytes))
         } catch (e: Throwable) {
             throw CryptoVaultExceptionCodes.unknown(
                 message = "Failed to parse RSA public key: ${e.message}",
@@ -65,9 +65,9 @@ internal class DefaultSoftwareRSAOperation(
         }
     }
 
-    override fun parsePrivateKey(key: ByteArray): PrivateKey {
+    override fun parsePrivateKey(privateKeyBytes: ByteArray): PrivateKey {
         return try {
-            keyFactoryFactory().generatePrivate(PKCS8EncodedKeySpec(key))
+            keyFactoryFactory().generatePrivate(PKCS8EncodedKeySpec(privateKeyBytes))
         } catch (e: Throwable) {
             throw CryptoVaultExceptionCodes.unknown(
                 message = "Failed to parse RSA private key: ${e.message}",
@@ -78,21 +78,21 @@ internal class DefaultSoftwareRSAOperation(
 
     override fun encrypt(
         publicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray {
         val oaepSpec = RsaCipherHelper.oaepParameterSpecForPadding(padding)
         return if (oaepSpec != null) {
-            encrypt(publicKey, plainText, blockMode, padding, oaepSpec)
+            encrypt(publicKey, plainTextBytes, blockMode, padding, oaepSpec)
         } else {
-            encryptWithoutSpec(publicKey, plainText, blockMode, padding)
+            encryptWithoutSpec(publicKey, plainTextBytes, blockMode, padding)
         }
     }
 
     override fun encrypt(
         publicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
         algorithmParameterSpec: AlgorithmParameterSpec,
@@ -100,7 +100,7 @@ internal class DefaultSoftwareRSAOperation(
         return try {
             val cipher = cipherFactory(RsaTransformation.raw(blockMode, padding))
             cipher.init(Cipher.ENCRYPT_MODE, publicKey, algorithmParameterSpec)
-            cipher.doFinal(plainText)
+            cipher.doFinal(plainTextBytes)
         } catch (e: CryptoVaultException) {
             throw e
         } catch (e: Throwable) {
@@ -113,21 +113,21 @@ internal class DefaultSoftwareRSAOperation(
 
     override fun decrypt(
         privateKey: PrivateKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray {
         val oaepSpec = RsaCipherHelper.oaepParameterSpecForPadding(padding)
         return if (oaepSpec != null) {
-            decrypt(privateKey, encrypted, blockMode, padding, oaepSpec)
+            decrypt(privateKey, encryptedBytes, blockMode, padding, oaepSpec)
         } else {
-            decryptWithoutSpec(privateKey, encrypted, blockMode, padding)
+            decryptWithoutSpec(privateKey, encryptedBytes, blockMode, padding)
         }
     }
 
     override fun decrypt(
         privateKey: PrivateKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String,
         padding: String,
         algorithmParameterSpec: AlgorithmParameterSpec,
@@ -135,7 +135,7 @@ internal class DefaultSoftwareRSAOperation(
         return try {
             val cipher = cipherFactory(RsaTransformation.raw(blockMode, padding))
             cipher.init(Cipher.DECRYPT_MODE, privateKey, algorithmParameterSpec)
-            cipher.doFinal(encrypted)
+            cipher.doFinal(encryptedBytes)
         } catch (e: CryptoVaultException) {
             throw e
         } catch (e: Throwable) {
@@ -148,13 +148,13 @@ internal class DefaultSoftwareRSAOperation(
 
     override fun sign(
         privateKey: PrivateKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         signatureAlgorithm: String,
     ): ByteArray {
         return try {
             val signer = signatureFactory(signatureAlgorithm)
             signer.initSign(privateKey)
-            signer.update(plainText)
+            signer.update(plainTextBytes)
             signer.sign()
         } catch (e: CryptoVaultException) {
             throw e
@@ -168,15 +168,15 @@ internal class DefaultSoftwareRSAOperation(
 
     override fun verify(
         publicKey: PublicKey,
-        signature: ByteArray,
-        plainText: ByteArray,
+        signatureBytes: ByteArray,
+        plainTextBytes: ByteArray,
         signatureAlgorithm: String,
     ): Boolean {
         return try {
             val verifier = signatureFactory(signatureAlgorithm)
             verifier.initVerify(publicKey)
-            verifier.update(plainText)
-            verifier.verify(signature)
+            verifier.update(plainTextBytes)
+            verifier.verify(signatureBytes)
         } catch (e: SignatureException) {
             false
         } catch (e: CryptoVaultException) {
@@ -191,14 +191,14 @@ internal class DefaultSoftwareRSAOperation(
 
     private fun encryptWithoutSpec(
         publicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray {
         return try {
             val cipher = cipherFactory(RsaTransformation.raw(blockMode, padding))
             cipher.init(Cipher.ENCRYPT_MODE, publicKey)
-            cipher.doFinal(plainText)
+            cipher.doFinal(plainTextBytes)
         } catch (e: CryptoVaultException) {
             throw e
         } catch (e: Throwable) {
@@ -211,14 +211,14 @@ internal class DefaultSoftwareRSAOperation(
 
     private fun decryptWithoutSpec(
         privateKey: PrivateKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray {
         return try {
             val cipher = cipherFactory(RsaTransformation.raw(blockMode, padding))
             cipher.init(Cipher.DECRYPT_MODE, privateKey)
-            cipher.doFinal(encrypted)
+            cipher.doFinal(encryptedBytes)
         } catch (e: CryptoVaultException) {
             throw e
         } catch (e: Throwable) {

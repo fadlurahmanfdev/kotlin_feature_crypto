@@ -111,12 +111,12 @@ open class CryptoVaultAESAndroidKeyStore(
         operation.isSupportStrongBox(context)
 
     /**
-     * Encrypts [plainText] with an Android Keystore AES key.
+     * Encrypts [plainTextBytes] with an Android Keystore AES key.
      *
      * The Cipher generates a fresh IV (randomized encryption). Caller IV is not accepted.
      *
      * @param secretKey Android Keystore AES key from [generateKey] or [getKey].
-     * @param plainText Data to encrypt.
+     * @param plainTextBytes Data to encrypt.
      * @param blockMode JCA block-mode segment for `AES/blockMode/padding`. Prefer `"GCM"`.
      *        Must match the modes configured when the key was generated.
      * @param padding JCA padding segment. Prefer `"NoPadding"` with GCM.
@@ -127,12 +127,12 @@ open class CryptoVaultAESAndroidKeyStore(
      */
     open fun encrypt(
         secretKey: SecretKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String = AesTransformation.DEFAULT_BLOCK_MODE,
         padding: String = AesTransformation.DEFAULT_PADDING,
     ): EncryptedData = operation.encrypt(
         secretKey = secretKey,
-        plainText = plainText,
+        plainTextBytes = plainTextBytes,
         blockMode = blockMode,
         padding = padding,
     )
@@ -143,8 +143,8 @@ open class CryptoVaultAESAndroidKeyStore(
      * For GCM, the authentication tag is verified before any data is returned.
      *
      * @param secretKey Android Keystore AES key used for encryption.
-     * @param encrypted Ciphertext from [EncryptedData.text].
-     * @param iv IV from [EncryptedData.iv].
+     * @param encryptedBytes Ciphertext from [EncryptedData.encryptedBytes].
+     * @param ivBytes IV from [EncryptedData.ivBytes].
      * @param blockMode JCA block-mode segment used for encryption. Prefer `"GCM"`.
      * @param padding JCA padding segment used for encryption. Prefer `"NoPadding"` with GCM.
      * @return Decrypted data.
@@ -156,14 +156,14 @@ open class CryptoVaultAESAndroidKeyStore(
      */
     open fun decrypt(
         secretKey: SecretKey,
-        encrypted: ByteArray,
-        iv: ByteArray,
+        encryptedBytes: ByteArray,
+        ivBytes: ByteArray,
         blockMode: String = AesTransformation.DEFAULT_BLOCK_MODE,
         padding: String = AesTransformation.DEFAULT_PADDING,
     ): ByteArray = operation.decrypt(
         secretKey = secretKey,
-        encrypted = encrypted,
-        iv = iv,
+        encryptedBytes = encryptedBytes,
+        ivBytes = ivBytes,
         blockMode = blockMode,
         padding = padding,
     )

@@ -41,11 +41,11 @@ internal class DefaultECOperation : ECOperation {
     }
 
     override fun generateSignature(
-        encodedPrivateKey: ByteArray,
+        privateKeyBytes: ByteArray,
         plainText: String,
         signatureAlgorithm: String,
     ): ByteArray {
-        val privateKeySpec = PKCS8EncodedKeySpec(encodedPrivateKey)
+        val privateKeySpec = PKCS8EncodedKeySpec(privateKeyBytes)
         val privateKey = KeyFactory.getInstance(ALGORITHM).generatePrivate(privateKeySpec)
         val signer = Signature.getInstance(signatureAlgorithm)
         signer.initSign(privateKey)
@@ -54,55 +54,55 @@ internal class DefaultECOperation : ECOperation {
     }
 
     override fun verifySignature(
-        encodedPublicKey: ByteArray,
-        signature: ByteArray,
+        publicKeyBytes: ByteArray,
+        signatureBytes: ByteArray,
         plainText: String,
         signatureAlgorithm: String,
     ): Boolean {
-        val publicKeySpec = X509EncodedKeySpec(encodedPublicKey)
+        val publicKeySpec = X509EncodedKeySpec(publicKeyBytes)
         val publicKey = KeyFactory.getInstance(ALGORITHM).generatePublic(publicKeySpec)
         val signer = Signature.getInstance(signatureAlgorithm)
         signer.initVerify(publicKey)
         signer.update(plainText.toByteArray())
-        return signer.verify(signature)
+        return signer.verify(signatureBytes)
     }
 
     override fun encrypt(
-        encodedPublicKey: ByteArray,
+        publicKeyBytes: ByteArray,
         transformation: String,
         plainText: String,
     ): ByteArray {
-        val publicKeySpec = X509EncodedKeySpec(encodedPublicKey)
+        val publicKeySpec = X509EncodedKeySpec(publicKeyBytes)
         val publicKey = KeyFactory.getInstance(ALGORITHM).generatePublic(publicKeySpec)
         return encryptWithEcdhAesGcm(
             recipientPublicKey = publicKey,
-            plainText = plainText.toByteArray(),
+            plainTextBytes = plainText.toByteArray(),
         )
     }
 
     override fun decrypt(
-        encodedPrivateKey: ByteArray,
+        privateKeyBytes: ByteArray,
         transformation: String,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
     ): String {
-        val privateKeySpec = PKCS8EncodedKeySpec(encodedPrivateKey)
+        val privateKeySpec = PKCS8EncodedKeySpec(privateKeyBytes)
         val privateKey = KeyFactory.getInstance(ALGORITHM).generatePrivate(privateKeySpec)
         val decrypted = decryptWithEcdhAesGcm(
             recipientPrivateKey = privateKey,
-            encryptedPayload = encrypted,
+            encryptedPayloadBytes = encryptedBytes,
         )
         return String(decrypted)
     }
 
     override fun generateSharedSecret(
-        ourEncodedPrivateKey: ByteArray,
-        otherEncodedPublicKey: ByteArray,
+        ourPrivateKeyBytes: ByteArray,
+        otherPublicKeyBytes: ByteArray,
     ): ByteArray {
         val keyAgreement = KeyAgreement.getInstance(KEY_AGREEMENT_ALGORITHM)
-        val privateKeySpec = PKCS8EncodedKeySpec(ourEncodedPrivateKey)
+        val privateKeySpec = PKCS8EncodedKeySpec(ourPrivateKeyBytes)
         val privateKey =
             KeyFactory.getInstance(ALGORITHM).generatePrivate(privateKeySpec)
-        val otherPublicKeySpec = X509EncodedKeySpec(otherEncodedPublicKey)
+        val otherPublicKeySpec = X509EncodedKeySpec(otherPublicKeyBytes)
         val otherPublicKey =
             KeyFactory.getInstance(ALGORITHM).generatePublic(otherPublicKeySpec)
         keyAgreement.init(privateKey)
@@ -110,50 +110,50 @@ internal class DefaultECOperation : ECOperation {
         return keyAgreement.generateSecret()
     }
 
-    override fun derivedSharedSecret(sharedSecret: ByteArray): ByteArray {
+    override fun derivedSharedSecret(sharedSecretBytes: ByteArray): ByteArray {
         val sha256 = MessageDigest.getInstance("SHA-256")
-        val keyBytes = sha256.digest(sharedSecret)
+        val keyBytes = sha256.digest(sharedSecretBytes)
         return SecretKeySpec(keyBytes, "AES").encoded
     }
 
     private fun encryptWithEcdhAesGcm(
         recipientPublicKey: PublicKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
     ): ByteArray {
         val ephemeralKeyPair = KeyPairGenerator.getInstance(ALGORITHM).generateKeyPair()
         val aesKey = deriveAesKey(
-            deriveSharedSecret(
+            sharedSecretBytes = deriveSharedSecret(
                 privateKey = ephemeralKeyPair.private,
                 publicKey = recipientPublicKey,
             ),
         )
 
-        val iv = ByteArray(GCM_IV_SIZE_BYTES).also { SecureRandom().nextBytes(it) }
+        val ivBytes = ByteArray(GCM_IV_SIZE_BYTES).also { SecureRandom().nextBytes(it) }
         val cipher = Cipher.getInstance(AES_TRANSFORMATION)
-        cipher.init(Cipher.ENCRYPT_MODE, aesKey, GCMParameterSpec(GCM_TAG_SIZE_BITS, iv))
-        val cipherText = cipher.doFinal(plainText)
+        cipher.init(Cipher.ENCRYPT_MODE, aesKey, GCMParameterSpec(GCM_TAG_SIZE_BITS, ivBytes))
+        val cipherTextBytes = cipher.doFinal(plainTextBytes)
 
         val ephemeralPublicKeyBytes = ephemeralKeyPair.public.encoded
-        return pack(ephemeralPublicKeyBytes, iv, cipherText)
+        return pack(ephemeralPublicKeyBytes, ivBytes, cipherTextBytes)
     }
 
     private fun decryptWithEcdhAesGcm(
         recipientPrivateKey: PrivateKey,
-        encryptedPayload: ByteArray,
+        encryptedPayloadBytes: ByteArray,
     ): ByteArray {
-        val (ephemeralPublicKeyBytes, iv, cipherText) = unpack(encryptedPayload)
+        val (ephemeralPublicKeyBytes, ivBytes, cipherTextBytes) = unpack(encryptedPayloadBytes)
         val ephemeralPublicKey = KeyFactory.getInstance(ALGORITHM)
             .generatePublic(X509EncodedKeySpec(ephemeralPublicKeyBytes))
         val aesKey = deriveAesKey(
-            deriveSharedSecret(
+            sharedSecretBytes = deriveSharedSecret(
                 privateKey = recipientPrivateKey,
                 publicKey = ephemeralPublicKey,
             ),
         )
 
         val cipher = Cipher.getInstance(AES_TRANSFORMATION)
-        cipher.init(Cipher.DECRYPT_MODE, aesKey, GCMParameterSpec(GCM_TAG_SIZE_BITS, iv))
-        return cipher.doFinal(cipherText)
+        cipher.init(Cipher.DECRYPT_MODE, aesKey, GCMParameterSpec(GCM_TAG_SIZE_BITS, ivBytes))
+        return cipher.doFinal(cipherTextBytes)
     }
 
     private fun deriveSharedSecret(privateKey: PrivateKey, publicKey: PublicKey): ByteArray {
@@ -163,36 +163,38 @@ internal class DefaultECOperation : ECOperation {
         return keyAgreement.generateSecret()
     }
 
-    private fun deriveAesKey(sharedSecret: ByteArray): SecretKeySpec {
-        val keyBytes = MessageDigest.getInstance("SHA-256").digest(sharedSecret)
+    private fun deriveAesKey(sharedSecretBytes: ByteArray): SecretKeySpec {
+        val keyBytes = MessageDigest.getInstance("SHA-256").digest(sharedSecretBytes)
         return SecretKeySpec(keyBytes, "AES")
     }
 
     private fun pack(
         ephemeralPublicKeyBytes: ByteArray,
-        iv: ByteArray,
-        cipherText: ByteArray,
+        ivBytes: ByteArray,
+        cipherTextBytes: ByteArray,
     ): ByteArray {
         val lengthPrefix = ByteBuffer.allocate(EPHEMERAL_PUBLIC_KEY_LENGTH_BYTES)
             .putInt(ephemeralPublicKeyBytes.size)
             .array()
-        return lengthPrefix + ephemeralPublicKeyBytes + iv + cipherText
+        return lengthPrefix + ephemeralPublicKeyBytes + ivBytes + cipherTextBytes
     }
 
-    private fun unpack(encryptedPayload: ByteArray): Triple<ByteArray, ByteArray, ByteArray> {
+    private fun unpack(
+        encryptedPayloadBytes: ByteArray,
+    ): Triple<ByteArray, ByteArray, ByteArray> {
         val minEnvelopeSize = EPHEMERAL_PUBLIC_KEY_LENGTH_BYTES + GCM_IV_SIZE_BYTES
-        require(encryptedPayload.size > minEnvelopeSize) {
+        require(encryptedPayloadBytes.size > minEnvelopeSize) {
             "Encrypted payload is too short to contain a valid ECDH-AES-GCM envelope"
         }
 
         val ephemeralPublicKeyLength = ByteBuffer
-            .wrap(encryptedPayload, 0, EPHEMERAL_PUBLIC_KEY_LENGTH_BYTES)
+            .wrap(encryptedPayloadBytes, 0, EPHEMERAL_PUBLIC_KEY_LENGTH_BYTES)
             .int
         require(ephemeralPublicKeyLength >= 0) {
             "Invalid ephemeral public key length prefix"
         }
 
-        val payloadSize = encryptedPayload.size.toLong()
+        val payloadSize = encryptedPayloadBytes.size.toLong()
         val ephemeralPublicKeyEnd =
             EPHEMERAL_PUBLIC_KEY_LENGTH_BYTES.toLong() + ephemeralPublicKeyLength
         val ivEnd = ephemeralPublicKeyEnd + GCM_IV_SIZE_BYTES
@@ -210,12 +212,13 @@ internal class DefaultECOperation : ECOperation {
         val ephemeralPublicKeyEndIndex = ephemeralPublicKeyEnd.toInt()
         val ivEndIndex = ivEnd.toInt()
 
-        val ephemeralPublicKeyBytes = encryptedPayload.copyOfRange(
+        val ephemeralPublicKeyBytes = encryptedPayloadBytes.copyOfRange(
             EPHEMERAL_PUBLIC_KEY_LENGTH_BYTES,
             ephemeralPublicKeyEndIndex,
         )
-        val iv = encryptedPayload.copyOfRange(ephemeralPublicKeyEndIndex, ivEndIndex)
-        val cipherText = encryptedPayload.copyOfRange(ivEndIndex, encryptedPayload.size)
-        return Triple(ephemeralPublicKeyBytes, iv, cipherText)
+        val ivBytes = encryptedPayloadBytes.copyOfRange(ephemeralPublicKeyEndIndex, ivEndIndex)
+        val cipherTextBytes =
+            encryptedPayloadBytes.copyOfRange(ivEndIndex, encryptedPayloadBytes.size)
+        return Triple(ephemeralPublicKeyBytes, ivBytes, cipherTextBytes)
     }
 }

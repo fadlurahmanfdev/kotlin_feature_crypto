@@ -126,7 +126,7 @@ internal class DefaultAndroidKeyStoreAESOperation() : AESAndroidKeyStoreOperatio
 
     override fun encrypt(
         secretKey: SecretKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): EncryptedData {
@@ -134,8 +134,8 @@ internal class DefaultAndroidKeyStoreAESOperation() : AESAndroidKeyStoreOperatio
             val cipher = cipher(AesTransformation.raw(blockMode, padding))
             cipher.init(Cipher.ENCRYPT_MODE, secretKey)
             return EncryptedData(
-                text = cipher.doFinal(plainText),
-                iv = cipher.iv,
+                encryptedBytes = cipher.doFinal(plainTextBytes),
+                ivBytes = cipher.iv,
             )
         } catch (e: Throwable) {
             throw mapKeyStoreCryptoFailure(
@@ -147,24 +147,24 @@ internal class DefaultAndroidKeyStoreAESOperation() : AESAndroidKeyStoreOperatio
 
     override fun decrypt(
         secretKey: SecretKey,
-        encrypted: ByteArray,
-        iv: ByteArray,
+        encryptedBytes: ByteArray,
+        ivBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray {
         try {
             val algorithmParameterSpec = when (blockMode) {
                 AesTransformation.DEFAULT_BLOCK_MODE ->
-                    GCMParameterSpec(AesTransformation.GCM_TAG_LENGTH_BITS, iv)
+                    GCMParameterSpec(AesTransformation.GCM_TAG_LENGTH_BITS, ivBytes)
 
-                AesTransformation.BLOCK_MODE_CBC -> IvParameterSpec(iv)
+                AesTransformation.BLOCK_MODE_CBC -> IvParameterSpec(ivBytes)
                 else -> throw CryptoVaultExceptionCodes.invalidBlockMode(
                     message = "Parameter with specific block mode: $blockMode is not found",
                 )
             }
             val cipher = cipher(AesTransformation.raw(blockMode, padding))
             cipher.init(Cipher.DECRYPT_MODE, secretKey, algorithmParameterSpec)
-            return cipher.doFinal(encrypted)
+            return cipher.doFinal(encryptedBytes)
         } catch (e: AEADBadTagException) {
             throw CryptoVaultExceptionCodes.integrityCheckFailed(
                 message = "Ciphertext or IV was modified, or does not belong to this key",

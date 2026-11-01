@@ -2,10 +2,8 @@ package com.fadlurahmanfdev.crypto_vault
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fadlurahmanfdev.crypto_vault.api.ec.CryptoVaultEC
-import com.fadlurahmanfdev.crypto_vault.core.enum.ec.CryptoVaultECTransformation
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -19,49 +17,48 @@ class CryptoVaultECTest {
 
     @Before
     fun setUp() {
-        cryptoVaultEC = CryptoVaultEC()
+        cryptoVaultEC = CryptoVaultEC.create()
     }
 
     @Test
-    fun generate_key_non_android_keystore_success() {
+    fun generate_key_success() {
         val key = cryptoVaultEC.generateKey()
-        assertTrue(key.encodedPublicKey.isNotEmpty())
-        assertTrue(key.encodedPrivateKey.isNotEmpty())
+        assertTrue(key.private.encoded.isNotEmpty())
+        assertTrue(key.public.encoded.isNotEmpty())
     }
 
     @Test
-    fun generate_and_verify_signature_non_android_keystore() {
+    fun generate_and_verify_signature() {
         val key = cryptoVaultEC.generateKey()
-        val signature = cryptoVaultEC.generateSignature(
-            encodedPrivateKey = key.encodedPrivateKey,
+        val privateKeyBytes = key.private.encoded
+        val publicKeyBytes = key.public.encoded
+        val signatureBytes = cryptoVaultEC.generateSignature(
+            privateKeyBytes = privateKeyBytes,
             plainText = plainText,
-            signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA,
         )
-        assertTrue(signature.isNotEmpty())
+        assertTrue(signatureBytes.isNotEmpty())
         assertTrue(
             cryptoVaultEC.verifySignature(
-                encodedPublicKey = key.encodedPublicKey,
-                signature = signature,
+                publicKeyBytes = publicKeyBytes,
+                signatureBytes = signatureBytes,
                 plainText = plainText,
-                signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA,
-            )
+            ),
         )
     }
 
     @Test
-    fun encrypt_and_decrypt_non_android_keystore() {
+    fun encrypt_and_decrypt_round_trip() {
         val key = cryptoVaultEC.generateKey()
-        val transformation = CryptoVaultECTransformation.ECDH_AES_GCM
-        val encrypted = cryptoVaultEC.encrypt(
-            encodedPublicKey = key.encodedPublicKey,
-            transformation = transformation,
+        val privateKeyBytes = key.private.encoded
+        val publicKeyBytes = key.public.encoded
+        val encryptedBytes = cryptoVaultEC.encrypt(
+            publicKeyBytes = publicKeyBytes,
             plainText = plainText,
         )
-        assertTrue(encrypted.isNotEmpty())
+        assertTrue(encryptedBytes.isNotEmpty())
         val decrypted = cryptoVaultEC.decrypt(
-            encodedPrivateKey = key.encodedPrivateKey,
-            transformation = transformation,
-            encryptedText = encrypted,
+            privateKeyBytes = privateKeyBytes,
+            encryptedBytes = encryptedBytes,
         )
         assertEquals(plainText, decrypted)
     }
@@ -69,14 +66,14 @@ class CryptoVaultECTest {
     @Test
     fun verify_signature_returns_false_for_invalid_signature() {
         val key = cryptoVaultEC.generateKey()
-        val invalidSignature = cryptoVaultEC.encode(ByteArray(64))
+        val publicKeyBytes = key.public.encoded
+        val invalidSignatureBytes = ByteArray(64)
         assertFalse(
             cryptoVaultEC.verifySignature(
-                encodedPublicKey = key.encodedPublicKey,
-                signature = invalidSignature,
+                publicKeyBytes = publicKeyBytes,
+                signatureBytes = invalidSignatureBytes,
                 plainText = plainText,
-                signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA,
-            )
+            ),
         )
     }
 
@@ -85,67 +82,23 @@ class CryptoVaultECTest {
         val bobKey = cryptoVaultEC.generateKey()
         val aliceKey = cryptoVaultEC.generateKey()
 
-        val bobSharedSecret = cryptoVaultEC.generateSharedSecret(
-            ourEncodedPrivateKey = bobKey.encodedPrivateKey,
-            otherEncodedPublicKey = aliceKey.encodedPublicKey,
+        val bobSharedSecretBytes = cryptoVaultEC.generateSharedSecret(
+            ourPrivateKeyBytes = bobKey.private.encoded,
+            otherPublicKeyBytes = aliceKey.public.encoded,
         )
-        val aliceSharedSecret = cryptoVaultEC.generateSharedSecret(
-            ourEncodedPrivateKey = aliceKey.encodedPrivateKey,
-            otherEncodedPublicKey = bobKey.encodedPublicKey,
-        )
-
-        assertTrue(bobSharedSecret.isNotEmpty())
-        assertTrue(aliceSharedSecret.isNotEmpty())
-
-        val bobDerivedKey = cryptoVaultEC.derivedSharedSecret(bobSharedSecret)
-        val aliceDerivedKey = cryptoVaultEC.derivedSharedSecret(aliceSharedSecret)
-        assertTrue(bobDerivedKey.isNotEmpty())
-        assertTrue(aliceDerivedKey.isNotEmpty())
-    }
-
-    @Test
-    fun generate_key_via_android_keystore_and_sign_verify() {
-
-        val keystoreAlias = "ec_keystore_test_${System.currentTimeMillis()}"
-        cryptoVaultEC.deleteKey(keystoreAlias)
-
-        val keyPair = cryptoVaultEC.generateKeyFromAndroidKeyStore(
-            keystoreAlias = keystoreAlias,
-            strongBoxBacked = false,
-        )
-        assertNotNull(keyPair.private)
-        assertNotNull(keyPair.public)
-
-        val signature = cryptoVaultEC.generateSignature(
-            privateKey = keyPair.private,
-            plainText = plainText,
-            signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA,
-        )
-        assertTrue(signature.isNotEmpty())
-
-        val publicKey = cryptoVaultEC.getPublicAndroidKeyStore(keystoreAlias)
-        assertNotNull(publicKey)
-        assertTrue(
-            cryptoVaultEC.verifySignature(
-                publicKey = publicKey!!,
-                signature = signature,
-                plainText = plainText,
-                signatureAlgorithm = CryptoVaultECSignatureAlgorithm.SHA256withECDSA,
-            )
-        )
-    }
-
-    @Test
-    fun get_private_key_from_android_keystore() {
-
-        val keystoreAlias = "ec_private_key_test_${System.currentTimeMillis()}"
-        cryptoVaultEC.deleteKey(keystoreAlias)
-        cryptoVaultEC.generateKeyFromAndroidKeyStore(
-            keystoreAlias = keystoreAlias,
-            strongBoxBacked = false,
+        val aliceSharedSecretBytes = cryptoVaultEC.generateSharedSecret(
+            ourPrivateKeyBytes = aliceKey.private.encoded,
+            otherPublicKeyBytes = bobKey.public.encoded,
         )
 
-        assertNotNull(cryptoVaultEC.getPrivateKeyAndroidKeyStore(keystoreAlias))
-        assertNotNull(cryptoVaultEC.getPublicAndroidKeyStore(keystoreAlias))
+        assertTrue(bobSharedSecretBytes.isNotEmpty())
+        assertTrue(aliceSharedSecretBytes.isNotEmpty())
+        assertTrue(bobSharedSecretBytes.contentEquals(aliceSharedSecretBytes))
+
+        val bobDerivedKeyBytes =
+            cryptoVaultEC.derivedSharedSecret(sharedSecretBytes = bobSharedSecretBytes)
+        val aliceDerivedKeyBytes =
+            cryptoVaultEC.derivedSharedSecret(sharedSecretBytes = aliceSharedSecretBytes)
+        assertTrue(bobDerivedKeyBytes.contentEquals(aliceDerivedKeyBytes))
     }
 }

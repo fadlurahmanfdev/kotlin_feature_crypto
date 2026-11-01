@@ -12,31 +12,25 @@ class Ed25519ExampleRunner(
         val plainText = "Passw0rd!Sus4hB9t"
         val plainTextBytes = plainText.toByteArray()
         val key = cryptoVaultED25519.generateKey()
-        val signature = cryptoVaultED25519.generateSignature(
-            encodedPrivateKey = key.encodedPrivateKey,
-            plainText = plainTextBytes,
+        val signatureBytes = cryptoVaultED25519.generateSignature(
+            privateKeyBytes = key.privateKeyBytes,
+            plainTextBytes = plainTextBytes,
         )
         val isVerified = cryptoVaultED25519.verifySignature(
-            encodedPublicKey = key.encodedPublicKey,
-            plainText = plainTextBytes,
-            signature = signature,
+            publicKeyBytes = key.publicKeyBytes,
+            plainTextBytes = plainTextBytes,
+            signatureBytes = signatureBytes,
         )
+        val encodedPrivateKey = Base64.encodeToString(key.privateKeyBytes, Base64.NO_WRAP)
+        val encodedPublicKey = Base64.encodeToString(key.publicKeyBytes, Base64.NO_WRAP)
+        val encodedSignature = Base64.encodeToString(signatureBytes, Base64.NO_WRAP)
         return ExampleResult(
             scenarioTitle = "ED25519 sign and verify",
             lines = listOf(
                 ResultLine("plain text", plainText),
-                ResultLine(
-                    "private key",
-                    Base64.encodeToString(key.encodedPrivateKey, Base64.NO_WRAP),
-                ),
-                ResultLine(
-                    "public key",
-                    Base64.encodeToString(key.encodedPublicKey, Base64.NO_WRAP),
-                ),
-                ResultLine(
-                    "signature",
-                    Base64.encodeToString(signature, Base64.NO_WRAP),
-                ),
+                ResultLine("private key", encodedPrivateKey),
+                ResultLine("public key", encodedPublicKey),
+                ResultLine("signature", encodedSignature),
                 ResultLine("signature verified", isVerified.toString()),
             ),
         )

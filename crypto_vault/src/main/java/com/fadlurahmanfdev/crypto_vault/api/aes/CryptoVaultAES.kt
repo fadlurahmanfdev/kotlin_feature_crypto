@@ -53,7 +53,7 @@ open class CryptoVaultAES(
      * @param key Raw AES key bytes.
      * @return AES [SecretKey] wrapping [key].
      */
-    open fun parseKey(key: ByteArray): SecretKey = operation.parseKey(key)
+    open fun parseKey(keyBytes: ByteArray): SecretKey = operation.parseKey(keyBytes)
 
     /**
      * Generates a [GCMParameterSpec] with a random IV.
@@ -78,10 +78,10 @@ open class CryptoVaultAES(
     ): IvParameterSpec = operation.generateIvParameterSpec(ivSizeBytes)
 
     /**
-     * Encrypts [plainText] and returns ciphertext plus the Cipher-generated IV.
+     * Encrypts [plainTextBytes] and returns ciphertext plus the Cipher-generated IV.
      *
      * @param secretKey Software AES key from [generateKey] or [parseKey].
-     * @param plainText Data to encrypt.
+     * @param plainTextBytes Data to encrypt.
      * @param blockMode JCA block-mode segment for `AES/blockMode/padding`. Prefer `"GCM"`.
      *        Any other Android/JCA mode string is allowed (for example `"CTR"`); unsupported
      *        combinations fail with [CryptoVaultException].
@@ -92,21 +92,21 @@ open class CryptoVaultAES(
      */
     open fun encrypt(
         secretKey: SecretKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String = AesTransformation.DEFAULT_BLOCK_MODE,
         padding: String = AesTransformation.DEFAULT_PADDING,
     ): EncryptedData = operation.encrypt(
         secretKey = secretKey,
-        plainText = plainText,
+        plainTextBytes = plainTextBytes,
         blockMode = blockMode,
         padding = padding,
     )
 
     /**
-     * Encrypts [plainText] with a caller-supplied [algorithmParameterSpec] (custom IV / GCM tag).
+     * Encrypts [plainTextBytes] with a caller-supplied [algorithmParameterSpec] (custom IV / GCM tag).
      *
      * @param secretKey Software AES key from [generateKey] or [parseKey].
-     * @param plainText Data to encrypt.
+     * @param plainTextBytes Data to encrypt.
      * @param blockMode JCA block-mode segment for `AES/blockMode/padding`. Prefer `"GCM"`.
      *        Any other Android/JCA mode string is allowed; unsupported combinations fail with
      *        [CryptoVaultException].
@@ -117,13 +117,13 @@ open class CryptoVaultAES(
      */
     open fun encrypt(
         secretKey: SecretKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String = AesTransformation.DEFAULT_BLOCK_MODE,
         padding: String = AesTransformation.DEFAULT_PADDING,
         algorithmParameterSpec: AlgorithmParameterSpec,
     ): ByteArray = operation.encrypt(
         secretKey = secretKey,
-        plainText = plainText,
+        plainTextBytes = plainTextBytes,
         blockMode = blockMode,
         padding = padding,
         algorithmParameterSpec = algorithmParameterSpec,
@@ -136,8 +136,8 @@ open class CryptoVaultAES(
      * [IvParameterSpec]. Other block modes need the [AlgorithmParameterSpec] overload.
      *
      * @param secretKey Same software AES key used for encryption.
-     * @param encrypted Ciphertext (for GCM includes the authentication tag).
-     * @param iv IV from encryption (for example [EncryptedData.iv]).
+     * @param encryptedBytes Ciphertext (for GCM includes the authentication tag).
+     * @param ivBytes IV from encryption (for example [EncryptedData.ivBytes]).
      * @param blockMode JCA block-mode segment used for encryption. Prefer `"GCM"`.
      * @param padding JCA padding segment used for encryption. Prefer `"NoPadding"` with GCM.
      * @return Decrypted plaintext bytes.
@@ -147,14 +147,14 @@ open class CryptoVaultAES(
      */
     open fun decrypt(
         secretKey: SecretKey,
-        encrypted: ByteArray,
-        iv: ByteArray,
+        encryptedBytes: ByteArray,
+        ivBytes: ByteArray,
         blockMode: String = AesTransformation.DEFAULT_BLOCK_MODE,
         padding: String = AesTransformation.DEFAULT_PADDING,
     ): ByteArray = operation.decrypt(
         secretKey = secretKey,
-        encrypted = encrypted,
-        iv = iv,
+        encryptedBytes = encryptedBytes,
+        ivBytes = ivBytes,
         blockMode = blockMode,
         padding = padding,
     )
@@ -163,7 +163,7 @@ open class CryptoVaultAES(
      * Decrypts data with a caller-supplied [algorithmParameterSpec].
      *
      * @param secretKey Same software AES key used for encryption.
-     * @param encrypted Ciphertext (for GCM includes the authentication tag).
+     * @param encryptedBytes Ciphertext (for GCM includes the authentication tag).
      * @param blockMode JCA block-mode segment used for encryption. Prefer `"GCM"`.
      * @param padding JCA padding segment used for encryption. Prefer `"NoPadding"` with GCM.
      * @param algorithmParameterSpec Spec used (or compatible with) encryption.
@@ -173,13 +173,13 @@ open class CryptoVaultAES(
      */
     open fun decrypt(
         secretKey: SecretKey,
-        encrypted: ByteArray,
+        encryptedBytes: ByteArray,
         blockMode: String = KeyProperties.BLOCK_MODE_GCM,
         padding: String = KeyProperties.ENCRYPTION_PADDING_NONE,
         algorithmParameterSpec: AlgorithmParameterSpec,
     ): ByteArray = operation.decrypt(
         secretKey = secretKey,
-        encrypted = encrypted,
+        encryptedBytes = encryptedBytes,
         blockMode = blockMode,
         padding = padding,
         algorithmParameterSpec = algorithmParameterSpec,

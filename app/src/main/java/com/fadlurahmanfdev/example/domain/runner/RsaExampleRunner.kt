@@ -14,41 +14,40 @@ class RsaExampleRunner(
 
     fun runSimpleKeyEncryptDecryptSignVerify(): ExampleResult {
         val plainText = "Passw0rd!"
+        val plainTextBytes = plainText.toByteArray()
         val keyPair = cryptoVaultRSA.generateKey()
-        val encrypted = cryptoVaultRSA.encrypt(
+        val encryptedBytes = cryptoVaultRSA.encrypt(
             publicKey = keyPair.public,
-            plainText = plainText.toByteArray(),
+            plainTextBytes = plainTextBytes,
         )
         val decrypted = String(
             cryptoVaultRSA.decrypt(
                 privateKey = keyPair.private,
-                encrypted = encrypted,
+                encryptedBytes = encryptedBytes,
             ),
         )
-        val signature = cryptoVaultRSA.sign(
+        val signatureBytes = cryptoVaultRSA.sign(
             privateKey = keyPair.private,
-            plainText = plainText.toByteArray(),
+            plainTextBytes = plainTextBytes,
         )
         val isVerified = cryptoVaultRSA.verify(
             publicKey = keyPair.public,
-            signature = signature,
-            plainText = plainText.toByteArray(),
+            signatureBytes = signatureBytes,
+            plainTextBytes = plainTextBytes,
         )
+        val encodedPrivateKey = Base64.encodeToString(keyPair.private.encoded, Base64.NO_WRAP)
+        val encodedPublicKey = Base64.encodeToString(keyPair.public.encoded, Base64.NO_WRAP)
+        val encodedEncryptedText = Base64.encodeToString(encryptedBytes, Base64.NO_WRAP)
+        val encodedSignature = Base64.encodeToString(signatureBytes, Base64.NO_WRAP)
         return ExampleResult(
             scenarioTitle = "RSA with software key pair",
             lines = listOf(
                 ResultLine("plain text", plainText),
-                ResultLine(
-                    "private key",
-                    Base64.encodeToString(keyPair.private.encoded, Base64.NO_WRAP),
-                ),
-                ResultLine(
-                    "public key",
-                    Base64.encodeToString(keyPair.public.encoded, Base64.NO_WRAP),
-                ),
-                ResultLine("encrypted text", Base64.encodeToString(encrypted, Base64.NO_WRAP)),
+                ResultLine("private key", encodedPrivateKey),
+                ResultLine("public key", encodedPublicKey),
+                ResultLine("encrypted text", encodedEncryptedText),
                 ResultLine("decrypted text", decrypted),
-                ResultLine("signature", Base64.encodeToString(signature, Base64.NO_WRAP)),
+                ResultLine("signature", encodedSignature),
                 ResultLine("signature verified", isVerified.toString()),
                 ResultLine("round-trip success", (plainText == decrypted).toString()),
             ),
@@ -57,25 +56,27 @@ class RsaExampleRunner(
 
     fun runKeystoreEncryptDecrypt(): ExampleResult {
         val plainText = "Passw0rd!"
+        val plainTextBytes = plainText.toByteArray()
         val keystoreAlias = "example_rsa"
         cryptoVaultRSAAndroidKeyStore.deleteKey(keystoreAlias)
         val keyPair = getOrCreateKeystoreKeyPair(keystoreAlias)
-        val encrypted = cryptoVaultRSAAndroidKeyStore.encrypt(
+        val encryptedBytes = cryptoVaultRSAAndroidKeyStore.encrypt(
             publicKey = keyPair.public,
-            plainText = plainText.toByteArray(),
+            plainTextBytes = plainTextBytes,
         )
         val decrypted = String(
             cryptoVaultRSAAndroidKeyStore.decrypt(
                 privateKey = keyPair.private,
-                encrypted = encrypted,
+                encryptedBytes = encryptedBytes,
             ),
         )
+        val encodedEncryptedText = Base64.encodeToString(encryptedBytes, Base64.NO_WRAP)
         return ExampleResult(
             scenarioTitle = "RSA encrypt/decrypt via Android Keystore",
             lines = listOf(
                 ResultLine("keystore alias", keystoreAlias),
                 ResultLine("plain text", plainText),
-                ResultLine("encrypted text", Base64.encodeToString(encrypted, Base64.NO_WRAP)),
+                ResultLine("encrypted text", encodedEncryptedText),
                 ResultLine("decrypted text", decrypted),
                 ResultLine("round-trip success", (plainText == decrypted).toString()),
             ),
@@ -84,26 +85,28 @@ class RsaExampleRunner(
 
     fun runKeystoreSignVerify(): ExampleResult {
         val plainText = "Passw0rd!"
+        val plainTextBytes = plainText.toByteArray()
         val keystoreAlias = "example_rsa"
         val privateKey = cryptoVaultRSAAndroidKeyStore.getPrivateKey(keystoreAlias)
             ?: error("Run the Keystore encrypt/decrypt example first to create the RSA key.")
         val publicKey = cryptoVaultRSAAndroidKeyStore.getPublicKey(keystoreAlias)
             ?: error("Run the Keystore encrypt/decrypt example first to create the RSA key.")
-        val signature = cryptoVaultRSAAndroidKeyStore.sign(
+        val signatureBytes = cryptoVaultRSAAndroidKeyStore.sign(
             privateKey = privateKey,
-            plainText = plainText.toByteArray(),
+            plainTextBytes = plainTextBytes,
         )
         val isVerified = cryptoVaultRSAAndroidKeyStore.verify(
             publicKey = publicKey,
-            signature = signature,
-            plainText = plainText.toByteArray(),
+            signatureBytes = signatureBytes,
+            plainTextBytes = plainTextBytes,
         )
+        val encodedSignature = Base64.encodeToString(signatureBytes, Base64.NO_WRAP)
         return ExampleResult(
             scenarioTitle = "RSA sign/verify via Android Keystore",
             lines = listOf(
                 ResultLine("keystore alias", keystoreAlias),
                 ResultLine("plain text", plainText),
-                ResultLine("signature", Base64.encodeToString(signature, Base64.NO_WRAP)),
+                ResultLine("signature", encodedSignature),
                 ResultLine("signature verified", isVerified.toString()),
             ),
         )

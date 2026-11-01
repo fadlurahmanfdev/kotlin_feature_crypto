@@ -34,15 +34,15 @@ interface AESAndroidKeyStoreOperation {
 
     fun encrypt(
         secretKey: SecretKey,
-        plainText: ByteArray,
+        plainTextBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): EncryptedData
 
     fun decrypt(
         secretKey: SecretKey,
-        encrypted: ByteArray,
-        iv: ByteArray,
+        encryptedBytes: ByteArray,
+        ivBytes: ByteArray,
         blockMode: String,
         padding: String,
     ): ByteArray
